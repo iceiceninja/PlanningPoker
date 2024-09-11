@@ -2,12 +2,12 @@
 import Image from "next/image";
 import Link from 'next/link'
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import io from 'socket.io-client';
 
 export default function Home() {
   useEffect(() => {
-    const socket = io();
+    const socket = io("http://localhost:3000");
 
     socket.on('connect', () => {
       console.log('Connected to WebSocket server');
