@@ -22,6 +22,11 @@ app.prepare().then(() => {
   io.on('connection', socket => {
     console.log('Client connected');
 
+    socket.on('message', (data) => {
+      console.log('Message from client:', data.text);
+    });
+  
+
     socket.on('disconnect', () => {
       console.log('Client disconnected');
     });
