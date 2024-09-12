@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, SetStateAction } from 'react';
-// import io from 'socket.io-client';
 import socket from "../socket";
 
 
@@ -45,7 +44,6 @@ export default function Home() {
     router.push('/user'); // Navigate to /user
   };
 
-  // Function to send a message to the backend
   // Function to handle sending the message to the backend
   const sendMessage = () => {
     if (message.trim() !== '') {
@@ -75,6 +73,5 @@ export default function Home() {
         Send Message to Backend
       </button>
     </div>
-
   )
 };
