@@ -20,13 +20,30 @@ export default function Home() {
 
   return (
     <div>
-       <li>
-        <Link href="/user">Home</Link>
-      </li>
-    <h1 style = {{color: 'white'}}>Planning Poker</h1>
-    <button  className = "button-43"> Join as Host</button>
-    <button className = "button-43"> Join as User</button>
-    <input type="text" />
+    <h1 style = {{color: 'black'}}>Planning Poker</h1>
+    <form>
+    <label  className = "label-input" htmlFor="hostName">Host's Name</label>
+<input
+  type="text"
+  className="form-input"
+  name="hostName"
+  id="hostName"
+  maxLength={20}
+  required
+/>
+
+<label className = "label-input" htmlFor="sessionTopic">Session Topic</label>
+<input
+  type="text"
+  className="form-input"
+  name="sessionTopic"
+  id="sessionTopic"
+  maxLength={10000}
+  required
+/>
+
+<button type ="submit" className = "button-43"> Start a Session</button>
+</form>
     </div>
   )
 };
