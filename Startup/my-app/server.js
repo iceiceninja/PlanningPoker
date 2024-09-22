@@ -2,11 +2,20 @@ const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
 const { Server } = require("socket.io");
+const express = require('express');
+const path = require('path');  // This helps resolve paths correctly
 
-const app = next({ dev: process.env.NODE_ENV !== 'production' });
-const handle = app.getRequestHandler();
+const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
+const handle = nextApp.getRequestHandler();
+const expressApp = express();
 
-app.prepare().then(() => {
+// Serve static files from the "host" folder
+expressApp.use(express.static(path.join(__dirname, 'host')));
+
+// Serve static files from the "host" folder
+expressApp.use(express.static(path.join(__dirname, 'images')));
+
+nextApp.prepare().then(() => {
   const server = createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
