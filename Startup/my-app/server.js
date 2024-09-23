@@ -4,7 +4,6 @@ const next = require('next');
 const { Server } = require("socket.io");
 const express = require('express');
 const path = require('path');  // This helps resolve paths correctly
-
 const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
 const handle = nextApp.getRequestHandler();
 const expressApp = express();
@@ -21,10 +20,20 @@ nextApp.prepare().then(() => {
     handle(req, res, parsedUrl);
   });
 
-  const io = new Server(server);
+  const io = new Server(server, {
+    cors: {
+      origin: "http://localhost:3000",
+      methods: ["GET", "POST"],
+    },
+  });
 
   io.on('connection', socket => {
     console.log('Client connected');
+
+    socket.on('message', (data) => {
+      console.log('Message from client:', data.text);
+    });
+  
 
     socket.on('disconnect', () => {
       console.log('Client disconnected');

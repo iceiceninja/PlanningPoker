@@ -14,15 +14,6 @@ export default function Home() {
   useEffect(() => {
     const socket = io(":3000");
 
-    socket.on('connect', () => {
-      console.log('Connected to WebSocket server');
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
   const joinAsHost = (event : any) => {
     event.preventDefault();  // Prevent the default GET request
     console.log('Form submitted:', formData);
@@ -69,6 +60,7 @@ export default function Home() {
 
 <button type ="submit" className = "button-43"> Start a Session</button>
 </form>
-    </div>
+
+
   )
 };
