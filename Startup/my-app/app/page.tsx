@@ -3,75 +3,64 @@ import Image from "next/image";
 import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, SetStateAction } from 'react';
-import socket from "../socket";
-
+import io from 'socket.io-client';
 
 export default function Home() {
-  const [message, setMessage] = useState('');  // State to hold the input text
   const router = useRouter(); // Initialize the router
+  const [hostJoined, setHostJoined] = useState(false);  // State to hold the input text
+  const [formData, setFormData] = useState({ hostName: '', sessionTopic: '' });
+
 
   useEffect(() => {
-    // Listen for the connection event
-    socket.on('connect', () => {
-      console.log('Connected to WebSocket server');
-    });
+    const socket = io(":3000");
 
-    // Listen for the disconnect event
-    socket.on('disconnect', () => {
-      console.log('Disconnected from WebSocket server');
-    });
+  const joinAsHost = (event : any) => {
+    event.preventDefault();  // Prevent the default GET request
+    console.log('Form submitted:', formData);
+    setFormData(formData);
+    console.log("hello world");
+    if (hostJoined) {
+      joinAsPlayer();
+    }
 
-    // Listen for responses from the server
-    socket.on('response', (data) => {
-      console.log('Response from server:', data);
-    });
-
-    // Cleanup when the component unmounts
-    return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('response');
-    };
-  }, []);
-
-
-  // Handle button clicks
-  const joinAsHost = () => {
+    setHostJoined(true);
     router.push('/host'); // Navigate to /host
   };
 
-  const joinAsUser = () => {
+
+  const joinAsPlayer = () => {
     router.push('/user'); // Navigate to /user
   };
 
-  // Function to handle sending the message to the backend
-  const sendMessage = () => {
-    if (message.trim() !== '') {
-      socket.emit('message', { text: message });  // Emit the message to the backend
-      setMessage('');  // Clear the input field after sending
-    }
-  };
-  const handleInputChange = (e: any) => {
-    setMessage(e.target.value);
-  };
+
 
   return (
     <div>
-      <li>
-        <Link href="/user">Home</Link>
-      </li>
-      <h1 style={{ color: 'white' }}>Planning Poker</h1>
-      <button className="button-43" onClick={joinAsHost}> Join as Host</button>
-      <button className="button-43" onClick={joinAsUser}> Join as User</button>
-      <input
-        type="text"
-        value={message}
-        onChange={handleInputChange}  // Update the state when typing
-        placeholder="Type your message here"
-      />
-      <button className="button-43" onClick={sendMessage}>
-        Send Message to Backend
-      </button>
-    </div>
+    <h1 style = {{color: 'black'}}>Planning Poker</h1>
+    <form onSubmit={joinAsHost}>
+    <label  className = "label-input" htmlFor="hostName">Host's Name</label>
+<input
+  type="text"
+  className="form-input"
+  name="hostName"
+  id="hostName"
+  maxLength={20}
+  required
+/>
+
+<label className = "label-input" htmlFor="sessionTopic">Session Topic</label>
+<input
+  type="text"
+  className="form-input"
+  name="sessionTopic"
+  id="sessionTopic"
+  maxLength={10000}
+  required
+/>
+
+<button type ="submit" className = "button-43"> Start a Session</button>
+</form>
+
+
   )
 };

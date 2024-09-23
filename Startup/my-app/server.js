@@ -1,12 +1,20 @@
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
-const { Server } = require('socket.io');
+const { Server } = require("socket.io");
+const express = require('express');
+const path = require('path');  // This helps resolve paths correctly
+const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
+const handle = nextApp.getRequestHandler();
+const expressApp = express();
 
-const app = next({ dev: process.env.NODE_ENV !== 'production' });
-const handle = app.getRequestHandler();
+// Serve static files from the "host" folder
+expressApp.use(express.static(path.join(__dirname, 'host')));
 
-app.prepare().then(() => {
+// Serve static files from the "host" folder
+expressApp.use(express.static(path.join(__dirname, 'images')));
+
+nextApp.prepare().then(() => {
   const server = createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
@@ -31,6 +39,7 @@ app.prepare().then(() => {
       console.log('Client disconnected');
     });
   });
+
 
   server.listen(3000, (err) => {
     if (err) throw err;
