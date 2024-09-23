@@ -8,6 +8,8 @@ const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
 const handle = nextApp.getRequestHandler();
 const expressApp = express();
 
+const PORT = process.env.PORT || 4000;  // Default to port 4000 instead of 3000
+
 // Serve static files from the "host" folder
 expressApp.use(express.static(path.join(__dirname, 'host')));
 
@@ -22,7 +24,7 @@ nextApp.prepare().then(() => {
 
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: "*",
       methods: ["GET", "POST"],
     },
   });
@@ -41,8 +43,8 @@ nextApp.prepare().then(() => {
   });
 
 
-  server.listen(3000, (err) => {
+  server.listen(PORT, (err) => {
     if (err) throw err;
-    console.log('> Ready on http://localhost:3000');
+    console.log(`Server is running on port ${PORT}`);
   });
 });

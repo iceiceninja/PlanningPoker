@@ -17,6 +17,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-router-dom": "^6.26.1",
+    "sharp": "^0.33.5",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
     "ws": "^8.18.0"

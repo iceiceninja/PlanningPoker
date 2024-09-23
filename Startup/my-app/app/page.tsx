@@ -11,7 +11,7 @@ export default function Home() {
   const [formData, setFormData] = useState({ hostName: '', sessionTopic: '' });
 
   // Initialize socket connection
-  const socket = io(":3000");
+  const socket = io(":4000");
 
   const joinAsHost = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();  // Prevent the default form submission
@@ -19,7 +19,6 @@ export default function Home() {
 
     setHostJoined(true); // Set host joined state
 
-    // Optionally emit an event to the server if needed
     socket.emit('hostJoined', formData);
 
     router.push('/host'); // Navigate to /host
@@ -39,7 +38,7 @@ export default function Home() {
     <div>
       <h1 style={{ color: 'black' }}>Planning Poker</h1>
       <form onSubmit={joinAsHost}>
-        <label className="label-input" htmlFor="hostName">Host's Name</label>
+        <label className="label-input" htmlFor="hostName">Host&#39;s Name</label>
         <input
           type="text"
           className="form-input"
