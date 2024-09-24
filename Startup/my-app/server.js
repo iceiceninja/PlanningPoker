@@ -35,8 +35,13 @@ nextApp.prepare().then(() => {
     socket.on('message', (data) => {
       console.log('Message from client:', data.text);
     });
-  
-
+    socket.on('start-round',()=>{
+        console.log('Host has started the round');
+    });
+    socket.on("start-round", (arg, callback) => {
+      console.log("Host has started the round. The topic is: " + arg); // "world"
+      callback("Server ACK");
+    });
     socket.on('disconnect', () => {
       console.log('Client disconnected');
     });

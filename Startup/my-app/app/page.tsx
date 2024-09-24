@@ -3,7 +3,9 @@ import Image from "next/image";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
+import socket from '../socket';
+
 
 export default function Home() {
   const router = useRouter(); // Initialize the router
@@ -11,7 +13,7 @@ export default function Home() {
   const [formData, setFormData] = useState({ hostName: '', sessionTopic: '' });
 
   // Initialize socket connection
-  const socket = io(":4000");
+  // const socket = io(":4000");
 
   const joinAsHost = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();  // Prevent the default form submission
