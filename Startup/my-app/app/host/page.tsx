@@ -20,6 +20,10 @@ export default function Host() {
         event.preventDefault();
         startRound(formData.get('roundTopic') as string);
     }
+    socket.on('round-topic',(arg:String)=>
+        {
+            console.log("Round topic is: " + arg);
+        })
 
     return (
         <div>
