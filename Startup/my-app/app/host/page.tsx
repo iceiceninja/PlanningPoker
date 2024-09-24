@@ -3,10 +3,8 @@
 import Image from "next/image";
 import Link from 'next/link'
 import { useRouter } from 'next/navigation';
-// import { io } from "socket.io-client";
 import  socket  from "../../socket";
 export default function Host() {
-    // const socket = io(":4000");
 
     function startRound(roundTopic:String)
     {
@@ -24,7 +22,13 @@ export default function Host() {
         {
             console.log("Round topic is: " + arg);
         })
-
+    const endRound = () => {
+        socket.emit("end-round");
+    }
+    socket.on('display-votes', (userVotes) =>
+        {
+            console.log(userVotes)
+        })
     return (
         <div>
             <h1> Hello World!</h1>
@@ -39,6 +43,7 @@ export default function Host() {
                 </label>
                 <button type="submit" className="button-43">Start a Session</button>
             </form>
+            <button onClick={endRound} className="button-43">End Round</button>
         </div>
     )
 
