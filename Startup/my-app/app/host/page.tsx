@@ -41,7 +41,7 @@ export default function Host() {
                         name="roundTopic"
                     />
                 </label>
-                <button type="submit" className="button-43">Start a Session</button>
+                <button type="submit" className="button-43">Start Round</button>
             </form>
             <button onClick={endRound} className="button-43">End Round</button>
         </div>

@@ -48,6 +48,7 @@ nextApp.prepare().then(() => {
     socket.on("start-round", (topic) => { // a
       console.log("Host has started the round. The topic is: " + topic); // "world"
       socket.broadcast.emit('round-topic', topic); // This broadcasts the message to all except the sender
+      io.emit('start');
       // callback("Server ACK");
     });
     socket.on("end-round",() => // votes should be a map {userId: vote}
@@ -62,11 +63,16 @@ nextApp.prepare().then(() => {
           // playerVotes.push({"id": vote.id, "value":vote.value})
           storeVote(vote.id, vote.value)
           console.log("Player " + vote.id + " has voted " + vote.value)
-          console.log(playerVotes)
+          // console.log(playerVotes)
         });
     socket.on('disconnect', () => {
       console.log('Client disconnected');
     });
+    // TODO: init Countdown
+    socket.on('countdown',()=>
+    {
+      socket.broadcast.emit('init-countdown') // handle actual countdown logic clientside 
+    })
   });
 
 
