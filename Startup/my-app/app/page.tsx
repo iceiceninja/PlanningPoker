@@ -14,6 +14,7 @@ export default function Home() {
   useEffect(() => {
     const socket = io(":3000");
 
+<<<<<<< HEAD
     socket.on('connect', () => {
       console.log('Connected to WebSocket server');
     });
@@ -23,6 +24,8 @@ export default function Home() {
     };
   }, []);
 
+=======
+>>>>>>> 78a108cc18c2767368bd0380345848c961d7d11c
   const joinAsHost = (event : any) => {
     event.preventDefault();  // Prevent the default GET request
     console.log('Form submitted:', formData);
@@ -43,6 +46,7 @@ export default function Home() {
 
 
 
+<<<<<<< HEAD
 
   // Handle button clicks
   const joinAsHost = () => {
@@ -64,6 +68,8 @@ export default function Home() {
     setMessage(e.target.value);
   };
 
+=======
+>>>>>>> 78a108cc18c2767368bd0380345848c961d7d11c
   return (
     <div>
     <h1 style = {{color: 'black'}}>Planning Poker</h1>
@@ -90,6 +96,11 @@ export default function Home() {
 
 <button type ="submit" className = "button-43"> Start a Session</button>
 </form>
+<<<<<<< HEAD
     </div>
+=======
+
+
+>>>>>>> 78a108cc18c2767368bd0380345848c961d7d11c
   )
 };
