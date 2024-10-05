@@ -43,6 +43,27 @@ export default function Home() {
 
 
 
+
+  // Handle button clicks
+  const joinAsHost = () => {
+    router.push('/host'); // Navigate to /host
+  };
+
+  const joinAsUser = () => {
+    router.push('/user'); // Navigate to /user
+  };
+
+  // Function to handle sending the message to the backend
+  const sendMessage = () => {
+    if (message.trim() !== '') {
+      socket.emit('message', { text: message });  // Emit the message to the backend
+      setMessage('');  // Clear the input field after sending
+    }
+  };
+  const handleInputChange = (e: any) => {
+    setMessage(e.target.value);
+  };
+
   return (
     <div>
     <h1 style = {{color: 'black'}}>Planning Poker</h1>
