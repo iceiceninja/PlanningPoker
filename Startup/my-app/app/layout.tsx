@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import background from "../images/89882.jpg"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html style ={{backgroundColor: 'black'}} lang="en">
+    <html style ={{backgroundImage: `url(${background.src})`}} lang="en">
       <body className={inter.className}>{children}</body>
     </html>
   );
