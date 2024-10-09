@@ -1,3 +1,9 @@
+// cd Startup/my-app
+// node server.js
+// localhost:4000
+// 1. change to 3000 
+// 2. 
+
 "use client"
 
 import Image from "next/image";
@@ -37,6 +43,7 @@ export default function host() {
             <button onClick={sendVote} className="button-43" value={13}>13</button>
             <button onClick={sendVote} className="button-43" value={21}>21</button>
             <button onClick={sendVote} className="button-43" value={"?"}>?</button>
+            <title>Planning Poker - Everfox</title>
         </div>
     )
 

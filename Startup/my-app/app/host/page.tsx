@@ -31,7 +31,7 @@ export default function Host() {
         })
     return (
         <div>
-            <h1> Hello World!</h1>
+            <h1>S</h1>
             <Link href="/"> Home Page</Link>
             <form onSubmit={handleSubmit}>
                 <label>
@@ -44,6 +44,7 @@ export default function Host() {
                 <button type="submit" className="button-43">Start Round</button>
             </form>
             <button onClick={endRound} className="button-43">End Round</button>
+            <title>Planning Poker - Everfox</title>
         </div>
     )
 

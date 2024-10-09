@@ -11,7 +11,7 @@ interface Props {
     initialTime: number;
 }
 
-const socket: Socket = io('http://localhost:4000');
+const socket: Socket = io('http://localhost:3000');
 
 const Timer: React.FC<Props> = ({ initialTime }) => {
     const [state, setState] = useState<State>({

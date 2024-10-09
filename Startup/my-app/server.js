@@ -8,7 +8,7 @@ const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
 const handle = nextApp.getRequestHandler();
 const expressApp = express();
 
-const PORT = process.env.PORT || 4000;  // Default to port 4000 instead of 3000
+const PORT = process.env.PORT || 3000;  // Default 3000
 
 // Serve static files from the "host" folder
 expressApp.use(express.static(path.join(__dirname, 'host')));
