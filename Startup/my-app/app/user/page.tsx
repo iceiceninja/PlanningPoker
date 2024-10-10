@@ -12,8 +12,23 @@ import { useRouter } from 'next/navigation';
 import socket from "../../socket";
 import { MouseEvent } from "react";
 import Timer from "../components/timer";
+import IconButton from '@mui/material/IconButton';
+import * as React from 'react';
+import Avatar from '@mui/material/Avatar';
+import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
+import {PopupBody} from '../components/Style'
+
+import Stack from '@mui/material/Stack';
 
 export default function host() {
+
+    // Popup 2
+    const [anchor2, setAnchor2] = React.useState(null);
+    const open2 = Boolean(anchor2);
+    const id2 = open2 ? 'simple-popper' : undefined;
+    const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
+        setAnchor2(anchor2 ? null : event2.currentTarget);
+    };
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
@@ -31,20 +46,108 @@ export default function host() {
     })
     return (
         <div>
-            <Timer initialTime={60}/>
-            <h1> Please Select Your Vote</h1>
-            <Link href="/"> Home Page</Link>
-            <button onClick={sendVote} className="button-43" value={"pass"}>PASS</button>
-            <button onClick={sendVote} className="button-43" value={1}>1</button>
-            <button onClick={sendVote} className="button-43" value={2}>2</button>
-            <button onClick={sendVote} className="button-43" value={3}>3</button>
-            <button onClick={sendVote} className="button-43" value={5}>5</button>
-            <button onClick={sendVote} className="button-43" value={8}>8</button>
-            <button onClick={sendVote} className="button-43" value={13}>13</button>
-            <button onClick={sendVote} className="button-43" value={21}>21</button>
-            <button onClick={sendVote} className="button-43" value={"?"}>?</button>
-            <title>Planning Poker - Everfox</title>
+            <Stack 
+                direction="row" 
+                spacing={2}
+                useFlexGap
+                sx = {{
+                    justifyContent: "space-between",
+                    alignItems: "flex-start"
+                }}>
+                <IconButton 
+                    onClick = {handleClick2}
+                    sx = {{
+                        marginTop:  '2%',
+                        marginLeft: '2%',
+                    }}                
+                >
+                    <Avatar>
+                        M
+                    </Avatar>
+                </IconButton>
+                <BasePopup id={id2} open={open2} anchor={anchor2}>
+                    <PopupBody>
+                        <Link href="/"> Home Page</Link>
+                    </PopupBody>
+                </BasePopup>
+                <Stack 
+                    direction = "column" 
+                    spacing={0}
+                    sx={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                    <h1 className = 'margin0 marginTop' >
+                        9/14/24 - Food Session
+                    </h1>
+                    <h2 className = 'margin0'>
+                        Host: Dustin Endres
+                    </h2>
+                </Stack>
+                <IconButton 
+                    sx = {{
+                        marginTop:  '2%',
+                        marginRight: '2%',
+                    }}>
+                    <Avatar>
+                        C
+                    </Avatar>
+                </IconButton>
+                <title>Planning Poker - Everfox</title>
+            </Stack>
+            <div className = ", footer">
+                <title>Planning Poker - Everfox</title>
+                <Stack               
+                    direction="row" 
+                    spacing={2}
+                    sx={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                    >
+                    <button onClick={sendVote} className="card" value={"pass"}>Pass</button>
+
+                    
+                    <button onClick={sendVote} className="card" value={1}>1</button>
+                    <button onClick={sendVote} className="card" value={2}>2</button>
+                    <button onClick={sendVote} className="card" value={3}>3</button>
+                    <button onClick={sendVote} className="card" value={5}>5</button>
+                    <button onClick={sendVote} className="card" value={8}>8</button>
+                    <button onClick={sendVote} className="card" value={13}>13</button>
+                    <button onClick={sendVote} className="card" value={21}>21</button>
+                    <button onClick={sendVote} className="card" value={"?"}>?</button>
+                </Stack>
+
+            </div>
         </div>
+ 
     )
 
 }
+
+{/*
+
+    <Stack                 
+        sx = {{
+            height: '100%',
+            justifyContent: "center",
+            alignItems: "flex-start" }}
+            className = "outline"
+            direction="row" >
+        <button onClick={sendVote} className="button-43" value={"pass"}>PASS</button>
+        <button onClick={sendVote} className="button-43" value={1}>1</button>
+        <button onClick={sendVote} className="button-43" value={2}>2</button>
+        <button onClick={sendVote} className="button-43" value={3}>3</button>
+        <button onClick={sendVote} className="button-43" value={5}>5</button>
+        <button onClick={sendVote} className="button-43" value={8}>8</button>
+        <button onClick={sendVote} className="button-43" value={13}>13</button>
+        <button onClick={sendVote} className="button-43" value={21}>21</button>
+        <button onClick={sendVote} className="button-43" value={"?"}>?</button>
+    </Stack>
+    <Timer initialTime={60}/>
+    <h1> Please Select Your Vote</h1>
+    <Link href="/"> Home Page</Link>
+
+    <title>Planning Poker - Everfox</title>
+*/}

@@ -33,32 +33,31 @@ export default function Home() {
   const handleClose = () => setOpen(false);
 
   // Input Content
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [emailError, setEmailError] = useState(false)
-  const [passwordError, setPasswordError] = useState(false)
+  const [hostName, setHostName] = useState("")
+  const [topicName, setTopicName] = useState("")
+  const [hostNameError, setHostNameError] = useState(false)
+  const [topicNameError, setTopicNameError] = useState(false)
 
   // Input Validation
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault()
 
-    setEmailError(false)
-    setPasswordError(false)
+    setHostNameError(false)
+    setTopicNameError(false)
 
-    if (email == '') {
-        setEmailError(true)
+    if (hostName == '') { 
+      setHostNameError(true) 
     }
-    if (password == '') {
-        setPasswordError(true)
-    }
+    if (topicName == '') { setTopicNameError(true) }
 
-    if (email && password) {
-        console.log(email, password)
+    if (hostName && topicName) {
+        console.log(hostName, topicName)
         event.preventDefault();  // Prevent the default form submission
         console.log('Form submitted:', formData);
         setHostJoined(true); // Set host joined state
         socket.emit('hostJoined', formData);
         router.push('/host'); // Navigate to /host
+        console.log("hello!")
     }
 }
 
@@ -88,6 +87,7 @@ export default function Home() {
 
   return (
     <div>
+      {/* Comment in html like this! */}
       <Stack
             component = "form"
             direction = "column"
@@ -101,23 +101,24 @@ export default function Home() {
           >
             <h1 style={{ color: 'black' }}>Planning Poker</h1>
             <h3 style={{ color: 'black' }}>Everfox</h3>
+            <h3 style={{ color: 'black' }}>You're the first one to join, you are default the host!</h3>
             <TextField
                 label = "Host's name"
-                onChange={e => setEmail(e.target.value)}
+                onChange={e => setHostName(e.target.value)}
                 required 
                 variant = "outlined"
                 color = "secondary"
-                value={email}
-                error={emailError}
+                value={hostName}
+                error={hostNameError}
             />
             <TextField
                 label="Session Topic"
-                onChange={e => setPassword(e.target.value)}
+                onChange={e => setTopicName(e.target.value)}
                 required
                 variant="outlined"
                 color="secondary"
-                value={password}
-                error={passwordError}
+                value={topicName}
+                error={topicNameError}
             />
             <Button type="submit" variant= "contained" className = "button-12">Start a Session</Button>
 

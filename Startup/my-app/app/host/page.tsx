@@ -21,6 +21,7 @@ import {PopupBody} from '../components/Style'
 import { useState, useEffect } from 'react';
 import { TextField, FormControl } from "@mui/material"; // and Button
 
+import Card from '@mui/material/Card';
 
 export default function Host() {
 
