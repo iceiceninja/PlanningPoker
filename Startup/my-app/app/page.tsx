@@ -102,26 +102,26 @@ export default function Home() {
             <h1 style={{ color: 'black' }}>Planning Poker</h1>
             <h3 style={{ color: 'black' }}>Everfox</h3>
             <TextField
-              label = "Host's name"
-              onChange={e => setEmail(e.target.value)}
-              required 
-              variant = "outlined"
-              color = "secondary"
-              value={email}
-              error={emailError}
+                label = "Host's name"
+                onChange={e => setEmail(e.target.value)}
+                required 
+                variant = "outlined"
+                color = "secondary"
+                value={email}
+                error={emailError}
             />
             <TextField
-                    label="Session Topic"
-                    onChange={e => setPassword(e.target.value)}
-                    required
-                    variant="outlined"
-                    color="secondary"
-                    value={password}
-                    error={passwordError}
+                label="Session Topic"
+                onChange={e => setPassword(e.target.value)}
+                required
+                variant="outlined"
+                color="secondary"
+                value={password}
+                error={passwordError}
             />
-            <Button type="submit" className="button-12">Start a Session</Button>
+            <Button type="submit" variant= "contained" className = "button-12">Start a Session</Button>
 
-            <Button type = "button" className="button-12" onClick={handleOpen}>Getting Started!</Button>
+            <Button type = "button" variant= "contained" className="button-12" onClick={handleOpen}>Getting Started!</Button>
             <Modal
               open={open}
               onClose={handleClose}
