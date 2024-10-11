@@ -47,6 +47,7 @@ export default function host() {
     return (
         <div>
             <Stack 
+                id = "outline"
                 direction="row" 
                 spacing={2}
                 useFlexGap
@@ -94,7 +95,6 @@ export default function host() {
                         C
                     </Avatar>
                 </IconButton>
-                <title>Planning Poker - Everfox</title>
             </Stack>
             <div className = ", footer">
                 <title>Planning Poker - Everfox</title>
@@ -107,8 +107,6 @@ export default function host() {
                     }}
                     >
                     <button onClick={sendVote} className="card" value={"pass"}>Pass</button>
-
-                    
                     <button onClick={sendVote} className="card" value={1}>1</button>
                     <button onClick={sendVote} className="card" value={2}>2</button>
                     <button onClick={sendVote} className="card" value={3}>3</button>
@@ -121,7 +119,6 @@ export default function host() {
 
             </div>
         </div>
- 
     )
 
 }
