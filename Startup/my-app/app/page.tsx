@@ -1,5 +1,5 @@
-// Original Imports
-"use client"; // Mark as a client component
+
+"use client"; 
 import Image from "next/image";
 // import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -7,16 +7,14 @@ import { useState, useEffect } from 'react';
 // import io from 'socket.io-client';
 import socket from '../socket';
 import { Link } from "react-router-dom"
-
-// Imports from Michael
 import * as React from 'react';
-import Box from '@mui/material/Box'; // MUI Box
-import Button from '@mui/material/Button'; // MUI Button
-import Typography from '@mui/material/Typography'; // MUI Typography
-import Modal from '@mui/material/Modal'; // MUI Modal
-import {Style} from './components/Style' // MUI Sstyle
-import { TextField, FormControl } from "@mui/material"; // MUI Textfield
-import Stack from '@mui/material/Stack'; // MUI Stack
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button'; 
+import Typography from '@mui/material/Typography'; 
+import Modal from '@mui/material/Modal'; 
+import {Style} from './components/Style' 
+import { TextField, FormControl } from "@mui/material"; 
+import Stack from '@mui/material/Stack'; 
 
 export default function hostHome() {
 
@@ -72,10 +70,10 @@ export default function hostHome() {
   return (
     <div>
 
-      {/* Title Component: Tab's name in browser */}
+
       <title>Planning Poker - Everfox</title>
 
-      {/* Stack Component: Column */}
+   
       <Stack
             component = "form"
             direction = "column"
@@ -87,13 +85,14 @@ export default function hostHome() {
             }}
             onSubmit={handleSubmit}
           >
-            {/* Title Component: Description */}
+         
             <h1 style={{ color: 'black' }}>Planning Poker</h1>
             <h3 style={{ color: 'black' }}>Everfox</h3>
             <h3 style={{ color: 'black' }}>You're the first one to join, you are default the host!</h3>
 
-            {/* Textfield Component: Host name textfield */}
+          
             <TextField
+                slotProps={{htmlInput : {maxLength: 20 }}}
                 label = "Host's name"
                 onChange={e => setHostName(e.target.value)}
                 required 
@@ -101,10 +100,12 @@ export default function hostHome() {
                 color = "secondary"
                 value={hostName}
                 error={hostNameError}
+                
             />
 
-            {/* Textfield Component: Session topic textfield */}
+           
             <TextField
+                 slotProps={{htmlInput : {maxLength: 20 }}}
                 label="Session Topic"
                 onChange={e => setTopicName(e.target.value)}
                 required
@@ -114,28 +115,28 @@ export default function hostHome() {
                 error={topicNameError}
             />
 
-            {/* Submit Button Component: Start a Session button */}
+  
             <Button type="submit" variant= "contained" className = "button-12">Start a Session</Button>
 
-            {/* Modal Button Component: Getting Started button */}
+    
             <Button type = "button" variant= "contained" className="button-12" onClick={handleOpen}>Getting Started!</Button>
 
-            {/* Modal Component: Information modal */}
+
             <Modal
               open={open}
               onClose={handleClose}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              {/* Box Component: Modal's box*/}
+             
               <Box sx = {Style}>
 
-                {/* Typography Component: Modal's Title */}
+               
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                   Welcome to Everfox's Planning Poker Application!
                 </Typography>
-
-                {/* Typography Component: Modal's Description */}
+ 
+              
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                   To get started, enter your host name and the session topic for today.
                   After clicking the "Start a Session" button, you will be prompted with a
