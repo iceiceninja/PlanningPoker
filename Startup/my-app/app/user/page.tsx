@@ -34,7 +34,7 @@ export default function host() {
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
         socket.emit("vote-selected", { id: "123", value: event.currentTarget.value }); // userId, vote value
     }
-    socket.on('display-votes', (userVotes) => {
+    socket.on('display-votes', (userVotes : any) => {
         console.log(userVotes)
     })
     socket.on('round-topic', (topic: String) => {
