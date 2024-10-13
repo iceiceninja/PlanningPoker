@@ -18,28 +18,6 @@ import {Style} from './components/Style' // MUI Sstyle
 import { TextField, FormControl } from "@mui/material"; // MUI Textfield
 import Stack from '@mui/material/Stack'; // MUI Stack
 
-/*
-  Home Screen for host:
-
-  This screen should show whenever the user is the first user
-  to enter the session.
-  The app will automatically make that user the host
-  Any other users that would join are transfered to userHome
-  with a different screen
-
-  ** TODO LIST**
-  1. Fix Input Validation
-    - Prevent user from submitting a host name/session topic with more than 20 characters
-    - Change the error message to reflect this and the empty name case
-  2. Data transfer to session screen
-    - Data that host has entered should be reflected in the session screen
-    - Including: Host name and session topic
-    - Work with formData
-  3. Make better UI
-    - Make a element that fill the whole screen without scrolling
-    - Replicate design from Figma (WIP) 
-*/
-
 export default function hostHome() {
 
 

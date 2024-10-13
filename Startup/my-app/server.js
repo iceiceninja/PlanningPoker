@@ -40,15 +40,19 @@ nextApp.prepare().then(() => {
 
 
 
-  const io = new Server(server);
+const io = new Server(server);
 
-  
 io.on('connection', (socket) => {
   console.log('a user connected');
+
+  
 });
+
+
 
   server.listen(PORT, (err) => {
     if (err) throw err;
     console.log(`Server is running on port ${PORT}`);
   });
 });
+
