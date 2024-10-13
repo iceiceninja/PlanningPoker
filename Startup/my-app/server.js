@@ -40,15 +40,22 @@ nextApp.prepare().then(() => {
 
 
 var hostExists = false;
+var host = " ";
+let players = [];
+let idToPlayerName = {};
 const io = new Server(server);
+
+
 
 io.on('connection', (socket) => {
   console.log('a user connected');
   console.log(hostExists);
 
+  idToPlayerName[socket.id] = " ";
+
   if (hostExists) {
      socket.emit("host_exists", "True");
-     console.log("pushed host exists");
+     console.log("host already exists");
   }
 
   socket.on('disconnect', () => {
@@ -56,7 +63,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('host_joined', (msg) => {
-    console.log("Host created" + msg);
+    console.log(msg);
     hostExists = true;
     socket.emit()
   });

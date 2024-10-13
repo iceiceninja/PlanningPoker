@@ -5,10 +5,6 @@ const socket = io(':3000', { // http://localhost
     path: '/socket.io',
 });
 
-
-socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
   
 
 

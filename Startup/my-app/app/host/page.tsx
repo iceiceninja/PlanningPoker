@@ -129,7 +129,7 @@ export default function hostSession() {
     }
 
     return (
-        <body>
+        <div>
             <Stack
                 direction = "column"
                 spacing={2}
@@ -320,6 +320,6 @@ export default function hostSession() {
             </Box>
 
             </Stack>
-        </body>
+            </div>
     )
 }

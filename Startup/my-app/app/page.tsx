@@ -21,16 +21,14 @@ export default function hostHome() {
 
   const router = useRouter(); // Initialize the router
   const [hostJoined, setHostJoined] = useState(false);  // State to track if host has joined
-  const [formData, setFormData] = useState({ hostName: '', sessionTopic: '' }); // formData
-  
-  // Popup component
+
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   // Input Content
   const [hostName, setHostName] = useState("")
-  const [topicName, setTopicName] = useState("")
+  const [sessionTopic, setSessionTopic] = useState("")
 
   socket.on("host_exists", () => {
     router.push('/host');
@@ -39,17 +37,17 @@ export default function hostHome() {
   // Input Validation
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     
+
       event.preventDefault()
-        console.log(hostName, topicName)
-        event.preventDefault();  // Prevent the default form submission
+        console.log(hostName, sessionTopic)
+        event.preventDefault();  
 
-        // ** TODO: transfer formData to the server backend **
-        console.log('Form submitted:', formData);
+        console.log('Form submitted:', {hostName, sessionTopic});
 
-        // Host joins the session after valid setup
-        setHostJoined(true); // Set host joined state
-        socket.emit('host_joined', formData);
-        router.push('/host'); // Navigate to /host
+
+        setHostJoined(true);
+        socket.emit('host_joined', {hostName, sessionTopic});
+        router.push('/host'); 
   }
 
   return (
@@ -91,11 +89,11 @@ export default function hostHome() {
             <TextField
                 slotProps={{htmlInput : {maxLength: 20 }}}
                 label="Session Topic"
-                onChange={e => setTopicName(e.target.value)}
+                onChange={e => setSessionTopic(e.target.value)}
                 required
                 variant="outlined"
                 color="secondary"
-                value={topicName}
+                value={sessionTopic}
             />
 
   
