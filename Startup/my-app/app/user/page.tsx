@@ -10,7 +10,7 @@ import Image from "next/image";
 import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import socket from "../../socket";
-import { MouseEvent } from "react";
+import { MouseEvent, useState, useEffect } from "react";
 import Timer from "../components/timer";
 import IconButton from '@mui/material/IconButton';
 import * as React from 'react';
@@ -45,9 +45,10 @@ export default function host() {
 
     })
 
-    
-    socket.on("host_left", () => {
-        router.push('/user');
+    useEffect(() => {
+        socket.on("host_left", () => {
+          router.push('/');
+        });
       });
 
 

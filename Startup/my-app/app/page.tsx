@@ -29,25 +29,38 @@ export default function hostHome() {
   // Input Content
   const [hostName, setHostName] = useState("")
   const [sessionTopic, setSessionTopic] = useState("")
-  useEffect(() => {
+  const [userCount, setUserCount] = useState(0);
+  const socketEmissionHolder = [];
+
   socket.on("host_exists", () => {
-    router.push('/host');
+    socketEmissionHolder.push("test");
+    console.log("HASHDHASDFKJSDFHSDAFKLDJASFKLDASJ;ASDJF")
   });
-});
+
+
+  useEffect(() => {
+    console.log("AHHAHA");
+    if(userCount == 1) {
+      router.push('/host')
+    }
+
+    else if (userCount > 1 || socketEmissionHolder.length == 1) {
+      router.push('/user')
+    }
+
+    
+}, [userCount]);
   // Input Validation
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     
 
-      event.preventDefault()
-        console.log(hostName, sessionTopic)
-        event.preventDefault();  
+        event.preventDefault()
 
-        console.log('Form submitted:', {hostName, sessionTopic});
+        setUserCount((prevValue) => prevValue + 1);
 
-
+        console.log(userCount);
         setHostJoined(true);
         socket.emit('host_joined', {hostName, sessionTopic});
-        router.push('/host'); 
   }
 
   return (
