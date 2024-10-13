@@ -32,6 +32,9 @@ export default function hostHome() {
   const [hostName, setHostName] = useState("")
   const [topicName, setTopicName] = useState("")
 
+  socket.on("host_exists", () => {
+    router.push('/host');
+  });
 
   // Input Validation
   const handleSubmit = (event: { preventDefault: () => void; }) => {
@@ -45,7 +48,7 @@ export default function hostHome() {
 
         // Host joins the session after valid setup
         setHostJoined(true); // Set host joined state
-        socket.emit('hostJoined', formData);
+        socket.emit('host_joined', formData);
         router.push('/host'); // Navigate to /host
   }
 

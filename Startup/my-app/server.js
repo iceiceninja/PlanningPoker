@@ -39,18 +39,26 @@ nextApp.prepare().then(() => {
 
 
 
-
+var hostExists = false;
 const io = new Server(server);
 
 io.on('connection', (socket) => {
   console.log('a user connected');
+  console.log(hostExists);
+
+  if (hostExists) {
+     socket.emit("host_exists", "True");
+     console.log("pushed host exists");
+  }
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
 
-  socket.on('hostJoined', (msg) => {
+  socket.on('host_joined', (msg) => {
     console.log("Host created" + msg);
+    hostExists = true;
+    socket.emit()
   });
   
 });
