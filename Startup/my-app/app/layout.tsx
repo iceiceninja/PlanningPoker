@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html style ={{backgroundImage: `url(${background.src})`}} lang="en">
+    <html lang="en">
     <body className={inter.className}>{children}</body>
   </html>
   );

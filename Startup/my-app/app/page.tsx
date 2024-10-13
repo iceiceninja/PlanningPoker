@@ -68,9 +68,7 @@ export default function hostHome() {
     setHostNameError(false)
     setTopicNameError(false)
 
-    // ** TODO: Input Validation for 20+ characters [hostName and topicName], show error message saying too much characters **
 
-    // If host name is empty/has 20+ characters
     if (hostName == '') { 
       setHostNameError(true) 
     }

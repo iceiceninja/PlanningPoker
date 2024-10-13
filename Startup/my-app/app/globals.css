@@ -7,6 +7,14 @@ button {
   text-align: center;
 }
 
+html { 
+  background: url(../images/blue_bg.png) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
 
 /* CSS */
 .button-43 {
