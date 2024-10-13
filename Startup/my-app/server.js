@@ -45,6 +45,10 @@ let players = [];
 let idToPlayerName = {};
 const io = new Server(server);
 
+// socketid, hostname, usernames
+// how can we get the host?
+// map[socketid] == hostName ? emit : do-nothing
+
 
 
 io.on('connection', (socket) => {
@@ -59,11 +63,16 @@ io.on('connection', (socket) => {
   }
 
   socket.on('disconnect', () => {
+    if(idToPlayerName[socket.id] == "host") {
+        socket.emit("host_left", "True");
+        hostExits = false;
+    }
     console.log('user disconnected');
   });
 
   socket.on('host_joined', (msg) => {
-    console.log(msg);
+    idToPlayerName[socket.id] = "host";
+    console.log(msg.hostName);
     hostExists = true;
     socket.emit()
   });

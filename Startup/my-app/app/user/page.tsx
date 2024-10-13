@@ -22,7 +22,7 @@ import Stack from '@mui/material/Stack';
 
 export default function host() {
 
-    // Popup 2
+    const router = useRouter(); // Initialize the router
     const [anchor2, setAnchor2] = React.useState(null);
     const open2 = Boolean(anchor2);
     const id2 = open2 ? 'simple-popper' : undefined;
@@ -44,6 +44,14 @@ export default function host() {
         console.log("countdown init");
 
     })
+
+    
+    socket.on("host_left", () => {
+        router.push('/user');
+      });
+
+
+
     return (
         <div>
             <Stack 

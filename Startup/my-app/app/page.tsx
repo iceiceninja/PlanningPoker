@@ -29,11 +29,11 @@ export default function hostHome() {
   // Input Content
   const [hostName, setHostName] = useState("")
   const [sessionTopic, setSessionTopic] = useState("")
-
+  useEffect(() => {
   socket.on("host_exists", () => {
     router.push('/host');
   });
-
+});
   // Input Validation
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     
