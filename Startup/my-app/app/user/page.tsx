@@ -56,7 +56,7 @@ export default function host() {
                     alignItems: "flex-start"
                 }}>
                 <IconButton 
-                    onClick = {handleClick2}
+                   onClick={() => {handleClick2}}
                     sx = {{
                         marginTop:  '2%',
                         marginLeft: '2%',
@@ -123,28 +123,6 @@ export default function host() {
 
 }
 
-{/*
-
-    <Stack                 
-        sx = {{
-            height: '100%',
-            justifyContent: "center",
-            alignItems: "flex-start" }}
-            className = "outline"
-            direction="row" >
-        <button onClick={sendVote} className="button-43" value={"pass"}>PASS</button>
-        <button onClick={sendVote} className="button-43" value={1}>1</button>
-        <button onClick={sendVote} className="button-43" value={2}>2</button>
-        <button onClick={sendVote} className="button-43" value={3}>3</button>
-        <button onClick={sendVote} className="button-43" value={5}>5</button>
-        <button onClick={sendVote} className="button-43" value={8}>8</button>
-        <button onClick={sendVote} className="button-43" value={13}>13</button>
-        <button onClick={sendVote} className="button-43" value={21}>21</button>
-        <button onClick={sendVote} className="button-43" value={"?"}>?</button>
-    </Stack>
-    <Timer initialTime={60}/>
-    <h1> Please Select Your Vote</h1>
-    <Link href="/"> Home Page</Link>
-
-    <title>Planning Poker - Everfox</title>
-*/}
+{
+    
+}
