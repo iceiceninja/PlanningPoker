@@ -31,29 +31,12 @@ export default function hostHome() {
   // Input Content
   const [hostName, setHostName] = useState("")
   const [topicName, setTopicName] = useState("")
-  const [hostNameError, setHostNameError] = useState(false)
-  const [topicNameError, setTopicNameError] = useState(false)
+
 
   // Input Validation
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     
-    // Cancels event if cancellable
-    event.preventDefault()
-
-    // Default Error states are false
-    setHostNameError(false)
-    setTopicNameError(false)
-
-
-    if (hostName == '') { 
-      setHostNameError(true) 
-    }
-
-    // If topic name is empty/has 20+ characters
-    if (topicName == '') { setTopicNameError(true) }
-
-    // Valid input
-    if (hostName && topicName) {
+      event.preventDefault()
         console.log(hostName, topicName)
         event.preventDefault();  // Prevent the default form submission
 
@@ -64,7 +47,6 @@ export default function hostHome() {
         setHostJoined(true); // Set host joined state
         socket.emit('hostJoined', formData);
         router.push('/host'); // Navigate to /host
-    }
   }
 
   return (
@@ -99,20 +81,18 @@ export default function hostHome() {
                 variant = "outlined"
                 color = "secondary"
                 value={hostName}
-                error={hostNameError}
                 
             />
 
            
             <TextField
-                 slotProps={{htmlInput : {maxLength: 20 }}}
+                slotProps={{htmlInput : {maxLength: 20 }}}
                 label="Session Topic"
                 onChange={e => setTopicName(e.target.value)}
                 required
                 variant="outlined"
                 color="secondary"
                 value={topicName}
-                error={topicNameError}
             />
 
   
