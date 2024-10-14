@@ -2,7 +2,7 @@
 "use client"; 
 import Image from "next/image";
 // import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, redirect  } from 'next/navigation';
 import { useState, useEffect } from 'react';
 // import io from 'socket.io-client';
 import socket from '../socket';
@@ -15,6 +15,7 @@ import Modal from '@mui/material/Modal';
 import {Style} from './components/Style' 
 import { TextField, FormControl } from "@mui/material"; 
 import Stack from '@mui/material/Stack'; 
+
 
 export default function hostHome() {
 
@@ -30,26 +31,31 @@ export default function hostHome() {
   const [hostName, setHostName] = useState("")
   const [sessionTopic, setSessionTopic] = useState("")
   const [userCount, setUserCount] = useState(0);
+  const [shouldRender, setShouldRender] = useState(false);
   const socketEmissionHolder = [];
 
   socket.on("host_exists", () => {
-    socketEmissionHolder.push("test");
-    console.log("HASHDHASDFKJSDFHSDAFKLDJASFKLDASJ;ASDJF")
+    socketEmissionHolder.push("1");
   });
 
 
-  useEffect(() => {
-    console.log("AHHAHA");
+  useEffect(() : any => {
     if(userCount == 1) {
       router.push('/host')
     }
 
-    else if (userCount > 1 || socketEmissionHolder.length == 1) {
+    else if (socketEmissionHolder.length == 1) {
       router.push('/user')
     }
 
+    if (socketEmissionHolder.length == 0) {
+      setShouldRender(true); // Change this condition as needed
+    }
     
-}, [userCount]);
+  
+  }, [userCount]);
+
+
   // Input Validation
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     
@@ -62,7 +68,13 @@ export default function hostHome() {
         setHostJoined(true);
         socket.emit('host_joined', {hostName, sessionTopic});
   }
+  
 
+  if (!shouldRender) {
+    return  <div>Loading...</div>;
+  }
+
+  else {
   return (
     <div>
 
@@ -141,4 +153,5 @@ export default function hostHome() {
           </Stack>
     </div>
   );
+}
 }
