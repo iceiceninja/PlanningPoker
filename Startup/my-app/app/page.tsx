@@ -36,6 +36,8 @@ export default function hostHome() {
 
   socket.on("host_exists", () => {
     socketEmissionHolder.push("1");
+    console.log("asdfsdaafafsdfdasdasf");
+    console.log(socketEmissionHolder.length + "asdfdwsafdaf")
   });
 
 
@@ -44,14 +46,16 @@ export default function hostHome() {
       router.push('/host')
     }
 
-    else if (socketEmissionHolder.length == 1) {
+    const timer = setTimeout(() => {
+     if (socketEmissionHolder.length >= 1) {
+      console.log("asdfsdaafafsdfdasdasf");
       router.push('/user')
     }
-
-    if (socketEmissionHolder.length == 0) {
-      setShouldRender(true); // Change this condition as needed
+    else {
+      setShouldRender(true)
     }
-    
+  }, 600); // 3000 milliseconds = 3 seconds
+
   
   }, [userCount]);
 

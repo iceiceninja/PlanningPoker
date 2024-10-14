@@ -53,13 +53,12 @@ io.on('connection', (socket) => {
 
   idToPlayerName[socket.id] = " ";
   socket.emit("user_joined", "True")
-  
-  if (hostExists) {
-     socket.emit("host_exists", "True");
-     console.log("host already exists");
 
-     
-  }
+  if (hostExists) 
+    {
+     socket.emit("host_exists", "True");
+     console.log("host already exists");   
+   }
 
   socket.on('disconnect', () => {
     if(idToPlayerName[socket.id] == "host") {
@@ -73,7 +72,6 @@ io.on('connection', (socket) => {
     idToPlayerName[socket.id] = "host";
     console.log(msg.hostName);
     hostExists = true;
-    socket.emit()
   });
   
 });
