@@ -23,6 +23,7 @@
     "next": "^14.2.13",
     "react": "^18",
     "react-dom": "^18",
+    "react-favicon": "^2.0.7",
     "react-router-dom": "^6.26.1",
     "sharp": "^0.33.5",
     "short-uuid": "^5.2.0",

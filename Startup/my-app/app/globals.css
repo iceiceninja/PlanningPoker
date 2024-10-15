@@ -166,7 +166,7 @@ html {
   min-height: 100%;    
   margin: 0px;    
   padding: 0px;
-  border: solid darkgreen;
+  border: solid transparent;
   box-sizing: border-box;
 }
 
