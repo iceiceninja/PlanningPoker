@@ -51,3 +51,118 @@ button {
     padding: 1rem 2rem;
   }
 }
+
+/* CSS */
+.button-12 {
+  background-image: linear-gradient(-180deg, #37AEE2 0%, #1E96C8 100%);
+  border-radius: .5rem;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  font-size: 16px;
+  justify-content: center;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  text-align: center;
+  margin: auto;
+  margin-top: 2rem;
+}
+
+.button-12:hover {
+  background-image: linear-gradient(-180deg, #1D95C9 0%, #17759C 100%);
+}
+
+.margin0 {
+  margin: 0
+}
+
+.marginTop {
+  margin-top: 4.5%;
+}
+
+.footer { 
+  position: absolute; 
+  bottom: 3%; 
+  left: 0; 
+  z-index: 10;
+  justify-content: center;
+  width:100%
+}
+
+.card {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
+  transition: 0.3s;
+  border-radius: 5px; /* 5px rounded corners */
+  padding: 1rem 1rem;
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
+}
+
+/* Add some padding inside the card container */
+.container {
+  padding: 2px 16px;
+}
+
+.button-34 {
+  background-image: linear-gradient(-180deg, #37AEE2 0%, #1E96C8 100%);
+  border-radius: .5rem;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  font-size: 16px;
+  justify-content: center;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  text-align: center;
+  margin: auto;
+  margin-top: 2rem;
+  width: 100%;
+  height: 100%;
+}
+
+html {
+    /* Height and width fallback for older browsers. */
+    height: 100%;
+    width: 100%;
+
+    /* Set the height to match that of the viewport. */
+    height: 100vh;
+
+    /* Set the width to match that of the viewport. */
+    width: 100vw;
+
+    /* Remove any browser-default margins. */
+    margin: 0;
+}
+
+.outline {
+  border-style: solid;
+}
+
+html {
+  height: 100%;
+}
+
+html {
+  min-height: 100%;    
+  margin: 0px;    
+  padding: 0px;
+  border: solid darkgreen;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+
