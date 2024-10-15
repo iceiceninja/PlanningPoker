@@ -153,8 +153,9 @@ html {
     margin: 0;
 }
 
-.outline {
-  border-style: solid;
+div {
+  border: solid transparent;
+  box-sizing: border-box;
 }
 
 html {
@@ -171,6 +172,11 @@ html {
 
 * {
   box-sizing: border-box;
+}
+
+h1, h2, h3 {
+  padding: 0px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
 }
 
 
