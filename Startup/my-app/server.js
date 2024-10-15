@@ -7,8 +7,8 @@ const path = require('path');  // This helps resolve paths correctly
 const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
 const handle = nextApp.getRequestHandler();
 const expressApp = express();
-
-const PORT = process.env.PORT || 4000;  // Default to port 4000 instead of 3000
+const os = require('os'); // Import os module to get network information
+const PORT = process.env.PORT || 3000;  // Default to port 4000 instead of 3000
 
 // Serve static files from the "host" folder
 expressApp.use(express.static(path.join(__dirname, 'host')));
@@ -18,6 +18,17 @@ expressApp.use(express.static(path.join(__dirname, 'images')));
 
 // const playerVotes = new Map();
 // const playerVotes = []
+function getHostIPAddress() {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return '127.0.0.1'; // Fallback to localhost if no other IP found
+}
 
 
 nextApp.prepare().then(() => {
@@ -76,8 +87,9 @@ nextApp.prepare().then(() => {
   });
 
 
-  server.listen(PORT, (err) => {
+  server.listen(PORT,'0.0.0.0', (err) => {
     if (err) throw err;
-    console.log(`Server is running on port ${PORT}`);
+    const hostIP = getHostIPAddress();
+    console.log(`Server is running at http://${hostIP}:${PORT}`);
   });
 });
