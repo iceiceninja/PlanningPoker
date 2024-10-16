@@ -1,81 +1,61 @@
 
 "use client"; 
-import Image from "next/image";
-// import Link from 'next/link';
-import { useRouter, redirect  } from 'next/navigation';
-import { useState, useEffect } from 'react';
-// import io from 'socket.io-client';
-import socket from '../socket';
-import { Link } from "react-router-dom"
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button'; 
-import Typography from '@mui/material/Typography'; 
-import Modal from '@mui/material/Modal'; 
-import {Style} from './components/Style' 
-import { TextField, FormControl } from "@mui/material"; 
-import Stack from '@mui/material/Stack'; 
 
+// Imports
+
+// Client/Server Imports
+import { useRouter } from 'next/navigation';
+import socket from '../socket';
+
+// React Library Imports
+import * as React from 'react';
+import { useState, useEffect } from 'react';
+import Favicon from "react-favicon";
+
+// MUI Imports
+import { Box, Button, Typography, Modal, TextField, Stack, CircularProgress
+} from "@mui/material"
+import { ThemeProvider } from '@mui/material/styles';
+
+// Folder imports
 import everfox_logo from '../images/everfox_logo.png'
 import cards from '../images/cards.png'
-import Favicon from "react-favicon";
-import CircularProgress from '@mui/material/CircularProgress';
+import {Style, textTheme } from './components/Style' 
 
+// Client Type Global Variable [for each client, it has a user type: Host or User]
 var clientType = ""
 
 export default function hostHome() {
 
-  const router = useRouter(); // Initialize the router
-  const [hostJoined, setHostJoined] = useState(false);  // State to track if host has joined
+  // Variables
+  const router = useRouter();                             // Router initialization
+  const [hostJoined, setHostJoined] = useState(false);    // Host Presence state **
+  const [open, setOpen] = React.useState(false);          // Modal State
+  const handleOpen = () => setOpen(true);                 // Open Modal
+  const handleClose = () => setOpen(false);               // Close Modal
+  const [hostName, setHostName] = useState("")            // Host name input
+  const [sessionTopic, setSessionTopic] = useState("")    // Session name input
+  const [userCount, setUserCount] = useState(0);          // User count 
+  const [shouldRender, setShouldRender] = useState(false);// Loading State
 
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  // Input Content
-  const [hostName, setHostName] = useState("")
-  const [sessionTopic, setSessionTopic] = useState("")
-  const [userCount, setUserCount] = useState(0);
-  const [shouldRender, setShouldRender] = useState(false);
-  const socketEmissionHolder = [];
-
-  // Temp Loading Timer
+  // Temp Loading Timer ** INSERT A SEMAPHORE HERE **
   useEffect(() : any => {
-
-    if(userCount == 1) {
-      router.push('/host')
-    }
-
+    if(userCount == 1) { router.push('/host') }
     const timer = setTimeout(() => {
-
       setShouldRender(true)
-      /*
-        //  if (socketEmissionHolder.length >= 1) {
-        //   
-        //   console.log("asdfsdaafafsdfdasdasf");
-        //   router.push('/user')
-        //   
-        // }
-        // else {
-        //   setShouldRender(true)
-        // }
-      */
     }, 600); // 3000 milliseconds = 3 seconds
   }, [userCount]);
 
-  // Input Validation
+  // Input Validation **
   const handleSubmit = (event: { preventDefault: () => void; }) => {
-
-        event.preventDefault()
-
-        setUserCount((prevValue) => prevValue + 1);
-
+        event.preventDefault() // Stops default action of an element from happening
+        setUserCount((prevValue) => prevValue + 1); // Increment user count
         console.log(userCount);
-        setHostJoined(true);
-        socket.emit('host_joined', {hostName, sessionTopic});
+        setHostJoined(true); // Tell client that host has joined **
+        socket.emit('host_joined', {hostName, sessionTopic}); // Tell server host has joined **
   }
 
-  // Retrieve user type
+  // Retrieve user type **
   socket.on("type", (arg) => {
     clientType = arg
     console.log(clientType);
@@ -106,7 +86,8 @@ export default function hostHome() {
   }
   
   // Show user login screen
-  if (clientType.localeCompare("user") == 0) {
+  // clientType.localeCompare("user") == 0
+  if (false) {
     console.log("load user screen")
     return (
       <div>
@@ -270,7 +251,8 @@ export default function hostHome() {
   }
 
   // Show host login screen
-  if (clientType.localeCompare("host") == 0) {
+  // clientType.localeCompare("host") == 0
+  if (true) {
   return (
     <div>
       {/* Tab Contents: Icon, title */}
@@ -296,6 +278,7 @@ export default function hostHome() {
             boxShadow: 2,
             width: "75vw",
             height: "75vh",
+            maxWidth: '750px'
           }}
         >
           {/* Box has 3 rows */}
@@ -310,12 +293,13 @@ export default function hostHome() {
           >
             {/* 1st Row: Title, session ID */}
             <Box>
-              <h1>
-                Host Setup
-              </h1>
-              <h2>
-                Session ID: ####
-              </h2>
+              <ThemeProvider theme = {textTheme}>
+                <Typography
+                  variant = "h3"
+                >
+                  Host Startup
+                </Typography>
+              </ThemeProvider>
             </Box>
 
             {/* 2nd Row: Login */}
@@ -333,22 +317,57 @@ export default function hostHome() {
                   sx={{
                     justifyContent: "center",
                     alignItems: "center",
+                    border: 0
                   }}
                 >
-
-                  <h1> Planning </h1>
-                  <h1> Poker </h1>
+                  <ThemeProvider theme = {textTheme}>
+                    <Typography
+                      variant = "h2"
+                      gutterBottom
+                      align = "center"
+                      sx = {{border: 0}}
+                      margin = '0'
+                    >
+                      Planning
+                    </Typography>
+                    <Typography
+                      variant = "h2"
+                      gutterBottom
+                      align = "center"
+                      sx = {{border: 0}}
+                    >
+                      Poker
+                    </Typography>
+                  </ThemeProvider>
                   <Box 
                     component = "img"
                     src = {cards.src} 
-                    alt = "everfox logo"
-                    sx = {{
-                      height: "10vh",
-                      width: "10vh"
-                    }}
+                    alt = "planning poker logo"
+                    sx = { (theme) => ({
+                      [theme.breakpoints.up('xs')]: { width: '6vh', height: '6vh'},
+                      [theme.breakpoints.up('sm')]: { width: '8vh', height: '8vh'},
+                      [theme.breakpoints.up('md')]: { width: '10vh', height: '10vh'},
+                      border: 0 })
+                    }
                   /> 
-                  <Box sx={{ m: '1rem' }} /> 
-                  <Button type = "button" variant= "contained" className="button-12" onClick={handleOpen}>Getting Started!</Button>
+                  <Box sx={{ m: 0 }} /> 
+                  {/*getting started */}
+                  <Button 
+                    type = "button" 
+                    variant= "contained" 
+                    className="button-12" 
+                    onClick={handleOpen}
+                    sx = { (theme) => ({
+                      [theme.breakpoints.up('xs')]: { width: '15vh', height: '5vh',   fontSize: '.57rem'},
+                      [theme.breakpoints.up('sm')]: { width: '25vh', height: '5.5vh', fontSize: '.90rem'},
+                      [theme.breakpoints.up('md')]: { width: '30vh', height: '6vh',   fontSize: '1.0rem'},
+                      border: 0,
+                      padding: 0,
+                     })
+                    }
+                  >
+                    Getting Started!
+                  </Button>
                   
                   <Modal
                     open={open}
@@ -382,21 +401,42 @@ export default function hostHome() {
                   spacing = {2}
                   sx={{  
                     justifyContent: "center",
-                    alignItems: "center"
+                    alignItems: "center",
+                    border: 0
                   }}
                   onSubmit={handleSubmit}
                 >
                   
                     <TextField
                         slotProps={{htmlInput : {maxLength: 20 }}}
-                        label = "Host's name"
+                        label = { "Host's Name" }
                         onChange={e => setHostName(e.target.value)}
                         required 
                         variant = "outlined"
                         color = "secondary"
                         value={hostName}
                         size = "small"
-                        sx = {{width: '25vh'}}
+                        sx = { (theme) => ({
+                          [theme.breakpoints.up('xs')]: { 
+                            width: '15vh', height: '5vh', fontSize: '.57rem', 
+                            '& .MuiFormLabel-root': { fontSize: '.67rem', marginTop: '.5vh'},     
+                            '& .MuiInputBase-input': { fontSize: '.67rem', marginTop: '.5vh'}                 
+                          },
+                          [theme.breakpoints.up('sm')]: { 
+                            width: '25vh', height: '5.5vh', fontSize: '.90rem',
+                            '& .MuiFormLabel-root': { fontSize: '.95rem', marginTop: '.5vh'},
+                            '& .MuiInputBase-input': { fontSize: '.95rem', marginTop: '.5vh'}                              
+                          },
+                          [theme.breakpoints.up('md')]: { 
+                            width: '30vh', height: '6vh', fontSize: '1.0rem',
+                            '& .MuiFormLabel-root': { fontSize: '1.0rem', marginTop: '.4.5vh'},
+                            '& .MuiInputBase-input': { fontSize: '1.0rem', marginTop: '.5vh'}   
+                          },
+                          border: 0,
+                          padding: 0,
+                          margin: 0
+                         })                         
+                        }
                     />
                   
                     <TextField
@@ -408,10 +448,43 @@ export default function hostHome() {
                         color="secondary"
                         value={sessionTopic}
                         size = "small"
-                        sx = {{width: '25vh'}}
+                        sx = { (theme) => ({
+                          [theme.breakpoints.up('xs')]: { 
+                            width: '15vh', height: '5vh', fontSize: '.57rem', 
+                            '& .MuiFormLabel-root': { fontSize: '.60rem', marginTop: '.9vh'},      
+                            '& .MuiInputBase-input': { fontSize: '.60rem', marginTop: '.5vh'}                
+                          },
+                          [theme.breakpoints.up('sm')]: { 
+                            width: '25vh', height: '5.5vh', fontSize: '.90rem', 
+                            '& .MuiFormLabel-root': { fontSize: '.93rem', marginTop: '.5vh'},
+                            '& .MuiInputBase-input': { fontSize: '.93rem', marginTop: '.5vh'}     
+                          },
+                          [theme.breakpoints.up('md')]: { 
+                            width: '30vh', height: '6vh',  fontSize: '1.0rem', 
+                            '& .MuiFormLabel-root': { fontSize: '1.0rem', marginTop: '.5vh'},
+                            '& .MuiInputBase-input': { fontSize: '1.0rem', marginTop: '.5vh'}  
+                          },
+                          border: 0,
+                          padding: 0,
+                         })
+                        }
                     />
 
-                    <Button type="submit" variant= "contained" className = "button-12">Start a Session</Button>
+                    <Button 
+                      type="submit" 
+                      variant= "contained" 
+                      className = "button-12"
+                      sx = { (theme) => ({
+                        [theme.breakpoints.up('xs')]: { width: '15vh', height: '5vh',   fontSize: '.57rem'},
+                        [theme.breakpoints.up('sm')]: { width: '25vh', height: '5.5vh', fontSize: '.90rem'},
+                        [theme.breakpoints.up('md')]: { width: '30vh', height: '6vh',   fontSize: '1.0rem'},
+                        border: 0,
+                        padding: 0,
+                       })
+                      }
+                    >
+                      Start a Session
+                    </Button>
                 </Stack>
             </Stack>
 
@@ -429,13 +502,21 @@ export default function hostHome() {
                 component = "img"
                 src = {everfox_logo.src} 
                 alt = "everfox logo"
-                sx = {{
-                  height: "5vh",
-                  width: "5vh"
-                }}/> 
-                <h2>
-                  Everfox
-                </h2>
+                sx = { (theme) => ({
+                  [theme.breakpoints.up('xs')]: { width: '3.5vh', height: '3.5vh'},
+                  [theme.breakpoints.up('sm')]: { width: '4vh', height: '4vh'},
+                  [theme.breakpoints.up('md')]: { width: '6vh', height: '6vh'},
+                  border: 0 })
+                }/> 
+
+                <ThemeProvider theme = {textTheme}>
+                  <Typography
+                    variant = "h5"
+                  >
+                    Everfox
+                  </Typography>
+                </ThemeProvider>
+
               </Stack>
             </Box>
           </Stack>
