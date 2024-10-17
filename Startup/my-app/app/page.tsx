@@ -55,7 +55,7 @@ export default function hostHome() {
     else {
       setShouldRender(true)
     }
-  }, 800); // 3000 milliseconds = 3 seconds
+  }, 1600); // 3000 milliseconds = 3 seconds
 
   
   }, [userCount]);

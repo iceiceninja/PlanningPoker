@@ -39,9 +39,8 @@ nextApp.prepare().then(() => {
 
 
 
-var hostExists = false;
-var host = " ";
-const ONE_USER   = 1;
+
+const NO_USERS  = 0;
 const HOST_EXISTS = 1;
 const HOST_NANE = "host";
 let players = new Queue;
@@ -53,30 +52,31 @@ const io = new Server(server);
 
 io.on('connection', (socket) => {
 
-  idForEachPlayerQueue.push(socket.id)
 
-  if (idForEachPlayerQueue.length > HOST_EXISTS) 
+  // We have to make sure not to push the host into the queue.
+  if (idToPlayerName.size >= HOST_EXISTS) 
    {
+     idForEachPlayerQueue.push(socket.id)
      socket.emit("host_exists", "True");
    }
 
-  idForEachPlayerQueue.length == ONE_USER ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "user");
+  idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "user");
   console.log(socket.id);
+  console.log(idToPlayerName.size);
 
 
   
 
   socket.on('disconnect', () => {
    if(idToPlayerName.get(socket.id) == HOST_NANE) {
+      if (idToPlayerName.size == NO_USRS) {
+        socket.emit("no_users_present", "True");
+      }
       var nextHostId = idForEachPlayerQueue.shift();
       idToPlayerName.delete(socket.id);
       idToPlayerName.set(nextHostId, "host");
       io.to(nextHostId).emit("new_host");
       console.log("assigned the new host as " + nextHostId);
-    }
-
-    if (idToPlayerName.size() == 0) {
-      socket.emit("no_users_present", "True");
     }
 
 

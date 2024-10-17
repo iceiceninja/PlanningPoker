@@ -37,6 +37,11 @@ export default function host() {
     socket.on('display-votes', (userVotes : any) => {
         console.log(userVotes)
     })
+
+    socket.on("next_host", () => {
+        router.push("/");
+    }); 
+
     socket.on('round-topic', (topic: String) => {
         console.log("Round topic is: " + topic);
     })
@@ -44,6 +49,12 @@ export default function host() {
         console.log("countdown init");
 
     })
+
+    useEffect(() => {
+        socket.on("host_exists", () => {
+          router.push('/user');
+        });
+      });
 
     useEffect(() => {
         socket.on("host_left", () => {
