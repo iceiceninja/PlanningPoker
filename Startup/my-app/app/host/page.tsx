@@ -15,7 +15,6 @@ import {
     Stack,
     IconButton,
     TextField,
-    // Daniel's imports - start
     Box,            
     Container,
     Typography,
@@ -25,21 +24,6 @@ import {
     // Daniel's imports - end
 } from "@mui/material"
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup'; // MUI popup
-
-/*
-    Session Screen for Host:
-
-    This screen allows the Host to start and end a round with a valid topic
-    The host should be able to edit the session topic, create a timer, edit the time
-
-    ** TODO LIST **
-    1. Fix UI
-    - Rearrange the component like in Figma (WIP)
-    2. Errors
-    - Fix overloading errors
-    3. Use server data
-    - retrieve data from the host's previous screen
-*/
 
 export default function hostSession() {
 
@@ -176,8 +160,6 @@ export default function hostSession() {
 
                     <BasePopup id={id2} open={open2} anchor={anchor2}>
 
-                        {/* Takes User back to home screen */}
-                        {/** TODO: Make it more presentable with icons **/}
                         <PopupBody>
                             <Link href="/"> Home Page</Link>
                         </PopupBody>

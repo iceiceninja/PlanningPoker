@@ -21,8 +21,6 @@ export default function hostHome() {
 
 
   const router = useRouter(); // Initialize the router
-  const [hostJoined, setHostJoined] = useState(false);  // State to track if host has joined
-
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -32,16 +30,17 @@ export default function hostHome() {
   const [sessionTopic, setSessionTopic] = useState("")
   const [userCount, setUserCount] = useState(0);
   const [shouldRender, setShouldRender] = useState(false);
- const currentPlayerSocketId = []; 
   const socketEmissionHolder = []; // Has to be an array otherwise the socket throws an error.
 
   socket.on("host_exists", () => {
     socketEmissionHolder.push("1");
   });
 
-  socket.on('connect', () => {
-    currentPlayerSocketId.push(socket.id);
-  });
+  socket.on("next_host", () => {
+    console.log("HAHWHASDFHASFADDSAHFDHDSDS")
+    router.push("/host");
+}); 
+
 
   useEffect(() : any => {
     if(userCount == 1) {
@@ -55,7 +54,7 @@ export default function hostHome() {
     else {
       setShouldRender(true)
     }
-  }, 1600); // 3000 milliseconds = 3 seconds
+  }, 700); // 3000 milliseconds = 3 seconds
 
   
   }, [userCount]);
@@ -63,14 +62,9 @@ export default function hostHome() {
 
   // Input Validation
   const handleSubmit = (event: { preventDefault: () => void; }) => {
-    
-
         event.preventDefault()
-
         setUserCount((prevValue) => prevValue + 1);
-
-        console.log(userCount);
-        setHostJoined(true);
+        console.log(userCount);;
   }
   
 

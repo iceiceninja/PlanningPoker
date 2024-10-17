@@ -68,18 +68,19 @@ io.on('connection', (socket) => {
   
 
   socket.on('disconnect', () => {
+    var nextHostId = idForEachPlayerQueue.shift();
    if(idToPlayerName.get(socket.id) == HOST_NANE) {
-      if (idToPlayerName.size == NO_USRS) {
+      if (idToPlayerName.size == NO_USERS) {
         socket.emit("no_users_present", "True");
       }
-      var nextHostId = idForEachPlayerQueue.shift();
+
       idToPlayerName.delete(socket.id);
       idToPlayerName.set(nextHostId, "host");
-      io.to(nextHostId).emit("new_host");
+
       console.log("assigned the new host as " + nextHostId);
     }
 
-
+    io.emit("next_host", "True");
 
     console.log('user disconnected');
   });

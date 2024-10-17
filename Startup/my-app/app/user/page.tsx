@@ -9,7 +9,7 @@
 import Image from "next/image";
 import Link from 'next/link'
 import { useRouter } from 'next/navigation';
-import socket from "../../socket";
+import socket from '../../socket';
 import { MouseEvent, useState, useEffect } from "react";
 import Timer from "../components/timer";
 import IconButton from '@mui/material/IconButton';
@@ -38,8 +38,8 @@ export default function host() {
         console.log(userVotes)
     })
 
-    socket.on("next_host", () => {
-        router.push("/");
+    socket.on("next_host", (data) => {
+       console.log("HAHHAHAHAHAHAAHAHDHSFHDSASFJDAFHAHHAHAAHAH")
     }); 
 
     socket.on('round-topic', (topic: String) => {
