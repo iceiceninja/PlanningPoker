@@ -41,38 +41,49 @@ nextApp.prepare().then(() => {
 
 var hostExists = false;
 var host = " ";
-let players = [];
-let idToPlayerName = {};
+const ONE_USER   = 1;
+const HOST_EXISTS = 1;
+const HOST_NANE = "host";
+let players = new Queue;
+var idForEachPlayerQueue = [];
+var idToPlayerName = new Map();
 const io = new Server(server);
 
 
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
-  console.log(hostExists);
 
-  idToPlayerName[socket.id] = " ";
-  socket.emit("user_joined", "True")
+  idForEachPlayerQueue.push(socket.id)
 
-  if (hostExists) 
-    {
+  if (idForEachPlayerQueue.length > HOST_EXISTS) 
+   {
      socket.emit("host_exists", "True");
-     console.log("host already exists");   
    }
 
+  idForEachPlayerQueue.length == ONE_USER ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "user");
+  console.log(socket.id);
+
+
+  
+
   socket.on('disconnect', () => {
-    if(idToPlayerName[socket.id] == "host") {
-        socket.emit("host_left", "True");
-        hostExits = false;
+   if(idToPlayerName.get(socket.id) == HOST_NANE) {
+      var nextHostId = idForEachPlayerQueue.shift();
+      idToPlayerName.delete(socket.id);
+      idToPlayerName.set(nextHostId, "host");
+      io.to(nextHostId).emit("new_host");
+      console.log("assigned the new host as " + nextHostId);
     }
+
+    if (idToPlayerName.size() == 0) {
+      socket.emit("no_users_present", "True");
+    }
+
+
+
     console.log('user disconnected');
   });
 
-  socket.on('host_joined', (msg) => {
-    idToPlayerName[socket.id] = "host";
-    console.log(msg.hostName);
-    hostExists = true;
-  });
   
 });
 
@@ -84,3 +95,34 @@ io.on('connection', (socket) => {
   });
 });
 
+class Queue {
+  constructor() {
+    this.queue = [];
+  }
+
+  enqueue(element) {
+    this.queue.push(element);
+    return this.queue;
+  }
+
+  dequeue() {
+    return this.queue.shift();
+  }
+
+  peek() {
+    return this.queue[0];
+  }
+
+  reverse() {
+    // Declare an empty array
+    const reversed = [];
+
+    // Iterate through the array using a while loop
+    while (this.queue.length > 0) {
+      reversed.push(this.queue.pop());
+    }
+    // Set queue using the new array
+    this.queue = reversed;
+    return this.queue;
+  }
+}

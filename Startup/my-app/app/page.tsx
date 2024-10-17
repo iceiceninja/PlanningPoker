@@ -32,14 +32,16 @@ export default function hostHome() {
   const [sessionTopic, setSessionTopic] = useState("")
   const [userCount, setUserCount] = useState(0);
   const [shouldRender, setShouldRender] = useState(false);
-  const socketEmissionHolder = [];
+ const currentPlayerSocketId = []; 
+  const socketEmissionHolder = []; // Has to be an array otherwise the socket throws an error.
 
   socket.on("host_exists", () => {
     socketEmissionHolder.push("1");
-    console.log("asdfsdaafafsdfdasdasf");
-    console.log(socketEmissionHolder.length + "asdfdwsafdaf")
   });
 
+  socket.on('connect', () => {
+    currentPlayerSocketId.push(socket.id);
+  });
 
   useEffect(() : any => {
     if(userCount == 1) {
@@ -48,13 +50,12 @@ export default function hostHome() {
 
     const timer = setTimeout(() => {
      if (socketEmissionHolder.length >= 1) {
-      console.log("asdfsdaafafsdfdasdasf");
       router.push('/user')
     }
     else {
       setShouldRender(true)
     }
-  }, 600); // 3000 milliseconds = 3 seconds
+  }, 800); // 3000 milliseconds = 3 seconds
 
   
   }, [userCount]);
@@ -70,7 +71,6 @@ export default function hostHome() {
 
         console.log(userCount);
         setHostJoined(true);
-        socket.emit('host_joined', {hostName, sessionTopic});
   }
   
 
