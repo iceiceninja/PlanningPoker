@@ -38,23 +38,12 @@ export default function hostHome() {
   const [userCount, setUserCount] = useState(0);          // User count 
   const [shouldRender, setShouldRender] = useState(false);// Loading State
 
-  // Temp Loading Timer ** INSERT A SEMAPHORE HERE **
+  // Loading Timer 
   useEffect(() : any => {
-    if(userCount == 1) { router.push('/host') }
     const timer = setTimeout(() => {
       setShouldRender(true)
-    }, 600); // 3000 milliseconds = 3 seconds
-  }, [userCount]);
-
-  // Input Validation **
-  const handleSubmit = (event: { preventDefault: () => void; }) => {
-        event.preventDefault() // Stops default action of an element from happening
-        setUserCount((prevValue) => prevValue + 1); // Increment user count
-        console.log(userCount);
-        setHostJoined(true); // Tell client that host has joined **
-        socket.emit('host_joined', {hostName, sessionTopic}); // Tell server host has joined **
-  }
-
+    }, 3000); // 3000 milliseconds = 3 seconds
+  });  
   // Retrieve user type **
   socket.on("type", (arg) => {
     clientType = arg
@@ -64,6 +53,18 @@ export default function hostHome() {
     // console.log("go to host: " + (clientType.localeCompare("host") == 0))
     // console.log("go to user: " + (clientType.localeCompare("user") == 0))
   })
+  socket.on("connection_error", (err) => {  
+    console.log(`connect_error due to ${err.message}` + err.code);
+  });
+
+  // Input Validation **
+  const handleSubmit = (event: { preventDefault: () => void; }) => {
+        event.preventDefault() // Stops default action of an element from happening
+        setUserCount((prevValue) => prevValue + 1); // Increment user count
+        console.log(userCount);
+        setHostJoined(true); // Tell client that host has joined **
+        socket.emit('host_joined', {hostName, sessionTopic}); // Tell server host has joined **
+  }
   
   // Loading Screen
   if (!shouldRender) {
@@ -87,7 +88,7 @@ export default function hostHome() {
   
   // Show user login screen
   // clientType.localeCompare("user") == 0
-  if (false) {
+  if (clientType.localeCompare("user") == 0) {
     console.log("load user screen")
     return (
       <div>
@@ -252,7 +253,7 @@ export default function hostHome() {
 
   // Show host login screen
   // clientType.localeCompare("host") == 0
-  if (true) {
+  if (clientType.localeCompare("host") == 0) {
   return (
     <div>
       {/* Tab Contents: Icon, title */}
@@ -524,10 +525,21 @@ export default function hostHome() {
       </Stack>
     </div>
   );
-}
+  }
+
+  // Refresh if there is an error in retrieving client type
+  window.location.reload();  
+
 }
 
 {/*
+
+  useEffect(() : any => {
+  if(userCount == 1) { router.push('/host') }
+  const timer = setTimeout(() => {
+    setShouldRender(true)
+  }, 600); // 3000 milliseconds = 3 seconds
+  }, [userCount]);
   
   socket.on("host_exists", () => {
     socketEmissionHolder.push("1");

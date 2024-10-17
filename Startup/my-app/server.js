@@ -5,6 +5,7 @@ const { Server } = require("socket.io");
 const express = require('express');
 const path = require('path');  // This helps resolve paths correctly
 const short = require('short-uuid');
+const { io } = require('socket.io-client');
 
 const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
 const handle = nextApp.getRequestHandler();
