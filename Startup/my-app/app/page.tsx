@@ -47,6 +47,21 @@ export default function hostHome() {
   // Connection error for debugging
   socket.on("connection_error", (err) => { console.log(`connect_error due to ${err.message}` + err.code); });
 
+    // Loading Screen
+    if (loading) {
+      return (
+        <div>
+          {/* Tab Contents: Icon, title */}
+          <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
+          <title>Planning Poker - Everfox</title>
+          <Stack sx={{ width: "100vw", height: "100vh", justifyContent: "center", alignItems: "center",  }} >
+            <CircularProgress />
+          </Stack>
+        </div>);
+    }
+  
+    // Direct to setup screens for host or user
+
   // Input Validation **
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault() // Stops default action of an element from happening
@@ -56,25 +71,7 @@ export default function hostHome() {
     socket.emit('host_joined', {hostName, sessionTopic}); // Tell server host has joined **
   }
   
-  // Loading Screen
-  if (loading) {
-    return (
-      <div>
-        {/* Tab Contents: Icon, title */}
-        <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
-        <title>Planning Poker - Everfox</title>
-        <Stack 
-        sx={{
-          width: "100vw",
-          height: "100vh",
-          justifyContent: "center",
-          alignItems: "center", 
-          }}
-        >
-          <CircularProgress />
-        </Stack>
-      </div>);
-  }
+
   
   // Show user login screen
   if (clientType === "user") {
