@@ -25,7 +25,7 @@ import {Style, textTheme } from './components/Style'
 // Client Type Global Variable [for each client, it has a user type: Host or User]
 var clientType = ""
 
-export default function hostHome() {
+export default function HostHome() {
 
   // Variables
   const router = useRouter();                             // Router initialization
@@ -165,11 +165,11 @@ export default function hostHome() {
                       <Box sx = {Style}>
                       
                         <Typography id="modal-modal-title" variant="h6" component="h2">
-                          Welcome to Everfox's Planning Poker Application!
+                          Welcome to Everfox&apos;s Planning Poker Application!
                         </Typography>
         
                         <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        To get started, enter your user name. After clicking the “Join Session" button, you will be prompted with a round screen where you can start the planning poker process!
+                        To get started, enter your user name. After clicking the &quot;Join Session&quot; button, you will be prompted with a round screen where you can start the planning poker process!
                         </Typography>
                       </Box>
                     </Modal>
@@ -365,12 +365,12 @@ export default function hostHome() {
                     <Box sx = {Style}>
                     
                       <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Welcome to Everfox's Planning Poker Application!
+                        Welcome to Everfox&apos;s Planning Poker Application!
                       </Typography>
       
                       <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                         To get started, enter your host name and the session topic for today.
-                        After clicking the "Start a Session" button, you will be prompted with a
+                        After clicking the &quot;Start a Session&quot; button, you will be prompted with a
                         round screen where you can start the planning poker process!
                       </Typography>
                     </Box>

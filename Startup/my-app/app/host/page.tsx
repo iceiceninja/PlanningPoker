@@ -43,7 +43,7 @@ import everfox_logo from '../../images/everfox_logo.png'
     - retrieve data from the host's previous screen
 */
 
-export default function hostSession() {
+export default function HostSession() {
 
     const [shouldRender, setShouldRender] = useState(false);
     const socketEmissionHolder = [];
