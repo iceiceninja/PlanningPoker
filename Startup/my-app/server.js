@@ -57,7 +57,7 @@ let playerids= []; // Player list with ids
 const io = new Server(server); // Server instance
 
 // When user (client) joins the server
-io.on('connection', async (socket) => {
+io.on('connection', (socket) => {
   
   // Add id to player id list
   playerids.push(socket.id)
