@@ -36,38 +36,28 @@ export default function hostHome() {
   const [hostName, setHostName] = useState("")            // Host name input
   const [sessionTopic, setSessionTopic] = useState("")    // Session name input
   const [userCount, setUserCount] = useState(0);          // User count 
-  const [shouldRender, setShouldRender] = useState(false);// Loading State
+  const [loading, setLoading] = useState(true);           // Loading State
 
-  // Loading Timer 
-  useEffect(() : any => {
-    const timer = setTimeout(() => {
-      setShouldRender(true)
-    }, 3000); // 3000 milliseconds = 3 seconds
-  });  
-  // Retrieve user type **
-  socket.on("type", (arg) => {
-    clientType = arg
-    console.log(clientType);
-    // console.log("user: " + clientType.localeCompare("user"));
-    // console.log("host: " + clientType.localeCompare("host"));
-    // console.log("go to host: " + (clientType.localeCompare("host") == 0))
-    // console.log("go to user: " + (clientType.localeCompare("user") == 0))
-  })
-  socket.on("connection_error", (err) => {  
-    console.log(`connect_error due to ${err.message}` + err.code);
-  });
+  // Loading Timer [1000ms = 1s]
+  useEffect(() => { setTimeout(() => {setLoading(false)}, 3000); }, []);  
+
+  // Retrieve user type using acknowledgements - Server calls back client type [response]
+  socket.emit("clientType", (response : any) => { clientType = response.clientType; });
+
+  // Connection error for debugging
+  socket.on("connection_error", (err) => { console.log(`connect_error due to ${err.message}` + err.code); });
 
   // Input Validation **
   const handleSubmit = (event: { preventDefault: () => void; }) => {
-        event.preventDefault() // Stops default action of an element from happening
-        setUserCount((prevValue) => prevValue + 1); // Increment user count
-        console.log(userCount);
-        setHostJoined(true); // Tell client that host has joined **
-        socket.emit('host_joined', {hostName, sessionTopic}); // Tell server host has joined **
+    event.preventDefault() // Stops default action of an element from happening
+    setUserCount((prevValue) => prevValue + 1); // Increment user count
+    console.log(userCount);
+    setHostJoined(true); // Tell client that host has joined **
+    socket.emit('host_joined', {hostName, sessionTopic}); // Tell server host has joined **
   }
   
   // Loading Screen
-  if (!shouldRender) {
+  if (loading) {
     return (
       <div>
         {/* Tab Contents: Icon, title */}
@@ -87,8 +77,7 @@ export default function hostHome() {
   }
   
   // Show user login screen
-  // clientType.localeCompare("user") == 0
-  if (clientType.localeCompare("user") == 0) {
+  if (clientType === "user") {
     console.log("load user screen")
     return (
       <div>
@@ -252,8 +241,7 @@ export default function hostHome() {
   }
 
   // Show host login screen
-  // clientType.localeCompare("host") == 0
-  if (clientType.localeCompare("host") == 0) {
+  if (clientType === "host") {
   return (
     <div>
       {/* Tab Contents: Icon, title */}

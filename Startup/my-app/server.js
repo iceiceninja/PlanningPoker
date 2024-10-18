@@ -57,7 +57,7 @@ let playerids= []; // Player list with ids
 const io = new Server(server); // Server instance
 
 // When user (client) joins the server
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   
   // Add id to player id list
   playerids.push(socket.id)
@@ -73,16 +73,16 @@ io.on('connection', (socket) => {
     socket.emit("host_exists", "True");
     console.log("Host Exists user[" + playerids[0] + "]\n");   
 
-    // Tell client that it's a user
+    // Tell client that it's a user [only once]
     // console.log("send to user page");
-    socket.emit("type", "user");
+    socket.once("clientType", (callback) => { callback({ clientType: "user" }); });
 
   } else {
     console.log("Host Joined user[" + playerids[0] + "]\n");
     
-    // Tell client that it's the host
+    // Tell client that it's the host [only once]
     // console.log("send to host page");
-    socket.emit("type", "host");
+    socket.once("clientType", (callback) => { callback({ clientType: "host" }); });
   }
 
   // If user leaves
