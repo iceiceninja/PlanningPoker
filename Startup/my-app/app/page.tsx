@@ -1,225 +1,535 @@
-// Original Imports
-"use client"; // Mark as a client component
-import Image from "next/image";
-// import Link from 'next/link';
+
+"use client"; 
+
+// Imports
+
+// Client/Server Imports
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-// import io from 'socket.io-client';
 import socket from '../socket';
-import { Link } from "react-router-dom"
 
-// Imports from Michael
+// React Library Imports
 import * as React from 'react';
-import Box from '@mui/material/Box'; // MUI Box
-import Button from '@mui/material/Button'; // MUI Button
-import Typography from '@mui/material/Typography'; // MUI Typography
-import Modal from '@mui/material/Modal'; // MUI Modal
-import {Style} from './components/Style' // MUI Sstyle
-import { TextField, FormControl } from "@mui/material"; // MUI Textfield
-import Stack from '@mui/material/Stack'; // MUI Stack
+import { useState, useEffect } from 'react';
+import Favicon from "react-favicon";
 
-/*
-  Home Screen for host:
+// MUI Imports
+import { Box, Button, Typography, Modal, TextField, Stack, CircularProgress
+} from "@mui/material"
+import { ThemeProvider } from '@mui/material/styles';
 
-  This screen should show whenever the user is the first user
-  to enter the session.
-  The app will automatically make that user the host
-  Any other users that would join are transfered to userHome
-  with a different screen
+// Folder imports
+import everfox_logo from '../images/everfox_logo.png'
+import cards from '../images/cards.png'
+import {Style, textTheme } from './components/Style' 
 
-  ** TODO LIST**
-  1. Fix Input Validation
-    - Prevent user from submitting a host name/session topic with more than 20 characters
-    - Change the error message to reflect this and the empty name case
-  2. Data transfer to session screen
-    - Data that host has entered should be reflected in the session screen
-    - Including: Host name and session topic
-    - Work with formData
-  3. Make better UI
-    - Make a element that fill the whole screen without scrolling
-    - Replicate design from Figma (WIP) 
-*/
+// Client Type Global Variable [for each client, it has a user type: Host or User]
+var clientType = ""
 
 export default function hostHome() {
 
-  // Initialize the router
-  const router = useRouter(); // Initialize the router
-  const [hostJoined, setHostJoined] = useState(false);  // State to track if host has joined
-  const [formData, setFormData] = useState({ hostName: '', sessionTopic: '' }); // formData
+  // Variables
+  const router = useRouter();                             // Router initialization
+  const [hostJoined, setHostJoined] = useState(false);    // Host Presence state **
+  const [open, setOpen] = React.useState(false);          // Modal State
+  const handleOpen = () => setOpen(true);                 // Open Modal
+  const handleClose = () => setOpen(false);               // Close Modal
+  const [hostName, setHostName] = useState("")            // Host name input
+  const [sessionTopic, setSessionTopic] = useState("")    // Session name input
+  const [userCount, setUserCount] = useState(0);          // User count 
+  const [loading, setLoading] = useState(true);           // Loading State
+
+  // Loading Timer [1000ms = 1s]
+  useEffect(() => { setTimeout(() => {setLoading(false)}, 3000); }, []);  
+
+  // Retrieve user type using acknowledgements - Server calls back client type [response]
+  socket.emit("clientType", (response : any) => { clientType = response.clientType; });
+
+  // Connection error for debugging
+  socket.on("connection_error", (err) => { console.log(`connect_error due to ${err.message}` + err.code); });
+
+    // Loading Screen
+    if (loading) {
+      return (
+        <div>
+          {/* Tab Contents: Icon, title */}
+          <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
+          <title>Planning Poker - Everfox</title>
+          <Stack sx={{ width: "100vw", height: "100vh", justifyContent: "center", alignItems: "center",  }} >
+            <CircularProgress />
+          </Stack>
+        </div>);
+    }
   
-  // Popup component
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+    // Direct to setup screens for host or user
 
-  // Input Content
-  const [hostName, setHostName] = useState("")
-  const [topicName, setTopicName] = useState("")
-  const [hostNameError, setHostNameError] = useState(false)
-  const [topicNameError, setTopicNameError] = useState(false)
-
-  // Input Validation
+  // Input Validation **
   const handleSubmit = (event: { preventDefault: () => void; }) => {
-    
-    // Cancels event if cancellable
-    event.preventDefault()
+    event.preventDefault() // Stops default action of an element from happening
+    setUserCount((prevValue) => prevValue + 1); // Increment user count
+    console.log(userCount);
+    setHostJoined(true); // Tell client that host has joined **
+    socket.emit('host_joined', {hostName, sessionTopic}); // Tell server host has joined **
+  }
+  
 
-    // Default Error states are false
-    setHostNameError(false)
-    setTopicNameError(false)
+  
+  // Show user login screen
+  if (clientType === "user") {
+    console.log("load user screen")
+    return (
+      <div>
+        {/* Tab Contents: Icon, title */}
+        <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
+        <title>Planning Poker - Everfox</title>
 
-    // ** TODO: Input Validation for 20+ characters [hostName and topicName], show error message saying too much characters **
+        {/* Whole Screen: Column with vertical centering*/}
+        <Stack
+          direction = "column"
+          sx = {{
+            width: "100vw",
+            height: "100vh",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
 
-    // If host name is empty/has 20+ characters
-    if (hostName == '') { 
-      setHostNameError(true) 
-    }
+          {/* Center Box */}
+          <Box
+            sx = {{
+              borderRadius: 1,
+              bgcolor: "#F3F1F6",
+              boxShadow: 2,
+              width: "75vw",
+              height: "75vh",
+            }}
+          >
+            {/* Box has 3 rows */}
+            <Stack
+                direction = "column"
+                sx = {{
+                  width: "100%",
+                  height: "100%",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+            >
+              {/* 1st Row: Title, session ID */}
+              <Box>
+                <h1>
+                  User Sign Up
+                </h1>
+                <h2>
+                  Session ID: ####
+                </h2>
+              </Box>
 
-    // If topic name is empty/has 20+ characters
-    if (topicName == '') { setTopicNameError(true) }
+              {/* 2nd Row: Login */}
+              <Stack
+                direction = "row"
+                spacing = {0}
+                sx={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                  {/* App title and logo, with getting started button */}
+                  <Stack
+                    direction = "column"
+                    sx={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
 
-    // Valid input
-    if (hostName && topicName) {
-        console.log(hostName, topicName)
-        event.preventDefault();  // Prevent the default form submission
+                    <h1> Planning </h1>
+                    <h1> Poker </h1>
+                    <Box 
+                      component = "img"
+                      src = {cards.src} 
+                      alt = "everfox logo"
+                      sx = {{
+                        height: "10vh",
+                        width: "10vh"
+                      }}
+                    /> 
+                    <Box sx={{ m: '1rem' }} /> 
+                    <Button type = "button" variant= "contained" className="button-12" onClick={handleOpen}>Getting Started!</Button>
+                    
+                    <Modal
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="modal-modal-title"
+                      aria-describedby="modal-modal-description"
+                    >
+              
+                      <Box sx = {Style}>
+                      
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                          Welcome to Everfox's Planning Poker Application!
+                        </Typography>
+        
+                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        To get started, enter your user name. After clicking the “Join Session" button, you will be prompted with a round screen where you can start the planning poker process!
+                        </Typography>
+                      </Box>
+                    </Modal>
+                  </Stack>
 
-        // ** TODO: transfer formData to the server backend **
-        console.log('Form submitted:', formData);
+                  {/* Spacing */}
+                  <Box sx = {{width: "10vw"}}/>
 
-        // Host joins the session after valid setup
-        setHostJoined(true); // Set host joined state
-        socket.emit('hostJoined', formData);
-        router.push('/host'); // Navigate to /host
-    }
+                  {/* Enter host name and session topic form */}
+                  <Stack
+                    component = "form"
+                    direction = "column"
+                    autoComplete = "off"
+                    spacing = {2}
+                    sx={{  
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                    onSubmit={handleSubmit}
+                  >
+                    
+                      <TextField
+                          slotProps={{htmlInput : {maxLength: 20 }}}
+                          label = "User name"
+                          onChange={e => setHostName(e.target.value)}
+                          required 
+                          variant = "outlined"
+                          color = "secondary"
+                          value={hostName}
+                          size = "small"
+                          sx = {{width: '25vh'}}
+                      />
+
+                      <Button type="submit" variant= "contained" className = "button-12">Join Session</Button>
+                  </Stack>
+              </Stack>
+
+              {/* 3rd Row: Logo and company name */}
+              <Box>
+                <Stack
+                  direction = "row"
+                  spacing = {1}
+                  sx = {{
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <Box 
+                  component = "img"
+                  src = {everfox_logo.src} 
+                  alt = "everfox logo"
+                  sx = {{
+                    height: "5vh",
+                    width: "5vh"
+                  }}/> 
+                  <h2>
+                    Everfox
+                  </h2>
+                </Stack>
+              </Box>
+            </Stack>
+          </Box>
+        </Stack>
+      </div>
+    )
   }
 
+  // Show host login screen
+  if (clientType === "host") {
   return (
     <div>
-
-      {/* Title Component: Tab's name in browser */}
+      {/* Tab Contents: Icon, title */}
+      <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
       <title>Planning Poker - Everfox</title>
 
-      {/* Stack Component: Column */}
+      {/* Whole Screen: Column with vertical centering*/}
       <Stack
-            component = "form"
-            direction = "column"
-            autoComplete = "off"
-            spacing = {2}
-            sx={{  
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-            onSubmit={handleSubmit}
+        direction = "column"
+        sx = {{
+          width: "100vw",
+          height: "100vh",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+
+        {/* Center Box */}
+        <Box
+          sx = {{
+            borderRadius: 1,
+            bgcolor: "#F3F1F6",
+            boxShadow: 2,
+            width: "75vw",
+            height: "75vh",
+            maxWidth: '750px'
+          }}
+        >
+          {/* Box has 3 rows */}
+          <Stack
+              direction = "column"
+              sx = {{
+                width: "100%",
+                height: "100%",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}
           >
-            {/* Title Component: Description */}
-            <h1 style={{ color: 'black' }}>Planning Poker</h1>
-            <h3 style={{ color: 'black' }}>Everfox</h3>
-            <h3 style={{ color: 'black' }}>You're the first one to join, you are default the host!</h3>
+            {/* 1st Row: Title, session ID */}
+            <Box>
+              <ThemeProvider theme = {textTheme}>
+                <Typography
+                  variant = "h3"
+                >
+                  Host Startup
+                </Typography>
+              </ThemeProvider>
+            </Box>
 
-            {/* Textfield Component: Host name textfield */}
-            <TextField
-                label = "Host's name"
-                onChange={e => setHostName(e.target.value)}
-                required 
-                variant = "outlined"
-                color = "secondary"
-                value={hostName}
-                error={hostNameError}
-            />
-
-            {/* Textfield Component: Session topic textfield */}
-            <TextField
-                label="Session Topic"
-                onChange={e => setTopicName(e.target.value)}
-                required
-                variant="outlined"
-                color="secondary"
-                value={topicName}
-                error={topicNameError}
-            />
-
-            {/* Submit Button Component: Start a Session button */}
-            <Button type="submit" variant= "contained" className = "button-12">Start a Session</Button>
-
-            {/* Modal Button Component: Getting Started button */}
-            <Button type = "button" variant= "contained" className="button-12" onClick={handleOpen}>Getting Started!</Button>
-
-            {/* Modal Component: Information modal */}
-            <Modal
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
+            {/* 2nd Row: Login */}
+            <Stack
+              direction = "row"
+              spacing = {0}
+              sx={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              {/* Box Component: Modal's box*/}
-              <Box sx = {Style}>
+                {/* App title and logo, with getting started button */}
+                <Stack
+                  direction = "column"
+                  sx={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: 0
+                  }}
+                >
+                  <ThemeProvider theme = {textTheme}>
+                    <Typography
+                      variant = "h2"
+                      gutterBottom
+                      align = "center"
+                      sx = {{border: 0}}
+                      margin = '0'
+                    >
+                      Planning
+                    </Typography>
+                    <Typography
+                      variant = "h2"
+                      gutterBottom
+                      align = "center"
+                      sx = {{border: 0}}
+                    >
+                      Poker
+                    </Typography>
+                  </ThemeProvider>
+                  <Box 
+                    component = "img"
+                    src = {cards.src} 
+                    alt = "planning poker logo"
+                    sx = { (theme) => ({
+                      [theme.breakpoints.up('xs')]: { width: '6vh', height: '6vh'},
+                      [theme.breakpoints.up('sm')]: { width: '8vh', height: '8vh'},
+                      [theme.breakpoints.up('md')]: { width: '10vh', height: '10vh'},
+                      border: 0 })
+                    }
+                  /> 
+                  <Box sx={{ m: 0 }} /> 
+                  {/*getting started */}
+                  <Button 
+                    type = "button" 
+                    variant= "contained" 
+                    className="button-12" 
+                    onClick={handleOpen}
+                    sx = { (theme) => ({
+                      [theme.breakpoints.up('xs')]: { width: '15vh', height: '5vh',   fontSize: '.57rem'},
+                      [theme.breakpoints.up('sm')]: { width: '25vh', height: '5.5vh', fontSize: '.90rem'},
+                      [theme.breakpoints.up('md')]: { width: '30vh', height: '6vh',   fontSize: '1.0rem'},
+                      border: 0,
+                      padding: 0,
+                     })
+                    }
+                  >
+                    Getting Started!
+                  </Button>
+                  
+                  <Modal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                  >
+             
+                    <Box sx = {Style}>
+                    
+                      <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Welcome to Everfox's Planning Poker Application!
+                      </Typography>
+      
+                      <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        To get started, enter your host name and the session topic for today.
+                        After clicking the "Start a Session" button, you will be prompted with a
+                        round screen where you can start the planning poker process!
+                      </Typography>
+                    </Box>
+                  </Modal>
+                </Stack>
 
-                {/* Typography Component: Modal's Title */}
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Welcome to Everfox's Planning Poker Application!
-                </Typography>
+                <Box sx = {{width: "10vw"}}/>
 
-                {/* Typography Component: Modal's Description */}
-                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                  To get started, enter your host name and the session topic for today.
-                  After clicking the "Start a Session" button, you will be prompted with a
-                  round screen where you can start the planning poker process!
-                </Typography>
-              </Box>
-            </Modal>
+                {/* Enter host name and session topic form */}
+                <Stack
+                  component = "form"
+                  direction = "column"
+                  autoComplete = "off"
+                  spacing = {2}
+                  sx={{  
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: 0
+                  }}
+                  onSubmit={handleSubmit}
+                >
+                  
+                    <TextField
+                        slotProps={{htmlInput : {maxLength: 20 }}}
+                        label = { "Host's Name" }
+                        onChange={e => setHostName(e.target.value)}
+                        required 
+                        variant = "outlined"
+                        color = "secondary"
+                        value={hostName}
+                        size = "small"
+                        sx = { (theme) => ({
+                          [theme.breakpoints.up('xs')]: { 
+                            width: '15vh', height: '5vh', fontSize: '.57rem', 
+                            '& .MuiFormLabel-root': { fontSize: '.67rem', marginTop: '.5vh'},     
+                            '& .MuiInputBase-input': { fontSize: '.67rem', marginTop: '.5vh'}                 
+                          },
+                          [theme.breakpoints.up('sm')]: { 
+                            width: '25vh', height: '5.5vh', fontSize: '.90rem',
+                            '& .MuiFormLabel-root': { fontSize: '.95rem', marginTop: '.5vh'},
+                            '& .MuiInputBase-input': { fontSize: '.95rem', marginTop: '.5vh'}                              
+                          },
+                          [theme.breakpoints.up('md')]: { 
+                            width: '30vh', height: '6vh', fontSize: '1.0rem',
+                            '& .MuiFormLabel-root': { fontSize: '1.0rem', marginTop: '.4.5vh'},
+                            '& .MuiInputBase-input': { fontSize: '1.0rem', marginTop: '.5vh'}   
+                          },
+                          border: 0,
+                          padding: 0,
+                          margin: 0
+                         })                         
+                        }
+                    />
+                  
+                    <TextField
+                        slotProps={{htmlInput : {maxLength: 20 }}}
+                        label="Session Topic"
+                        onChange={e => setSessionTopic(e.target.value)}
+                        required
+                        variant="outlined"
+                        color="secondary"
+                        value={sessionTopic}
+                        size = "small"
+                        sx = { (theme) => ({
+                          [theme.breakpoints.up('xs')]: { 
+                            width: '15vh', height: '5vh', fontSize: '.57rem', 
+                            '& .MuiFormLabel-root': { fontSize: '.60rem', marginTop: '.9vh'},      
+                            '& .MuiInputBase-input': { fontSize: '.60rem', marginTop: '.5vh'}                
+                          },
+                          [theme.breakpoints.up('sm')]: { 
+                            width: '25vh', height: '5.5vh', fontSize: '.90rem', 
+                            '& .MuiFormLabel-root': { fontSize: '.93rem', marginTop: '.5vh'},
+                            '& .MuiInputBase-input': { fontSize: '.93rem', marginTop: '.5vh'}     
+                          },
+                          [theme.breakpoints.up('md')]: { 
+                            width: '30vh', height: '6vh',  fontSize: '1.0rem', 
+                            '& .MuiFormLabel-root': { fontSize: '1.0rem', marginTop: '.5vh'},
+                            '& .MuiInputBase-input': { fontSize: '1.0rem', marginTop: '.5vh'}  
+                          },
+                          border: 0,
+                          padding: 0,
+                         })
+                        }
+                    />
+
+                    <Button 
+                      type="submit" 
+                      variant= "contained" 
+                      className = "button-12"
+                      sx = { (theme) => ({
+                        [theme.breakpoints.up('xs')]: { width: '15vh', height: '5vh',   fontSize: '.57rem'},
+                        [theme.breakpoints.up('sm')]: { width: '25vh', height: '5.5vh', fontSize: '.90rem'},
+                        [theme.breakpoints.up('md')]: { width: '30vh', height: '6vh',   fontSize: '1.0rem'},
+                        border: 0,
+                        padding: 0,
+                       })
+                      }
+                    >
+                      Start a Session
+                    </Button>
+                </Stack>
+            </Stack>
+
+            {/* 3rd Row: Logo and company name */}
+            <Box>
+              <Stack
+                direction = "row"
+                spacing = {1}
+                sx = {{
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <Box 
+                component = "img"
+                src = {everfox_logo.src} 
+                alt = "everfox logo"
+                sx = { (theme) => ({
+                  [theme.breakpoints.up('xs')]: { width: '3.5vh', height: '3.5vh'},
+                  [theme.breakpoints.up('sm')]: { width: '4vh', height: '4vh'},
+                  [theme.breakpoints.up('md')]: { width: '6vh', height: '6vh'},
+                  border: 0 })
+                }/> 
+
+                <ThemeProvider theme = {textTheme}>
+                  <Typography
+                    variant = "h5"
+                  >
+                    Everfox
+                  </Typography>
+                </ThemeProvider>
+
+              </Stack>
+            </Box>
           </Stack>
+        </Box>
+      </Stack>
     </div>
   );
+  }
+
+  // Refresh if there is an error in retrieving client type
+  window.location.reload();  
+
 }
 
-{/* Comment in html like this! */}
+{/*
 
-{/*  // Leftover Code // 
-  // Initialize socket connection
-  // const socket = io(":4000");
-
-  const joinAsHost = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();  // Prevent the default form submission
-    console.log('Form submitted:', formData);
-
-    setHostJoined(true); // Set host joined state
-
-    socket.emit('hostJoined', formData);
-
-    router.push('/host'); // Navigate to /host
-  }; 
+  useEffect(() : any => {
+  if(userCount == 1) { router.push('/host') }
+  const timer = setTimeout(() => {
+    setShouldRender(true)
+  }, 600); // 3000 milliseconds = 3 seconds
+  }, [userCount]);
   
-  const joinAsPlayer = () => {
-    router.push('/user'); // Navigate to /user
-  };
-
-  // Handle form input changes
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  <form onSubmit={joinAsHost}>
-    <label className="label-input" htmlFor="hostName">Host&#39;s Name</label>
-    <input
-      type="text"
-      className="form-input"
-      name="hostName"
-      id="hostName"
-      maxLength={20}
-      required
-      onChange={handleInputChange}
-    />
-
-    <label className="label-input" htmlFor="sessionTopic">Session Topic</label>
-    <input
-      type="text"
-      className="form-input"
-      name="sessionTopic"
-      id="sessionTopic"
-      maxLength={10000}
-      required
-      onChange={handleInputChange}
-    /> 
-  </form>
+  socket.on("host_exists", () => {
+    socketEmissionHolder.push("1");
+    console.log("asdfsdaafafsdfdasdasf");
+    console.log(socketEmissionHolder.length + "asdfdwsafdaf")
+  });
+    
 */}

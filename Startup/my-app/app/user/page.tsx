@@ -10,7 +10,7 @@ import Image from "next/image";
 import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import socket from "../../socket";
-import { MouseEvent } from "react";
+import { MouseEvent, useState, useEffect } from "react";
 import Timer from "../components/timer";
 import IconButton from '@mui/material/IconButton';
 import * as React from 'react';
@@ -22,7 +22,7 @@ import Stack from '@mui/material/Stack';
 
 export default function host() {
 
-    // Popup 2
+    const router = useRouter(); // Initialize the router
     const [anchor2, setAnchor2] = React.useState(null);
     const open2 = Boolean(anchor2);
     const id2 = open2 ? 'simple-popper' : undefined;
@@ -34,7 +34,7 @@ export default function host() {
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
         socket.emit("vote-selected", { id: "123", value: event.currentTarget.value }); // userId, vote value
     }
-    socket.on('display-votes', (userVotes) => {
+    socket.on('display-votes', (userVotes : any) => {
         console.log(userVotes)
     })
     socket.on('round-topic', (topic: String) => {
@@ -44,6 +44,15 @@ export default function host() {
         console.log("countdown init");
 
     })
+
+    useEffect(() => {
+        socket.on("host_left", () => {
+          router.push('/');
+        });
+      });
+
+
+
     return (
         <div>
             <Stack 
@@ -56,7 +65,7 @@ export default function host() {
                     alignItems: "flex-start"
                 }}>
                 <IconButton 
-                    onClick = {handleClick2}
+                   onClick={() => {handleClick2}}
                     sx = {{
                         marginTop:  '2%',
                         marginLeft: '2%',
@@ -123,28 +132,6 @@ export default function host() {
 
 }
 
-{/*
-
-    <Stack                 
-        sx = {{
-            height: '100%',
-            justifyContent: "center",
-            alignItems: "flex-start" }}
-            className = "outline"
-            direction="row" >
-        <button onClick={sendVote} className="button-43" value={"pass"}>PASS</button>
-        <button onClick={sendVote} className="button-43" value={1}>1</button>
-        <button onClick={sendVote} className="button-43" value={2}>2</button>
-        <button onClick={sendVote} className="button-43" value={3}>3</button>
-        <button onClick={sendVote} className="button-43" value={5}>5</button>
-        <button onClick={sendVote} className="button-43" value={8}>8</button>
-        <button onClick={sendVote} className="button-43" value={13}>13</button>
-        <button onClick={sendVote} className="button-43" value={21}>21</button>
-        <button onClick={sendVote} className="button-43" value={"?"}>?</button>
-    </Stack>
-    <Timer initialTime={60}/>
-    <h1> Please Select Your Vote</h1>
-    <Link href="/"> Home Page</Link>
-
-    <title>Planning Poker - Everfox</title>
-*/}
+{
+    
+}

@@ -25,6 +25,8 @@ import {
     // Daniel's imports - end
 } from "@mui/material"
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup'; // MUI popup
+import Favicon from "react-favicon";
+import everfox_logo from '../../images/everfox_logo.png'
 
 /*
     Session Screen for Host:
@@ -42,6 +44,9 @@ import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup'; // MUI p
 */
 
 export default function hostSession() {
+
+    const [shouldRender, setShouldRender] = useState(false);
+    const socketEmissionHolder = [];
 
     /* JS Player Components */
     const [sessionId, setSessionId] = useState("");
@@ -128,8 +133,38 @@ export default function hostSession() {
         socket.emit("end-round");
     }
 
+    
+    useEffect(() : any => {
+
+    
+        const timer = setTimeout(() => {
+
+          setShouldRender(true)
+      }, 600); // 3000 milliseconds = 3 seconds
+    
+      
+      });
+
+    if (!shouldRender) {
+        return (
+          <div>
+            {/* Tab Contents: Icon, title */}
+            <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
+            <title>Planning Poker - Everfox</title>
+            <Stack 
+            sx={{
+              width: "100vw",
+              height: "100vh",
+              justifyContent: "center",
+              alignItems: "center", 
+              }}
+            >
+              <CircularProgress />
+            </Stack>
+          </div>);
+    } else {
     return (
-        <body>
+        <div>
             <Stack
                 direction = "column"
                 spacing={2}
@@ -157,10 +192,9 @@ export default function hostSession() {
                     }}
                 >
 
-                                            {/* IconButton Component: Avatar Icon Button */}
-                    {/** TODO: Fix this overload error **/}
+
                     <IconButton 
-                        onClick = {handleClick2}
+                         onClick={() => {handleClick2}}
                         sx = {{
                             border: 1,
                             marginTop:  '2%',
@@ -175,8 +209,6 @@ export default function hostSession() {
 
                     </IconButton>
 
-                    {/* BasePopup Component: Shows settings */}
-                    {/** TODO: Add more settings here **/}
                     <BasePopup id={id2} open={open2} anchor={anchor2}>
 
                         {/* Takes User back to home screen */}
@@ -194,10 +226,9 @@ export default function hostSession() {
                     </Typography>
                     </Box>
 
-                    {/* IconButton Component: Clock component */}
-                    {/** TODO: fix this overload error **/}
+
                     <IconButton 
-                        onClick = {handleClick}
+                       onClick={() => {handleClick2}}
                         sx = {{
                             border: 1,
                             marginTop:  '2%',
@@ -324,166 +355,7 @@ export default function hostSession() {
             </Box>
 
             </Stack>
-        </body>
-    )
-
-    return (
-        <body>
-
-                {/* Title Component: Tab's name in browser */}
-                <title>Planning Poker - Everfox</title>
-                
-                {/* Stack Component: Row [top bar] */}
-                <Stack 
-                    direction="row" 
-                    spacing={2}
-                    useFlexGap
-                    sx = {{
-                        height: '100%',
-                        minHeight: '100%',
-                        margin: '0px',
-                        boxSizing: 'border-box',
-                        justifyContent: "space-between",
-                        alignItems: "flex-start"
-                    }}>
-
-                    {/* IconButton Component: Avatar Icon Button */}
-                    {/** TODO: Fix this overload error **/}
-                    <IconButton 
-                        onClick = {handleClick2}
-                        sx = {{
-                            marginTop:  '2%',
-                            marginLeft: '2%',
-                        }}                
-                    >
-                        {/* Avatar Initial */}
-                        {/** TODO: Use formdata to change the initial **/}
-                        <Avatar>
-                            M
-                        </Avatar>
-
-                    </IconButton>
-
-                    {/* BasePopup Component: Shows settings */}
-                    {/** TODO: Add more settings here **/}
-                    <BasePopup id={id2} open={open2} anchor={anchor2}>
-
-                        {/* Takes User back to home screen */}
-                        {/** TODO: Make it more presentable with icons **/}
-                        <PopupBody>
-                            <Link href="/"> Home Page</Link>
-                        </PopupBody>
-
-                    </BasePopup>
-
-                    {/* Stack Component: Session Form */}
-                    <Stack 
-                        direction = "column" 
-                        spacing={0}
-                        sx={{
-                            justifyContent: "center",
-                            alignItems: "center",
-                        }}
-                        >
-
-                        {/* Header Components: Session Topic & Host Name */}
-                        {/** TODO: Use Data from formData instead of hardcoded values **/}    
-                        <h1 className = 'margin0 marginTop outline' >
-                            9/14/24 - Food Session
-                        </h1>
-                        <h2 className = 'margin0'>
-                            Host: Dustin Endres
-                        </h2>
-                    </Stack>
-
-                    {/* IconButton Component: Clock component */}
-                    {/** TODO: fix this overload error **/}
-                    <IconButton 
-                        onClick = {handleClick}
-                        sx = {{
-                            marginTop:  '2%',
-                            marginRight: '2%',
-                        }}>
-
-                        {/* Comment in html like this! */}
-                        <Avatar>
-                            C
-                        </Avatar>
-
-                    </IconButton>
-
-                    {/* BasePopup */}
-                    <BasePopup id={id} open={open} anchor={anchor}>
-
-                        {/* PopupBody component: Shows starting round form */}
-                        <PopupBody>
-
-                            {/* Stack component: Column form */}
-                            <Stack
-                                component = "form"
-                                direction = "column"
-                                autoComplete = "off"
-                                spacing = {2}
-                                sx={{  
-                                justifyContent: "center",
-                                alignItems: "center"
-                                }}
-                                onSubmit={handleSubmit}
-                            >
-                                {/* Textfield component: Session topic */}
-                                <TextField
-                                    label="Session Topic"
-                                    onChange={e => setEmail(e.target.value)}
-                                    required
-                                    variant="outlined"
-                                    color="secondary"
-                                    value={email}
-                                    error={emailError}
-                                    name="roundTopic"
-                                    type="text"
-                                />
-
-                                {/* Submit button component: Submit */}
-                                <button type="submit" className="button-43">Start Round</button>
-                        
-                            </Stack>
-
-                            {/* Button component: End round */}
-                            <button onClick={endRound} className="button-43">End Round</button>
-                        </PopupBody>
-                    </BasePopup> 
-                </Stack>
-        </body>
+            </div>
     )
 }
-
-{/* Comment in html like this! */}
-
-{/* // Leftover Code //
-
-    const handleSubmit2: React.FormEventHandler<HTMLFormElement> = (event) => {
-        const formData = new FormData(event.currentTarget);
-        event.preventDefault();
-        startRound(formData.get('roundTopic') as string);
-    }
-    socket.on('round-topic',(arg:String)=>
-        {
-            console.log("Round topic is: " + arg);
-        })
-    socket.on('display-votes', (userVotes) =>
-        {
-            console.log(userVotes)
-        })
-
-    <form onSubmit={handleSubmit}>
-        <label>
-            Round topic:
-            <input
-                type="text"
-                name="roundTopic"
-            />
-        </label>
-        <button type="submit" className="button-43">Start Round</button>
-    </form>
-    <button onClick={endRound} className="button-43">End Round</button>
-*/}
+}
