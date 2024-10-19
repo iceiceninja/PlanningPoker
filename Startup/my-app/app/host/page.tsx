@@ -24,8 +24,28 @@ import {
     // Daniel's imports - end
 } from "@mui/material"
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup'; // MUI popup
+import Favicon from "react-favicon";
+import everfox_logo from '../../images/everfox_logo.png'
 
-export default function hostSession() {
+/*
+    Session Screen for Host:
+
+    This screen allows the Host to start and end a round with a valid topic
+    The host should be able to edit the session topic, create a timer, edit the time
+
+    ** TODO LIST **
+    1. Fix UI
+    - Rearrange the component like in Figma (WIP)
+    2. Errors
+    - Fix overloading errors
+    3. Use server data
+    - retrieve data from the host's previous screen
+*/
+
+export default function HostSession() {
+
+    const [shouldRender, setShouldRender] = useState(false);
+    const socketEmissionHolder = [];
 
     /* JS Player Components */
     const [sessionId, setSessionId] = useState("");
@@ -112,6 +132,36 @@ export default function hostSession() {
         socket.emit("end-round");
     }
 
+    
+    useEffect(() : any => {
+
+    
+        const timer = setTimeout(() => {
+
+          setShouldRender(true)
+      }, 600); // 3000 milliseconds = 3 seconds
+    
+      
+      });
+
+    if (!shouldRender) {
+        return (
+          <div>
+            {/* Tab Contents: Icon, title */}
+            <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
+            <title>Planning Poker - Everfox</title>
+            <Stack 
+            sx={{
+              width: "100vw",
+              height: "100vh",
+              justifyContent: "center",
+              alignItems: "center", 
+              }}
+            >
+              <CircularProgress />
+            </Stack>
+          </div>);
+    } else {
     return (
         <div>
             <Stack
@@ -304,4 +354,5 @@ export default function hostSession() {
             </Stack>
             </div>
     )
+}
 }

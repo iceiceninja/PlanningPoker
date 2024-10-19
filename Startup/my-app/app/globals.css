@@ -66,10 +66,10 @@ html {
   border-radius: .5rem;
   box-sizing: border-box;
   color: #FFFFFF;
-  font-size: 16px;
+  /* font-size: 16px; */
   justify-content: center;
   text-decoration: none;
-  border: 0;
+  border: 1;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
@@ -123,7 +123,7 @@ html {
   border-radius: .5rem;
   box-sizing: border-box;
   color: #FFFFFF;
-  font-size: 16px;
+  /* font-size: 16px; */
   justify-content: center;
   text-decoration: none;
   border: 0;
@@ -153,8 +153,9 @@ html {
     margin: 0;
 }
 
-.outline {
-  border-style: solid;
+div {
+  border: solid transparent;
+  box-sizing: border-box;
 }
 
 html {
@@ -165,12 +166,17 @@ html {
   min-height: 100%;    
   margin: 0px;    
   padding: 0px;
-  border: solid darkgreen;
+  border: solid transparent;
   box-sizing: border-box;
 }
 
 * {
   box-sizing: border-box;
+}
+
+h1, h2, h3 {
+  padding: 0px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
 }
 
 

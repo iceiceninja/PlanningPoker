@@ -20,7 +20,7 @@ import {PopupBody} from '../components/Style'
 
 import Stack from '@mui/material/Stack';
 
-export default function host() {
+export default function Host() {
 
     const router = useRouter(); // Initialize the router
     const [anchor2, setAnchor2] = React.useState(null);
