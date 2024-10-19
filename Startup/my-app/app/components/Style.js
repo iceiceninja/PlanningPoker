@@ -85,11 +85,8 @@ textTheme.typography.button = {
 const buttonTheme = createTheme({
   palette: {
     primary: {
-      main: "#black",
-      contrastText: "#fff"
-    },
-    background: {
-      default: "#F3F1F6"
+      main: "#F3F1F6",
+      contrastText: "#000000"
     }
   }
 });
