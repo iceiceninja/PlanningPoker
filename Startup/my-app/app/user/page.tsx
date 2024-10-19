@@ -12,13 +12,13 @@ import { useRouter } from 'next/navigation';
 import socket from "../../socket";
 import { MouseEvent, useState, useEffect } from "react";
 import Timer from "../components/timer";
-import IconButton from '@mui/material/IconButton';
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
 import {PopupBody} from '../components/Style'
-
-import Stack from '@mui/material/Stack';
+import { Avatar, Box, Button, IconButton, Stack, ThemeProvider, Typography } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import LinkIcon from '@mui/icons-material/Link';
+import { buttonTheme, Style, textTheme } from '../components/Style' 
 
 export default function Host() {
 
@@ -49,32 +49,36 @@ export default function Host() {
         socket.on("host_left", () => {
           router.push('/');
         });
-      });
+    });
 
-
+    // Variables
+    let name: string = "User"
+    let topicName: string = "Food Session" // TODO: Limit to 36 chars in backend
+    let hostName: string = "Dustin Endres"           // TODO: Limit to 20 chars in backend
 
     return (
-        <div>
+        <Box height={135}>
             <Stack 
                 id = "outline"
                 direction="row" 
                 spacing={2}
                 useFlexGap
-                sx = {{
-                    justifyContent: "space-between",
-                    alignItems: "flex-start"
-                }}>
-                <IconButton 
-                   onClick={() => {handleClick2}}
-                    sx = {{
-                        marginTop:  '2%',
-                        marginLeft: '2%',
-                    }}                
-                >
-                    <Avatar>
-                        M
-                    </Avatar>
-                </IconButton>
+                alignItems="center"
+                justifyContent="space-between"
+            >
+                <Box sx={{ width: "16vw", minWidth: 80, maxWidth: 160 }}>
+                    <IconButton
+                        onClick={() => {handleClick2}}
+                        sx = {{
+                            width: "12vw",
+                            height: "12vw",
+                            maxWidth: 75,
+                            maxHeight: 75
+                        }}                
+                    >
+                        <Avatar {...stringAvatar(name)} />
+                    </IconButton>
+                </Box>
                 <BasePopup id={id2} open={open2} anchor={anchor2}>
                     <PopupBody>
                         <Link href="/"> Home Page</Link>
@@ -86,24 +90,83 @@ export default function Host() {
                     sx={{
                         justifyContent: "center",
                         alignItems: "center",
+                        padding: 2,
+                        bgcolor: "#F3F1F6",
+                        borderRadius: '8px',
+                        width: "50vw",
+                        height: "10vh",
+                        maxWidth: 500
                       }}
                     >
-                    <h1 className = 'margin0 marginTop' >
-                        9/14/24 - Food Session
-                    </h1>
-                    <h2 className = 'margin0'>
-                        Host: Dustin Endres
-                    </h2>
+                    <ThemeProvider theme = {textTheme}>
+                        <Typography
+                            variant="h6"
+                            align="center"
+                        >
+                            {topicName}
+                        </Typography>
+                    </ThemeProvider>
+                    <ThemeProvider theme = {textTheme}>
+                        <Typography
+                            variant="subtitle1"
+                            align="center"
+                        >
+                            Host: {hostName}
+                        </Typography>
+                    </ThemeProvider>
                 </Stack>
-                <IconButton 
+                <Stack
+                    direction="column"
+                    spacing={2}
+                    width="10vw"
+                    height="12vh"
                     sx = {{
-                        marginTop:  '2%',
-                        marginRight: '2%',
-                    }}>
-                    <Avatar>
-                        C
-                    </Avatar>
-                </IconButton>
+                        width: 160,
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }}
+                >
+                    <ThemeProvider theme = {buttonTheme}>
+                        <Button
+                            variant="contained"
+                            startIcon={<InfoIcon />}
+                            sx={{
+                                width: "16vw",
+                                maxWidth: 160,
+                                height: "4vh"
+                            }}
+                        >
+                            <ThemeProvider theme = {textTheme}>
+                                <Typography
+                                    variant="button"
+                                    align="center"
+                                >
+                                    How to Play
+                                </Typography>
+                            </ThemeProvider>
+                        </Button>
+                    </ThemeProvider>
+                    <ThemeProvider theme = {buttonTheme}>
+                        <Button
+                            variant="contained"
+                            startIcon={<LinkIcon />}
+                            sx={{
+                                width: "16vw",
+                                maxWidth: 160,
+                                height: "4vh"
+                            }}
+                        >
+                            <ThemeProvider theme = {textTheme}>
+                                <Typography
+                                    variant="button"
+                                    align="center"
+                                >
+                                    Invite Link
+                                </Typography>
+                            </ThemeProvider>
+                        </Button>
+                    </ThemeProvider>
+                </Stack>
             </Stack>
             <div className = ", footer">
                 <title>Planning Poker - Everfox</title>
@@ -112,7 +175,7 @@ export default function Host() {
                     spacing={2}
                     sx={{
                         justifyContent: "center",
-                        alignItems: "center",
+                        alignItems: "center"
                     }}
                     >
                     <button onClick={sendVote} className="card" value={"pass"}>Pass</button>
@@ -127,11 +190,42 @@ export default function Host() {
                 </Stack>
 
             </div>
-        </div>
+        </Box>
     )
 
 }
 
-{
-    
+// For top div's Avatar - Converts name into a color
+function stringToColor(string: string) {
+    let hash = 0;
+    let i;
+  
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+  
+    let color = '#';
+  
+    for (i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    /* eslint-enable no-bitwise */
+  
+    return color;
+  }
+  
+// For top div's Avatar - Updates avatar's name and bg color
+function stringAvatar(name: string) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+        width: "12vw",
+        height: "12vw",
+        maxWidth: 75,
+        maxHeight: 75
+      },
+      children: `${name[0]}`,
+    };
 }
