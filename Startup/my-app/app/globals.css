@@ -83,14 +83,6 @@ html {
   background-image: linear-gradient(-180deg, #1D95C9 0%, #17759C 100%);
 }
 
-.margin0 {
-  margin: 0
-}
-
-.marginTop {
-  margin-top: 4.5%;
-}
-
 .footer { 
   position: absolute; 
   bottom: 3%; 
