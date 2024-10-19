@@ -46,6 +46,7 @@ nextApp.prepare().then(() => {
   var idToPlayerName = new Map();
   const io = new Server(server);
   const NO_USERS = 0;
+  var average = 0;
 
   function storeVote(userId, vote) {
     playerVotes[userId] = vote;
@@ -76,6 +77,7 @@ nextApp.prepare().then(() => {
     
     //if we find the host, remove the host, and set the new hostid.
     if(idToPlayerName.get(socket.id) == HOST_NANE) {
+      
 
       if (idToPlayerName.size == NO_USERS) {
         socket.emit("no_users_present", "True");
@@ -90,6 +92,15 @@ nextApp.prepare().then(() => {
     io.emit("next_host", "True");
 
     console.log('user disconnected');
+  });
+
+  socket.on("vote-selected", (data) => {
+    console.log("MWHAHAHAH")
+    console.log(data.value);
+    var targetsValue = data.value;
+   average = average + Number(targetsValue);
+
+    io.emit("display_votes", average);
   });
 
     

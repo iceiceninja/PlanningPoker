@@ -41,6 +41,106 @@ html {
   background-image: linear-gradient(-180deg, #1D95C9 0%, #17759C 100%);
 }
 
+.card1 {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+  border-radius: 5px; /* 5px rounded corners */
+  padding: 1rem 1rem;
+  background-color: cyan;
+  border-width: 0;
+  
+}
+
+.card2 {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+  border-radius: 5px; /* 5px rounded corners */
+  padding: 1rem 1rem;
+  background-image: linear-gradient(90deg, cyan ,  rgb(1, 1, 1, .1));
+  border-width: 0;
+  
+  
+}
+
+.card3 {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+  border-radius: 5px; /* 5px rounded corners */
+  padding: 1rem 1rem;
+  background-color: cyan;
+  border-width: 0;
+  
+}
+
+.card5 {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+  border-radius: 5px; /* 5px rounded corners */
+  padding: 1rem 1rem;
+  background-color: cyan;
+  border-width: 0;
+  
+}
+
+.card8 {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+  border-radius: 5px; /* 5px rounded corners */
+  padding: 1rem 1rem;
+  background-color: cyan;
+  border-width: 0;
+  
+}
+
+.card13 {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+  border-radius: 5px; /* 5px rounded corners */
+  padding: 1rem 1rem;
+  background-color: cyan;
+  border-width: 0;
+  
+}
+
+.card21 {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+  border-radius: 5px; /* 5px rounded corners */
+  padding: 1rem 1rem;
+  background-color: cyan;
+  border-width: 0;
+  
+}
+
+.cardQuestionMark {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+  border-radius: 5px; /* 5px rounded corners */
+  padding: 1rem 1rem;
+  background-color: cyan;
+  border-width: 0;
+  
+}
+
+.cardPass {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+  border-radius: 5px; /* 5px rounded corners */
+  padding: 1rem 1rem;
+  background-color: cyan;
+  border-width: 0;
+  
+}
+
 .form-input {
   display: block;
   text-align: center;
@@ -103,14 +203,18 @@ html {
 .card {
   /* Add shadows to create the "card" effect */
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
-  transition: 0.3s;
+  transition: 0.3s ease;
   border-radius: 5px; /* 5px rounded corners */
   padding: 1rem 1rem;
+  background-color: cyan;
+  border-width: 0;
+  
 }
 
 /* On mouse-over, add a deeper shadow */
-.card:hover {
+.cardHover:hover {
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
+  transform: translateY(-20px); /* Move button 10px upwards */
 }
 
 /* Add some padding inside the card container */

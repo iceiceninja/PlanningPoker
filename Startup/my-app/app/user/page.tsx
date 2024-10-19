@@ -29,18 +29,15 @@ export default function Host() {
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
         setAnchor2(anchor2 ? null : event2.currentTarget);
     };
+    const [userVotes, setUserVotes] = useState(0);
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
-        socket.emit("vote-selected", { id: "123", value: event.currentTarget.value }); // userId, vote value
+        socket.emit("vote-selected", {value: event.currentTarget.value }); // userId, vote value
     }
-    socket.on('display-votes', (userVotes : any) => {
-        console.log(userVotes)
-    })
-
-    socket.on("next_host", (data) => {
-       console.log("HAHHAHAHAHAHAAHAHDHSFHDSASFJDAFHAHHAHAAHAH")
-    }); 
+    socket.on("display_votes", (msg) => {
+        setUserVotes(msg);
+      });
 
     socket.on('round-topic', (topic: String) => {
         console.log("Round topic is: " + topic);
@@ -66,6 +63,7 @@ export default function Host() {
 
     return (
         <div>
+            <h1> {userVotes} Hello world! </h1>
             <Stack 
                 id = "outline"
                 direction="row" 
@@ -126,15 +124,15 @@ export default function Host() {
                         alignItems: "center",
                     }}
                     >
-                    <button onClick={sendVote} className="card" value={"pass"}>Pass</button>
-                    <button onClick={sendVote} className="card" value={1}>1</button>
-                    <button onClick={sendVote} className="card" value={2}>2</button>
-                    <button onClick={sendVote} className="card" value={3}>3</button>
-                    <button onClick={sendVote} className="card" value={5}>5</button>
-                    <button onClick={sendVote} className="card" value={8}>8</button>
-                    <button onClick={sendVote} className="card" value={13}>13</button>
-                    <button onClick={sendVote} className="card" value={21}>21</button>
-                    <button onClick={sendVote} className="card" value={"?"}>?</button>
+                    <button onClick={sendVote} className="cardPass cardHover" value={"pass"}>Pass</button>
+                    <button onClick={sendVote} className="card1 cardHover" value={1}>1</button>
+                    <button onClick={sendVote} className="card2 cardHover" value={2}>2</button>
+                    <button onClick={sendVote} className="card3 cardHover" value={3}>3</button>
+                    <button onClick={sendVote} className="card5 cardHover" value={5}>5</button>
+                    <button onClick={sendVote} className="card8 cardHover" value={8}>8</button>
+                    <button onClick={sendVote} className="card13 cardHover" value={13}>13</button>
+                    <button onClick={sendVote} className="card21 cardHover" value={21}>21</button>
+                    <button onClick={sendVote} className="cardQuestionMark cardHover" value={"?"}>?</button>
                 </Stack>
 
             </div>
