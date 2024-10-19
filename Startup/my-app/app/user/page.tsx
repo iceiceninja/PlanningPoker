@@ -9,7 +9,7 @@
 import Image from "next/image";
 import Link from 'next/link'
 import { useRouter } from 'next/navigation';
-import socket from "../../socket";
+import socket from '../../socket';
 import { MouseEvent, useState, useEffect } from "react";
 import Timer from "../components/timer";
 import * as React from 'react';
@@ -38,6 +38,11 @@ export default function Host() {
     socket.on('display-votes', (userVotes : any) => {
         console.log(userVotes)
     })
+
+    socket.on("next_host", (data) => {
+       console.log("HAHHAHAHAHAHAAHAHDHSFHDSASFJDAFHAHHAHAAHAH")
+    }); 
+
     socket.on('round-topic', (topic: String) => {
         console.log("Round topic is: " + topic);
     })
@@ -45,6 +50,12 @@ export default function Host() {
         console.log("countdown init");
 
     })
+
+    useEffect(() => {
+        socket.on("host_exists", () => {
+          router.push('/user');
+        });
+      });
 
     useEffect(() => {
         socket.on("host_left", () => {
