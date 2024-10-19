@@ -19,6 +19,7 @@ import { Avatar, Box, Button, IconButton, Stack, ThemeProvider, Typography } fro
 import InfoIcon from '@mui/icons-material/Info';
 import LinkIcon from '@mui/icons-material/Link';
 import { buttonTheme, Style, textTheme } from '../components/Style' 
+import { shadows } from '@mui/system';
 
 export default function Host() {
 
@@ -52,145 +53,179 @@ export default function Host() {
     });
 
     // Variables
-    let name: string = "User"
-    let topicName: string = "Food Session" // TODO: Limit to 36 chars in backend
-    let hostName: string = "Dustin Endres"           // TODO: Limit to 20 chars in backend
+    let name: string = "Kaiden"
+    let topicName: string = "Food Session"      // TODO: Limit to 36 chars in backend
+    let hostName: string = "Dustin Endres"      // TODO: Limit to 20 chars in backend
+    let topic: string = "Hi! Today we will be making a project about food. I like food. You like food."
+        + " We all love food! So, how long would this project take? I estimate 3.50!"
+                                                // TODO: Limit to 150 chars in backend
 
     return (
-        <Box height={135}>
-            <Stack 
-                id = "outline"
-                direction="row" 
-                spacing={2}
-                useFlexGap
-                alignItems="center"
-                justifyContent="space-between"
-            >
-                <Box sx={{ width: "16vw", minWidth: 80, maxWidth: 160 }}>
-                    <IconButton
-                        onClick={() => {handleClick2}}
-                        sx = {{
-                            width: "12vw",
-                            height: "12vw",
-                            maxWidth: 75,
-                            maxHeight: 75
-                        }}                
-                    >
-                        <Avatar {...stringAvatar(name)} />
-                    </IconButton>
-                </Box>
-                <BasePopup id={id2} open={open2} anchor={anchor2}>
-                    <PopupBody>
-                        <Link href="/"> Home Page</Link>
-                    </PopupBody>
-                </BasePopup>
+        <>
+            <Box height={135}>
                 <Stack 
-                    direction = "column" 
-                    spacing={0}
-                    sx={{
-                        justifyContent: "center",
-                        alignItems: "center",
-                        padding: 2,
-                        bgcolor: "#F3F1F6",
-                        borderRadius: '8px',
-                        width: "50vw",
-                        height: "10vh",
-                        maxWidth: 500
-                      }}
-                    >
-                    <ThemeProvider theme = {textTheme}>
-                        <Typography
-                            variant="h6"
-                            align="center"
-                        >
-                            {topicName}
-                        </Typography>
-                    </ThemeProvider>
-                    <ThemeProvider theme = {textTheme}>
-                        <Typography
-                            variant="subtitle1"
-                            align="center"
-                        >
-                            Host: {hostName}
-                        </Typography>
-                    </ThemeProvider>
-                </Stack>
-                <Stack
-                    direction="column"
-                    spacing={2}
-                    width="10vw"
-                    height="12vh"
-                    sx = {{
-                        width: 160,
-                        justifyContent: "center",
-                        alignItems: "center"
-                    }}
-                >
-                    <ThemeProvider theme = {buttonTheme}>
-                        <Button
-                            variant="contained"
-                            startIcon={<InfoIcon />}
-                            sx={{
-                                width: "16vw",
-                                maxWidth: 160,
-                                height: "4vh"
-                            }}
-                        >
-                            <ThemeProvider theme = {textTheme}>
-                                <Typography
-                                    variant="button"
-                                    align="center"
-                                >
-                                    How to Play
-                                </Typography>
-                            </ThemeProvider>
-                        </Button>
-                    </ThemeProvider>
-                    <ThemeProvider theme = {buttonTheme}>
-                        <Button
-                            variant="contained"
-                            startIcon={<LinkIcon />}
-                            sx={{
-                                width: "16vw",
-                                maxWidth: 160,
-                                height: "4vh"
-                            }}
-                        >
-                            <ThemeProvider theme = {textTheme}>
-                                <Typography
-                                    variant="button"
-                                    align="center"
-                                >
-                                    Invite Link
-                                </Typography>
-                            </ThemeProvider>
-                        </Button>
-                    </ThemeProvider>
-                </Stack>
-            </Stack>
-            <div className = ", footer">
-                <title>Planning Poker - Everfox</title>
-                <Stack               
+                    id = "outline"
                     direction="row" 
                     spacing={2}
-                    sx={{
-                        justifyContent: "center",
-                        alignItems: "center"
-                    }}
+                    useFlexGap
+                    alignItems="center"
+                    justifyContent="space-between"
+                >
+                    <Box sx={{ width: "16vw", minWidth: 80, maxWidth: 160 }}>
+                        <IconButton
+                            onClick={() => {handleClick2}}
+                            sx = {{
+                                width: "12vw",
+                                height: "12vw",
+                                maxWidth: 75,
+                                maxHeight: 75
+                            }}                
+                        >
+                            <Avatar {...stringAvatar(name)} />
+                        </IconButton>
+                    </Box>
+                    <BasePopup id={id2} open={open2} anchor={anchor2}>
+                        <PopupBody>
+                            <Link href="/"> Home Page</Link>
+                        </PopupBody>
+                    </BasePopup>
+                    <Stack 
+                        direction = "column" 
+                        spacing={0}
+                        sx={{
+                            justifyContent: "center",
+                            alignItems: "center",
+                            padding: 2,
+                            bgcolor: "#F3F1F6",
+                            borderRadius: '8px',
+                            width: "50vw",
+                            height: "10vh",
+                            maxWidth: 500,
+                            boxShadow: 4
+                        }}
+                        >
+                        <ThemeProvider theme = {textTheme}>
+                            <Typography
+                                variant="h6"
+                                align="center"
+                            >
+                                {topicName}
+                            </Typography>
+                        </ThemeProvider>
+                        <ThemeProvider theme = {textTheme}>
+                            <Typography
+                                variant="subtitle1"
+                                align="center"
+                            >
+                                Host: {hostName}
+                            </Typography>
+                        </ThemeProvider>
+                    </Stack>
+                    <Stack
+                        direction="column"
+                        spacing={2}
+                        width="10vw"
+                        height="12vh"
+                        sx = {{
+                            width: 160,
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
                     >
-                    <button onClick={sendVote} className="card" value={"pass"}>Pass</button>
-                    <button onClick={sendVote} className="card" value={1}>1</button>
-                    <button onClick={sendVote} className="card" value={2}>2</button>
-                    <button onClick={sendVote} className="card" value={3}>3</button>
-                    <button onClick={sendVote} className="card" value={5}>5</button>
-                    <button onClick={sendVote} className="card" value={8}>8</button>
-                    <button onClick={sendVote} className="card" value={13}>13</button>
-                    <button onClick={sendVote} className="card" value={21}>21</button>
-                    <button onClick={sendVote} className="card" value={"?"}>?</button>
+                        <ThemeProvider theme = {buttonTheme}>
+                            <Button
+                                variant="contained"
+                                startIcon={<InfoIcon />}
+                                sx={{
+                                    width: "16vw",
+                                    maxWidth: 160,
+                                    height: "4vh"
+                                }}
+                            >
+                                <ThemeProvider theme = {textTheme}>
+                                    <Typography
+                                        variant="button"
+                                        align="center"
+                                    >
+                                        How to Play
+                                    </Typography>
+                                </ThemeProvider>
+                            </Button>
+                        </ThemeProvider>
+                        <ThemeProvider theme = {buttonTheme}>
+                            <Button
+                                variant="contained"
+                                startIcon={<LinkIcon />}
+                                sx={{
+                                    width: "16vw",
+                                    maxWidth: 160,
+                                    height: "4vh"
+                                }}
+                            >
+                                <ThemeProvider theme = {textTheme}>
+                                    <Typography
+                                        variant="button"
+                                        align="center"
+                                    >
+                                        Invite Link
+                                    </Typography>
+                                </ThemeProvider>
+                            </Button>
+                        </ThemeProvider>
+                    </Stack>
                 </Stack>
+                <div className = ", footer">
+                    <title>Planning Poker - Everfox</title>
+                    <Stack               
+                        direction="row" 
+                        spacing={2}
+                        sx={{
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                        >
+                        <button onClick={sendVote} className="card" value={"pass"}>Pass</button>
+                        <button onClick={sendVote} className="card" value={1}>1</button>
+                        <button onClick={sendVote} className="card" value={2}>2</button>
+                        <button onClick={sendVote} className="card" value={3}>3</button>
+                        <button onClick={sendVote} className="card" value={5}>5</button>
+                        <button onClick={sendVote} className="card" value={8}>8</button>
+                        <button onClick={sendVote} className="card" value={13}>13</button>
+                        <button onClick={sendVote} className="card" value={21}>21</button>
+                        <button onClick={sendVote} className="card" value={"?"}>?</button>
+                    </Stack>
 
-            </div>
-        </Box>
+                </div>
+            </Box>
+
+            <Box
+                sx={{
+                    width: "40vw",
+                    height: "20vh",
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    margin: "auto",
+                    bgcolor: "#F3F1F6",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: 2,
+                    borderRadius: '8px',
+                    boxShadow: 4
+                }}
+            >
+                <ThemeProvider theme = {textTheme}>
+                    <Typography
+                        variant="body1"
+                        align="center"
+                    >
+                        {topic}
+                    </Typography>
+                </ThemeProvider>
+            </Box>
+        </>
     )
 
 }

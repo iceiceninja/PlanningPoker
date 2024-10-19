@@ -81,6 +81,13 @@ textTheme.typography.button = {
   [textTheme.breakpoints.up('md')]: { fontSize: '0.9rem', },  // Medium width: Screen Width >= 900px
 }
 
+// Host/User Center Text Box
+textTheme.typography.body1 = {
+  fontSize: '1.0rem',                                         // Extra Small Width: Screen Width < 600px
+  [textTheme.breakpoints.up('sm')]: { fontSize: '1.1rem', },  // Small width: Screen Width >= 600px
+  [textTheme.breakpoints.up('md')]: { fontSize: '1.5rem', },  // Medium width: Screen Width >= 900px
+}
+
 // Button
 const buttonTheme = createTheme({
   palette: {
