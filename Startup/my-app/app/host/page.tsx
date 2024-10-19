@@ -15,7 +15,6 @@ import {
     Stack,
     IconButton,
     TextField,
-    // Daniel's imports - start
     Box,            
     Container,
     Typography,
@@ -211,8 +210,6 @@ export default function HostSession() {
 
                     <BasePopup id={id2} open={open2} anchor={anchor2}>
 
-                        {/* Takes User back to home screen */}
-                        {/** TODO: Make it more presentable with icons **/}
                         <PopupBody>
                             <Link href="/"> Home Page</Link>
                         </PopupBody>

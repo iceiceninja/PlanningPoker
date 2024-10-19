@@ -23,7 +23,7 @@ import cards from '../images/cards.png'
 import {Style, textTheme } from './components/Style' 
 
 // Client Type Global Variable [for each client, it has a user type: Host or User]
-var clientType = ""
+var clientType = "host"
 
 export default function HostHome() {
 
@@ -36,29 +36,48 @@ export default function HostHome() {
   const [hostName, setHostName] = useState("")            // Host name input
   const [sessionTopic, setSessionTopic] = useState("")    // Session name input
   const [userCount, setUserCount] = useState(0);          // User count 
-  const [loading, setLoading] = useState(true);           // Loading State
+  const [loading, setLoading] = useState(true);           // Loading State 
+  const [shouldRender, setShouldRender] = useState(false);
+  const socketEmissionHolder = []; // Has to be an array otherwise the socket throws an error.
 
   // Loading Timer [1000ms = 1s]
   useEffect(() => { setTimeout(() => {setLoading(false)}, 3000); }, []);  
 
-  // Retrieve user type using acknowledgements - Server calls back client type [response]
-  socket.emit("clientType", (response : any) => { clientType = response.clientType; });
+  socket.on("host_exists", () => {
+    socketEmissionHolder.push("1");
+  });
 
-  // Connection error for debugging
-  socket.on("connection_error", (err) => { console.log(`connect_error due to ${err.message}` + err.code); });
+  useEffect(() : any => {
+    if(userCount == 1) {
+      router.push('/host')
+    }
+
+    const timer = setTimeout(() => {
+     if (socketEmissionHolder.length >= 1) {
+      router.push('/user')
+    }
+    else {
+      setShouldRender(true)
+    }
+  }, 700); 
+
+  
+  }, [userCount]);
+
+
 
     // Loading Screen
-    if (loading) {
+    if (!shouldRender) {
       return (
         <div>
-          {/* Tab Contents: Icon, title */}
-          <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
           <title>Planning Poker - Everfox</title>
           <Stack sx={{ width: "100vw", height: "100vh", justifyContent: "center", alignItems: "center",  }} >
             <CircularProgress />
           </Stack>
         </div>);
     }
+
+    
   
     // Direct to setup screens for host or user
 
@@ -68,18 +87,15 @@ export default function HostHome() {
     setUserCount((prevValue) => prevValue + 1); // Increment user count
     console.log(userCount);
     setHostJoined(true); // Tell client that host has joined **
-    socket.emit('host_joined', {hostName, sessionTopic}); // Tell server host has joined **
+     socket.emit('host_joined', {hostName, sessionTopic}); // Tell server host has joined **
   }
   
 
   
   // Show user login screen
-  if (clientType === "user") {
-    console.log("load user screen")
-    return (
+  if (socketEmissionHolder.length >= 1) {
+   return (
       <div>
-        {/* Tab Contents: Icon, title */}
-        <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
         <title>Planning Poker - Everfox</title>
 
         {/* Whole Screen: Column with vertical centering*/}
@@ -237,12 +253,8 @@ export default function HostHome() {
     )
   }
 
-  // Show host login screen
-  if (clientType === "host") {
   return (
     <div>
-      {/* Tab Contents: Icon, title */}
-      <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
       <title>Planning Poker - Everfox</title>
 
       {/* Whole Screen: Column with vertical centering*/}
@@ -510,26 +522,7 @@ export default function HostHome() {
       </Stack>
     </div>
   );
-  }
 
-  // Refresh if there is an error in retrieving client type
-  window.location.reload();  
 
 }
 
-{/*
-
-  useEffect(() : any => {
-  if(userCount == 1) { router.push('/host') }
-  const timer = setTimeout(() => {
-    setShouldRender(true)
-  }, 600); // 3000 milliseconds = 3 seconds
-  }, [userCount]);
-  
-  socket.on("host_exists", () => {
-    socketEmissionHolder.push("1");
-    console.log("asdfsdaafafsdfdasdasf");
-    console.log(socketEmissionHolder.length + "asdfdwsafdaf")
-  });
-    
-*/}
