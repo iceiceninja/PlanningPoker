@@ -1,3 +1,5 @@
+
+
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
@@ -6,7 +8,6 @@ const express = require('express');
 const path = require('path');  // This helps resolve paths correctly
 const short = require('short-uuid');
 const { io } = require('socket.io-client');
-
 const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
 const handle = nextApp.getRequestHandler();
 const expressApp = express();
@@ -45,14 +46,13 @@ nextApp.prepare().then(() => {
   const HOST_NANE = "host";
   var idForEachPlayerQueue = [];
   var idToPlayerName = new Map();
+  var idToPlayerVote = new Map();
   var storePlayers = [];
   const io = new Server(server);
   const NO_USERS = 0;
   var average = 0;
 
-  function storeVote(userId, vote) {
-    playerVotes[userId] = vote;
-  }
+
 
   function onUserJoin(socket) {
      // We have to make sure not to push the host into the queue.
@@ -65,6 +65,16 @@ nextApp.prepare().then(() => {
       idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "user");
       
   }
+
+  function getOrDefault(map, key, defaultValue = "", selected) {
+    if (selected)
+    return map.get(key) ?? defaultValue;
+
+    else {
+      map.set(key, defaultValue);
+      return map.get(key);
+    }
+}
 
 
 
@@ -109,32 +119,39 @@ nextApp.prepare().then(() => {
   socket.on("user_joined", (data) => {
     
     idToPlayerName.set(socket.id, data.value)
-    console.log(idToPlayerName)
 
- 
+ // converting the map into an array
     const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
       name,      // The name from the Map
-      vote: " " // Default vote, you can change this later
+      vote: " " 
     }));
-
-        
-    // We have to use io.to to get a specific socket.id
+    
     io.emit("return_user_name", newArray);
-    console.log(newArray);
-    console.log("made it past return user")
+        
   })
 
 
 
   socket.on("vote-selected", (data) => {
     var targetsValue = data.value;
+    var isSelected = data.selected;
+
+    idToPlayerVote.set(socket.id, data.value);
+
    average = average + Number(targetsValue);
 
-    io.emit("display_votes", average);
+   const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+    name,      // The name from the Map
+    vote: getOrDefault(idToPlayerVote, id, " ", isSelected) 
+  }));
+
+  console.log(newArray)
+
+      
+  io.emit("return_user_name", newArray);
   });
 
-    
-  
+
 });
 
 server.listen(PORT, (err) => {

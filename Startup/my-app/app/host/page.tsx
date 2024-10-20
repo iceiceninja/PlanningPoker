@@ -54,7 +54,7 @@ export default function HostSession() {
     const [isJoined, setIsJoined] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [players, setPlayers] = useState([
-      { name: getDisplayHostname(), vote: "?" },
+      { name: getDisplayHostname(), vote: "" },
 
     ]);
 
@@ -81,7 +81,7 @@ export default function HostSession() {
     /* Card Selection */
     const handleCardSelection = (value: any) => {
         setSelectedCard(value);
-        // Update the user's vote in the players array
+        // Update the user's vote in the players arrayh
         setPlayers((prevPlayers) =>
           prevPlayers.map((player) =>
             player.name === userName ? { ...player, vote: value } : player

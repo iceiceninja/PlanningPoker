@@ -31,11 +31,17 @@ export default function Host() {
         setAnchor2(anchor2 ? null : event2.currentTarget);
     };
     const [userVotes, setUserVotes] = useState(0);
+    var cardSelected = false;
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
-        socket.emit("vote-selected", {value: event.currentTarget.value }); // userId, vote value
+        console.log("HHAHAAHAH")
+        cardSelected = !cardSelected
+        console.log(cardSelected)
+        socket.emit("vote-selected", {value: event.currentTarget.value, selected: cardSelected}); // userId, vote value
     }
+
+
     socket.on("display_votes", (msg) => {
         setUserVotes(msg);
       });
