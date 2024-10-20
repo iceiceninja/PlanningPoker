@@ -324,6 +324,7 @@ export default function HostSession() {
                                 variant="h6"
                                 align="center"
                             >
+                        <p>Session topic</p>
                          <input type="text" />
                             </Typography>
                         </ThemeProvider>
