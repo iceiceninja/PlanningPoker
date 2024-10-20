@@ -52,25 +52,29 @@ export default function HostSession() {
     const [isJoined, setIsJoined] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [players, setPlayers] = useState([
-      { name: "Player 1", vote: null },
-      { name: "Player 2", vote: null },
-      { name: "Player 3", vote: null },
+      { name: "Player 1", vote: "?" },
+
     ]);
 
     /* Placeholders */
     const hostName = "Host 1"; // Placeholder for host name
     const sessionDate = "2024-10-10"; // Placeholder for session date
     const userName = "You"; // Use this as the user's display name in the table
+    var lengthChange = -1; // Only update the state if the length changes, otherwise this infinitely loops
 
-    /* Join functionality */
-    const handleJoin = () => {
-        if (sessionId) {
-          // Add the user to the players list when they join
-          setPlayers((prevPlayers) => [...prevPlayers, { name: userName, vote: null }]);
-          setIsJoined(true);
-          // Handle actual session join with backend here
-        }
-    };
+    
+
+    socket.on("return_user_name", (allPlayers) => {
+        console.log("YEYEYEYEYEYYEYEYE BUDDDDYYY");     
+        setPlayers(allPlayers);
+        console.log(players);
+        console.log(allPlayers)
+        lengthChange = players.length;
+      
+    })
+    
+
+
 
     /* Card Selection */
     const handleCardSelection = (value: any) => {
@@ -144,11 +148,12 @@ export default function HostSession() {
       
       });
 
+
     if (!shouldRender) {
         return (
           <div>
             {/* Tab Contents: Icon, title */}
-            <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
+
             <title>Planning Poker - Everfox</title>
             <Stack 
             sx={{
@@ -292,9 +297,9 @@ export default function HostSession() {
                     border: 1
                 }}
                 >
-                {players.map((player, index) => (
+                {players.map((player, vote) => (
                     <Paper
-                    key={index}
+                    key={player.name}
                     elevation={3}
                     sx={{
                         width: 120,  // Size of each player card

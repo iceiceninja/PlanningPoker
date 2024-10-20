@@ -11,6 +11,7 @@ const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
 const handle = nextApp.getRequestHandler();
 const expressApp = express();
 const os = require('os'); // Import os module to get network information
+const { SystemSecurityUpdate } = require('@mui/icons-material');
 const PORT = process.env.PORT || 3000;  // Default to port 4000 instead of 3000
 
 // Serve static files from the: 
@@ -44,12 +45,25 @@ nextApp.prepare().then(() => {
   const HOST_NANE = "host";
   var idForEachPlayerQueue = [];
   var idToPlayerName = new Map();
+  var storePlayers = [];
   const io = new Server(server);
   const NO_USERS = 0;
   var average = 0;
 
   function storeVote(userId, vote) {
     playerVotes[userId] = vote;
+  }
+
+  function onUserJoin(socket) {
+     // We have to make sure not to push the host into the queue.
+    if (idToPlayerName.size >= HOST_EXISTS) 
+      {
+        idForEachPlayerQueue.push(socket.id)
+        socket.emit("host_exists", "True");
+      }
+
+      idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "user");
+      
   }
 
 
@@ -66,10 +80,7 @@ nextApp.prepare().then(() => {
 
 
   idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "user");
-  console.log(socket.id);
-  console.log(idToPlayerName.size);
-
-
+   console.log("user connected");
   
 
   socket.on('disconnect', () => {
@@ -94,9 +105,28 @@ nextApp.prepare().then(() => {
     console.log('user disconnected');
   });
 
+
+  socket.on("user_joined", (data) => {
+    
+    idToPlayerName.set(socket.id, data.value)
+    console.log(idToPlayerName)
+
+ 
+    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+      name,      // The name from the Map
+      vote: " " // Default vote, you can change this later
+    }));
+
+        
+    // We have to use io.to to get a specific socket.id
+    io.emit("return_user_name", newArray);
+    console.log(newArray);
+    console.log("made it past return user")
+  })
+
+
+
   socket.on("vote-selected", (data) => {
-    console.log("MWHAHAHAH")
-    console.log(data.value);
     var targetsValue = data.value;
    average = average + Number(targetsValue);
 
