@@ -21,9 +21,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import everfox_logo from '../images/everfox_logo.png'
 import cards from '../images/cards.png'
 import {Style, textTheme } from './components/Style' 
+import { getDisplayHostname, setDisplayHostname } from '../globalHost';
 
-// Client Type Global Variable [for each client, it has a user type: Host or User]
-var clientType = "host"
 
 export default function HostHome() {
 
@@ -88,6 +87,7 @@ export default function HostHome() {
     console.log(userCount);
     setHostJoined(true); // Tell client that host has joined **
      socket.emit('user_joined', {value: hostName}); // Tell server host has joined **
+    setDisplayHostname(hostName);
   }
   
 

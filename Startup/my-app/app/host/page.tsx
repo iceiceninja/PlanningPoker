@@ -26,6 +26,8 @@ import {
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup'; // MUI popup
 import Favicon from "react-favicon";
 import everfox_logo from '../../images/everfox_logo.png'
+import { getDisplayHostname, setDisplayHostname } from '../../globalHost';
+
 
 /*
     Session Screen for Host:
@@ -52,7 +54,7 @@ export default function HostSession() {
     const [isJoined, setIsJoined] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [players, setPlayers] = useState([
-      { name: "Player 1", vote: "?" },
+      { name: getDisplayHostname(), vote: "?" },
 
     ]);
 
