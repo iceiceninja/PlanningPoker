@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import  socket  from "../../socket";
 
+import { createTheme } from '@mui/material/styles';
+
 // Added by Michael
 import * as React from 'react'; // All react imports
 import { useState, useEffect } from 'react';  // React useState
@@ -20,7 +22,8 @@ import {
     Typography,
     Button,
     Paper,
-    CircularProgress
+    CircularProgress,
+    ThemeProvider,
     // Daniel's imports - end
 } from "@mui/material"
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup'; // MUI popup
@@ -32,24 +35,8 @@ import { Layout, Menu } from 'antd';
 
 const { Sider } = Layout;
 
-
+const textTheme = createTheme({});
  
-
-
-/*
-    Session Screen for Host:
-
-    This screen allows the Host to start and end a round with a valid topic
-    The host should be able to edit the session topic, create a timer, edit the time
-
-    ** TODO LIST **
-    1. Fix UI
-    - Rearrange the component like in Figma (WIP)
-    2. Errors
-    - Fix overloading errors
-    3. Use server data
-    - retrieve data from the host's previous screen
-*/
 
 export default function HostSession() {
 
@@ -63,6 +50,10 @@ export default function HostSession() {
     const [players, setPlayers] = useState([
       { name: getDisplayHostname(), vote: "" },
     ]);
+
+    const [sessionTopic, setSessionTopic] = useState([
+        { name: getDisplayHostname(), vote: "" },
+      ]);
 
     /* Placeholders */
     const hostName = "Host 1"; // Placeholder for host name
@@ -328,6 +319,14 @@ export default function HostSession() {
                         </PopupBody>
                     </BasePopup> 
                 </Stack>
+                    <ThemeProvider theme = {textTheme}>
+                            <Typography
+                                variant="h6"
+                                align="center"
+                            >
+                         <input type="text" />
+                            </Typography>
+                        </ThemeProvider>
 
                 {/* Player Arrangement: Simulates sitting around a table */}
                 <Box
@@ -337,7 +336,7 @@ export default function HostSession() {
                     justifyContent: "center",
                     gap: 4,
                     marginBottom: 4,
-                    border: 1,
+                    border: "transparent",
                     width: "70%",
                     marginRight: 2000
                 }}
