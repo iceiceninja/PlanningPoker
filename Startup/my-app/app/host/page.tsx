@@ -62,7 +62,6 @@ export default function HostSession() {
     const [selectedCard, setSelectedCard] = useState(null);
     const [players, setPlayers] = useState([
       { name: getDisplayHostname(), vote: "" },
-
     ]);
 
     /* Placeholders */
@@ -338,7 +337,9 @@ export default function HostSession() {
                     justifyContent: "center",
                     gap: 4,
                     marginBottom: 4,
-                    border: 1
+                    border: 1,
+                    width: "70%",
+                    marginRight: 2000
                 }}
                 >
                 {players.map((player, vote) => (
@@ -346,13 +347,14 @@ export default function HostSession() {
                     key={player.name}
                     elevation={3}
                     sx={{
-                        width: 120,  // Size of each player card
-                        height: 120, // Size of each player card
+                        width: 100,  // Size of each player card
+                        height: 100, // Size of each player card
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
                         justifyContent: "center",
                         padding: 3,
+                        marginRight: 3,
                     }}
                     >
                     <Typography>{player.name}</Typography>
