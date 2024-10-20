@@ -68,6 +68,7 @@ nextApp.prepare().then(() => {
 
   function getOrDefault(map, key, defaultValue = "", selected) {
     if (selected) {
+      console.log("YYEEEEEEEE BUDDDDY")
       return map.get(key) ?? defaultValue;
     }
 

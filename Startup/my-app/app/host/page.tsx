@@ -27,6 +27,13 @@ import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup'; // MUI p
 import Favicon from "react-favicon";
 import everfox_logo from '../../images/everfox_logo.png'
 import { getDisplayHostname, setDisplayHostname } from '../../globalHost';
+import { Drawer, List, ListItem } from '@mui/material';
+import { Layout, Menu } from 'antd';
+
+const { Sider } = Layout;
+
+
+ 
 
 
 /*
@@ -103,6 +110,7 @@ export default function HostSession() {
 
     // Clock Popup - from clock avatar
     const [anchor, setAnchor] = React.useState(null);
+    const [visible, setVisible] = useState(true);
     const open = Boolean(anchor);
     const id = open ? 'simple-popper' : undefined;
     const handleClick = (event: { currentTarget: React.SetStateAction<null>; }) => { // Click Event
@@ -180,9 +188,21 @@ export default function HostSession() {
               <CircularProgress />
             </Stack>
           </div>);
-    } else {
+    } 
+    
+    else {
     return (
+
         <div>
+              <Layout>
+            <Sider width={200} style={{ position: 'fixed', right: 0, height: '100vh', background: 'transparent' }}>
+                <Menu style={{ background: 'transparent'}} mode="vertical">
+                    <Menu.Item style={{ background: 'transparent'}}  key="1">Item 1</Menu.Item>
+                    <Menu.Item key="2">Item 2</Menu.Item>
+                    <Menu.Item key="3">Item 3</Menu.Item>
+                </Menu>
+            </Sider>
+        </Layout>
             <Stack
                 direction = "column"
                 spacing={2}
@@ -209,6 +229,16 @@ export default function HostSession() {
                         alignItems: "center"
                     }}
                 >
+     <Drawer
+            anchor="right"
+            open={open}
+        >
+            <List>
+                pelasllreslresr
+            </List>
+        </Drawer>   
+
+
 
 
                     <IconButton 
