@@ -30,18 +30,33 @@ export default function Host() {
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
         setAnchor2(anchor2 ? null : event2.currentTarget);
     };
+    const [userVotes, setUserVotes] = useState(0);
+    var cardSelected = false;
+    var previousValue = "-1";
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
-        socket.emit("vote-selected", { id: "123", value: event.currentTarget.value }); // userId, vote value
-    }
-    socket.on('display-votes', (userVotes : any) => {
-        console.log(userVotes)
-    })
+        console.log("HHAHAAHAH")
+        console.log(event.currentTarget.value);
 
-    socket.on("next_host", (data) => {
-       console.log("HAHHAHAHAHAHAAHAHDHSFHDSASFJDAFHAHHAHAAHAH")
-    }); 
+        //if you click two different cards, it should automatically update.
+        if (previousValue != event.currentTarget.value || cardSelected == false) {
+            previousValue = event.currentTarget.value;
+            cardSelected = true;
+            socket.emit("vote-selected", {value: event.currentTarget.value, selected: cardSelected}); // userId, vote value
+        }
+
+        //if you click the same card twice, its assumed you deselected it.
+        else {
+            cardSelected = !cardSelected;
+            socket.emit("vote-selected", {value: event.currentTarget.value, selected: cardSelected}); // userId, vote value
+        }
+    }
+
+
+    socket.on("display_votes", (msg) => {
+        setUserVotes(msg);
+      });
 
     socket.on('round-topic', (topic: String) => {
         console.log("Round topic is: " + topic);

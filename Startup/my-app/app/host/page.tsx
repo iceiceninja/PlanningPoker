@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import  socket  from "../../socket";
 
+import { createTheme } from '@mui/material/styles';
+
 // Added by Michael
 import * as React from 'react'; // All react imports
 import { useState, useEffect } from 'react';  // React useState
@@ -20,27 +22,21 @@ import {
     Typography,
     Button,
     Paper,
-    CircularProgress
+    CircularProgress,
+    ThemeProvider,
     // Daniel's imports - end
 } from "@mui/material"
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup'; // MUI popup
 import Favicon from "react-favicon";
 import everfox_logo from '../../images/everfox_logo.png'
+import { getDisplayHostname, setDisplayHostname } from '../../globalHost';
+import { Drawer, List, ListItem } from '@mui/material';
+import { Layout, Menu } from 'antd';
 
-/*
-    Session Screen for Host:
+const { Sider } = Layout;
 
-    This screen allows the Host to start and end a round with a valid topic
-    The host should be able to edit the session topic, create a timer, edit the time
-
-    ** TODO LIST **
-    1. Fix UI
-    - Rearrange the component like in Figma (WIP)
-    2. Errors
-    - Fix overloading errors
-    3. Use server data
-    - retrieve data from the host's previous screen
-*/
+const textTheme = createTheme({});
+ 
 
 export default function HostSession() {
 
@@ -52,30 +48,49 @@ export default function HostSession() {
     const [isJoined, setIsJoined] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [players, setPlayers] = useState([
-      { name: "Player 1", vote: null },
-      { name: "Player 2", vote: null },
-      { name: "Player 3", vote: null },
+      { name: getDisplayHostname(), vote: "" },
     ]);
+
+    const [sessionTopic, setSessionTopic] = useState([
+        { name: getDisplayHostname(), vote: "" },
+      ]);
 
     /* Placeholders */
     const hostName = "Host 1"; // Placeholder for host name
     const sessionDate = "2024-10-10"; // Placeholder for session date
     const userName = "You"; // Use this as the user's display name in the table
+    var lengthChange = -1; // Only update the state if the length changes, otherwise this infinitely loops
+    // Array of month names
+    const monthNames = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+];
 
-    /* Join functionality */
-    const handleJoin = () => {
-        if (sessionId) {
-          // Add the user to the players list when they join
-          setPlayers((prevPlayers) => [...prevPlayers, { name: userName, vote: null }]);
-          setIsJoined(true);
-          // Handle actual session join with backend here
-        }
-    };
+    
+    var d = new Date(new Date().toLocaleString('en', {timeZone: 'America/New_York'}))
+    var datestring = ("0" + d.getDate()).slice(-2) + "-" + monthNames[d.getMonth()] + "-" +
+    d.getFullYear()
+
+    const [timestamp, setTimestamp] = useState(datestring);
+
+    
+
+    socket.on("return_user_name", (allPlayers) => {
+        console.log("YEYEYEYEYEYYEYEYE BUDDDDYYY");     
+        setPlayers(allPlayers);
+        console.log(players);
+        console.log(allPlayers)
+        lengthChange = players.length;
+      
+    })
+    
+
+
 
     /* Card Selection */
     const handleCardSelection = (value: any) => {
         setSelectedCard(value);
-        // Update the user's vote in the players array
+        // Update the user's vote in the players arrayh
         setPlayers((prevPlayers) =>
           prevPlayers.map((player) =>
             player.name === userName ? { ...player, vote: value } : player
@@ -85,6 +100,7 @@ export default function HostSession() {
 
     // Clock Popup - from clock avatar
     const [anchor, setAnchor] = React.useState(null);
+    const [visible, setVisible] = useState(true);
     const open = Boolean(anchor);
     const id = open ? 'simple-popper' : undefined;
     const handleClick = (event: { currentTarget: React.SetStateAction<null>; }) => { // Click Event
@@ -144,11 +160,12 @@ export default function HostSession() {
       
       });
 
+
     if (!shouldRender) {
         return (
           <div>
             {/* Tab Contents: Icon, title */}
-            <Favicon url = {everfox_logo.src} /> {/* Using <head> causes internal error */}
+
             <title>Planning Poker - Everfox</title>
             <Stack 
             sx={{
@@ -161,9 +178,21 @@ export default function HostSession() {
               <CircularProgress />
             </Stack>
           </div>);
-    } else {
+    } 
+    
+    else {
     return (
+
         <div>
+              <Layout>
+            <Sider width={200} style={{ position: 'fixed', right: 0, height: '100vh', background: 'transparent' }}>
+                <Menu style={{ background: 'transparent'}} mode="vertical">
+                    <Menu.Item style={{ background: 'transparent'}}  key="1">Item 1</Menu.Item>
+                    <Menu.Item key="2">Item 2</Menu.Item>
+                    <Menu.Item key="3">Item 3</Menu.Item>
+                </Menu>
+            </Sider>
+        </Layout>
             <Stack
                 direction = "column"
                 spacing={2}
@@ -190,6 +219,16 @@ export default function HostSession() {
                         alignItems: "center"
                     }}
                 >
+     <Drawer
+            anchor="right"
+            open={open}
+        >
+            <List>
+                pelasllreslresr
+            </List>
+        </Drawer>   
+
+
 
 
                     <IconButton 
@@ -219,7 +258,7 @@ export default function HostSession() {
                     {/* Session Information */}
                     <Box textAlign="center" sx={{ marginBottom: 4, border: 1 }}>
                     <Typography variant="h6">
-                        Host: {hostName} | Session Date: {sessionDate} | Session ID: {sessionId}
+                        Host: {getDisplayHostname()} | Session Date: {timestamp} 
                     </Typography>
                     </Box>
 
@@ -280,6 +319,15 @@ export default function HostSession() {
                         </PopupBody>
                     </BasePopup> 
                 </Stack>
+                    <ThemeProvider theme = {textTheme}>
+                            <Typography
+                                variant="h6"
+                                align="center"
+                            >
+                        <p>Session topic</p>
+                         <input type="text" />
+                            </Typography>
+                        </ThemeProvider>
 
                 {/* Player Arrangement: Simulates sitting around a table */}
                 <Box
@@ -289,21 +337,24 @@ export default function HostSession() {
                     justifyContent: "center",
                     gap: 4,
                     marginBottom: 4,
-                    border: 1
+                    border: "transparent",
+                    width: "70%",
+                    marginRight: 2000
                 }}
                 >
-                {players.map((player, index) => (
+                {players.map((player, vote) => (
                     <Paper
-                    key={index}
+                    key={player.name}
                     elevation={3}
                     sx={{
-                        width: 120,  // Size of each player card
-                        height: 120, // Size of each player card
+                        width: 100,  // Size of each player card
+                        height: 100, // Size of each player card
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
                         justifyContent: "center",
                         padding: 3,
+                        marginRight: 3,
                     }}
                     >
                     <Typography>{player.name}</Typography>
