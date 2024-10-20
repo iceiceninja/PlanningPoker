@@ -25,19 +25,46 @@ export default function Host() {
 
     const router = useRouter(); // Initialize the router
     const [anchor2, setAnchor2] = React.useState(null);
+    const [isClicked, setIsClicked] = useState(false);
+
     const open2 = Boolean(anchor2);
     const id2 = open2 ? 'simple-popper' : undefined;
-    const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
-        setAnchor2(anchor2 ? null : event2.currentTarget);
-    };
     const [userVotes, setUserVotes] = useState(0);
     var cardSelected = false;
     var previousValue = "-1";
+    var inititalMap = new Map([
+        ["Pass", false],
+        ["1", false],
+        ["2", false],
+        ["3", false],
+        ["5", false],
+        ["8", false],
+        ["13", false],
+        ["21", false],
+        ["?", false],
+      ]);
+      const [buttonStates, setButtonStates] = useState(inititalMap);
+
+
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
-        console.log("HHAHAAHAH")
-        console.log(event.currentTarget.value);
+        const newButtonStates = new Map(buttonStates);
+        newButtonStates.forEach((value, key) => {
+            if(key == event.currentTarget.value) {
+                console.log(event.currentTarget.value)
+                newButtonStates.set(event.currentTarget.value, !newButtonStates.get(event.currentTarget.value));
+                console.log(newButtonStates.get("Pass"))
+            }
+            else {
+                newButtonStates.set(key, false);
+            }
+        });
+        console.log('AHWDHFDSAHFSDAJKHADS')
+
+        console.log(newButtonStates.get("Pass"))
+
+        setButtonStates(newButtonStates);
 
         //if you click two different cards, it should automatically update.
         if (previousValue != event.currentTarget.value || cardSelected == false) {
@@ -52,6 +79,11 @@ export default function Host() {
             socket.emit("vote-selected", {value: event.currentTarget.value, selected: cardSelected}); // userId, vote value
         }
     }
+
+    const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
+        setAnchor2(anchor2 ? null : event2.currentTarget);
+    };
+
 
 
     socket.on("display_votes", (msg) => {
@@ -210,15 +242,15 @@ export default function Host() {
                             alignItems: "center"
                         }}
                         >
-                        <button onClick={sendVote} className="card" value={"pass"}>Pass</button>
-                        <button onClick={sendVote} className="card" value={1}>1</button>
-                        <button onClick={sendVote} className="card" value={2}>2</button>
-                        <button onClick={sendVote} className="card" value={3}>3</button>
-                        <button onClick={sendVote} className="card" value={5}>5</button>
-                        <button onClick={sendVote} className="card" value={8}>8</button>
-                        <button onClick={sendVote} className="card" value={13}>13</button>
-                        <button onClick={sendVote} className="card" value={21}>21</button>
-                        <button onClick={sendVote} className="card" value={"?"}>?</button>
+                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp card cardHover" : "card cardHover"}  value={"Pass"}>Pass</button>
+                        <button onClick={sendVote}  className={buttonStates.get("1") ? "cardUp card cardHover" : "card cardHover"}  value={"1"}>1</button>
+                        <button onClick={sendVote}  className={buttonStates.get("2") ? "cardUp card cardHover" : "card cardHover"}  value={"2"}>2</button>
+                        <button onClick={sendVote}  className={buttonStates.get("3") ? "cardUp card cardHover" : "card cardHover"}  value={"3"}>3</button>
+                        <button onClick={sendVote}  className={buttonStates.get("5") ? "cardUp card cardHover" : "card cardHover"}  value={"5"}>5</button>
+                        <button onClick={sendVote}  className={buttonStates.get("8") ? "cardUp card cardHover" : "card cardHover"}  value={"8"}>8</button>
+                        <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card cardHover" : "card cardHover"}  value={"13"}>13</button>
+                        <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card cardHover" : "card cardHover"}  value={"21"}>21</button>
+                        <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp card cardHover" : "card cardHover"}  value={"?"}>?</button>
                     </Stack>
 
                 </div>

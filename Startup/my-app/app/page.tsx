@@ -22,6 +22,7 @@ import everfox_logo from '../images/everfox_logo.png'
 import cards from '../images/cards.png'
 import {Style, textTheme } from './components/Style' 
 import { getDisplayHostname, setDisplayHostname } from '../globalHost';
+import { getGlobalSession, setGlobalSession } from '../globalSession';
 
 
 export default function HostHome() {
@@ -38,6 +39,18 @@ export default function HostHome() {
   const [loading, setLoading] = useState(true);           // Loading State 
   const [shouldRender, setShouldRender] = useState(false);
   const socketEmissionHolder = []; // Has to be an array otherwise the socket throws an error.
+
+  var buttonPressMap = new Map();
+  buttonPressMap.set("Pass", false);
+  buttonPressMap.set("1", false);
+  buttonPressMap.set("2", false);
+  buttonPressMap.set("3", false);
+  buttonPressMap.set("5", false);
+  buttonPressMap.set("8", false);
+  buttonPressMap.set("13", false);
+  buttonPressMap.set("21", false);
+
+
 
   // Loading Timer [1000ms = 1s]
   useEffect(() => { setTimeout(() => {setLoading(false)}, 3000); }, []);  
@@ -88,6 +101,7 @@ export default function HostHome() {
     setHostJoined(true); // Tell client that host has joined **
      socket.emit('user_joined', {value: hostName}); // Tell server host has joined **
     setDisplayHostname(hostName);
+    setGlobalSession(sessionTopic);
   }
   
 
