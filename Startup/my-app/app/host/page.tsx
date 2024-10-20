@@ -63,6 +63,18 @@ export default function HostSession() {
     const sessionDate = "2024-10-10"; // Placeholder for session date
     const userName = "You"; // Use this as the user's display name in the table
     var lengthChange = -1; // Only update the state if the length changes, otherwise this infinitely loops
+    // Array of month names
+    const monthNames = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+];
+
+    
+    var d = new Date(new Date().toLocaleString('en', {timeZone: 'America/New_York'}))
+    var datestring = ("0" + d.getDate()).slice(-2) + "-" + monthNames[d.getMonth()] + "-" +
+    d.getFullYear()
+
+    const [timestamp, setTimestamp] = useState(datestring);
 
     
 
@@ -226,7 +238,7 @@ export default function HostSession() {
                     {/* Session Information */}
                     <Box textAlign="center" sx={{ marginBottom: 4, border: 1 }}>
                     <Typography variant="h6">
-                        Host: {hostName} | Session Date: {sessionDate} | Session ID: {sessionId}
+                        Host: {getDisplayHostname()} | Session Date: {timestamp} 
                     </Typography>
                     </Box>
 
