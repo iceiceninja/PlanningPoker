@@ -32,13 +32,25 @@ export default function Host() {
     };
     const [userVotes, setUserVotes] = useState(0);
     var cardSelected = false;
+    var previousValue = "-1";
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
         console.log("HHAHAAHAH")
-        cardSelected = !cardSelected
-        console.log(cardSelected)
-        socket.emit("vote-selected", {value: event.currentTarget.value, selected: cardSelected}); // userId, vote value
+        console.log(event.currentTarget.value);
+
+        //if you click two different cards, it should automatically update.
+        if (previousValue != event.currentTarget.value || cardSelected == false) {
+            previousValue = event.currentTarget.value;
+            cardSelected = true;
+            socket.emit("vote-selected", {value: event.currentTarget.value, selected: cardSelected}); // userId, vote value
+        }
+
+        //if you click the same card twice, its assumed you deselected it.
+        else {
+            cardSelected = !cardSelected;
+            socket.emit("vote-selected", {value: event.currentTarget.value, selected: cardSelected}); // userId, vote value
+        }
     }
 
 
