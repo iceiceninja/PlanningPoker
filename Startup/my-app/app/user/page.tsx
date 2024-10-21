@@ -115,6 +115,13 @@ export default function Host() {
       
     })
 
+    // If the host disconnects, all users disconnect too
+    socket.on("disconnect_all", (allPlayers) => {  
+        console.log("hahaahhasdfhasdjfkhdasdjasfhadsklfhasdlkasdhlsdikah")
+        socket.emit("disconnect_each_socket")  
+        router.push("/endScreen")   
+    })
+
 
 
     socket.on("display_votes", (msg) => {

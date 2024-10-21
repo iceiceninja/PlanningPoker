@@ -47,6 +47,7 @@ nextApp.prepare().then(() => {
   var idForEachPlayerQueue = [];
   var idToPlayerName = new Map();
   var idToPlayerVote = new Map();
+  var hostSocket = "";
   var storePlayers = [];
   const io = new Server(server);
   const NO_USERS = 0;
@@ -97,13 +98,34 @@ nextApp.prepare().then(() => {
    }
 
 
-  idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "user");
-   console.log("user connected");
+   // We have to make it a defautl  value for now so that every other connection besides host goes to userStartUp
+   if ( idToPlayerName.size == NO_USERS) {
+    hostSocket = socket.id
+    idToPlayerName.set(socket.id, "host")
+   }
+   else {
+    idToPlayerName.set(socket.id, "user")
+   }
+
+   socket.on("disconnect_each_socket", () => {
+      socket.disconnect(true);
+   })
   
 
   socket.on('disconnect', () => {
+
+    console.log(hostSocket)
+    console.log(socket.id)
+    // If the host disconnects, disconnect everyone.
+    if (hostSocket ==  socket.id) {
+      console.log("tester1234")
+      io.emit('disconnect_all' , "true")
+    }
+
+
     idToPlayerName.delete(socket.id)
     idToPlayerVote.delete(socket.id)
+
 
     const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
       name,      // The name from the Map
