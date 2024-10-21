@@ -32,6 +32,8 @@ import everfox_logo from '../../images/everfox_logo.png'
 import { getDisplayHostname, setDisplayHostname } from '../../globalHost';
 import { Drawer, List, ListItem } from '@mui/material';
 import { Layout, Menu } from 'antd';
+import { getGlobalSession, setGlobalSession } from '../../globalSession';
+
 
 const { Sider } = Layout;
 
@@ -54,7 +56,6 @@ export default function HostSession() {
     const [sessionTopic, setSessionTopic] = useState([
         { name: getDisplayHostname(), vote: "" },
       ]);
-
     /* Placeholders */
     const hostName = "Host 1"; // Placeholder for host name
     const sessionDate = "2024-10-10"; // Placeholder for session date
@@ -64,9 +65,7 @@ export default function HostSession() {
     const monthNames = [
     "January", "February", "March", "April", "May", "June", 
     "July", "August", "September", "October", "November", "December"
-];
-
-    
+];  
     var d = new Date(new Date().toLocaleString('en', {timeZone: 'America/New_York'}))
     var datestring = ("0" + d.getDate()).slice(-2) + "-" + monthNames[d.getMonth()] + "-" +
     d.getFullYear()
@@ -75,37 +74,15 @@ export default function HostSession() {
 
     
 
-    socket.on("return_user_name", (allPlayers) => {
-        console.log("YEYEYEYEYEYYEYEYE BUDDDDYYY");     
-        setPlayers(allPlayers);
-        console.log(players);
-        console.log(allPlayers)
-        lengthChange = players.length;
-      
-    })
-    
-
-
-
-    /* Card Selection */
-    const handleCardSelection = (value: any) => {
-        setSelectedCard(value);
-        // Update the user's vote in the players arrayh
-        setPlayers((prevPlayers) =>
-          prevPlayers.map((player) =>
-            player.name === userName ? { ...player, vote: value } : player
-          )
-        );
-    };
-
     // Clock Popup - from clock avatar
     const [anchor, setAnchor] = React.useState(null);
     const [visible, setVisible] = useState(true);
     const open = Boolean(anchor);
     const id = open ? 'simple-popper' : undefined;
-    const handleClick = (event: { currentTarget: React.SetStateAction<null>; }) => { // Click Event
-        setAnchor(anchor ? null : event.currentTarget);
-    };
+
+
+  
+    
 
     // Settings Popup - from avatar
     const [anchor2, setAnchor2] = React.useState(null);
@@ -119,6 +96,12 @@ export default function HostSession() {
     const [formData, setFormData] = useState({ hostName: '', sessionTopic: '' });
     const [email, setEmail] = useState("")
     const [emailError, setEmailError] = useState(false)
+
+
+    const handleClick = (event: { currentTarget: React.SetStateAction<null>; }) => { // Click Event
+        setAnchor(anchor ? null : event.currentTarget);
+    };
+
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault()
         setEmailError(false)
@@ -134,6 +117,26 @@ export default function HostSession() {
             startRound(formData.get('roundTopic') as string);
         }
     }
+
+    socket.on("return_user_name", (allPlayers) => {
+        setPlayers(allPlayers);
+        lengthChange = players.length;
+      
+    })
+    
+
+    /* Card Selection */
+    const handleCardSelection = (value: any) => {
+        setSelectedCard(value);
+        // Update the user's vote in the players arrayh
+        setPlayers((prevPlayers) =>
+          prevPlayers.map((player) =>
+            player.name === userName ? { ...player, vote: value } : player
+          )
+        );
+    };
+
+
 
     // Start Round function
     function startRound(roundTopic:String)
@@ -228,9 +231,6 @@ export default function HostSession() {
             </List>
         </Drawer>   
 
-
-
-
                     <IconButton 
                          onClick={() => {handleClick2}}
                         sx = {{
@@ -258,7 +258,7 @@ export default function HostSession() {
                     {/* Session Information */}
                     <Box textAlign="center" sx={{ marginBottom: 4, border: 1 }}>
                     <Typography variant="h6">
-                        Host: {getDisplayHostname()} | Session Date: {timestamp} 
+                        Session Topic: {getGlobalSession()} | Host: {getDisplayHostname()} | Session Date: {timestamp} 
                     </Typography>
                     </Box>
 

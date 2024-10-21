@@ -66,16 +66,22 @@ nextApp.prepare().then(() => {
       
   }
 
-  function getOrDefault(map, key, defaultValue = "", selected) {
+  function getOrDefault(map, id, socketId, defaultValue = "", selected) {
+    if (socketId == id) {
     if (selected) {
-      console.log("YYEEEEEEEE BUDDDDY")
-      return map.get(key) ?? defaultValue;
+      return map.get(id) ?? defaultValue;
     }
 
     else {
-      map.set(key, defaultValue);
-      return map.get(key);
+      console.log(id)
+      map.set(id, defaultValue);
+      return map.get(id);
     }
+  }
+
+  else {
+    return map.get(id);
+  }
 }
 
 
@@ -96,37 +102,48 @@ nextApp.prepare().then(() => {
   
 
   socket.on('disconnect', () => {
-    var nextHostId = idForEachPlayerQueue.shift();
+    idToPlayerName.delete(socket.id)
+    idToPlayerVote.delete(socket.id)
+
+    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+      name,      // The name from the Map
+      vote: getOrDefault(idToPlayerVote, id, "randomIdBecauseWeJustWantTheMapAsAnArray" , " ", false) 
+    }));
     
-    //if we find the host, remove the host, and set the new hostid.
-    if(idToPlayerName.get(socket.id) == HOST_NANE) {
-      
+        io.emit("return_user_name", newArray);
 
-      if (idToPlayerName.size == NO_USERS) {
-        socket.emit("no_users_present", "True");
-      }
-
-      idToPlayerName.delete(socket.id);
-      idToPlayerName.set(nextHostId, "host");
-
-      console.log("assigned the new host as " + nextHostId);
-    }
-
-    io.emit("next_host", "True");
 
     console.log('user disconnected');
   });
+
+  
+  socket.on("render", (data) => {
+    
+ // convert the map to an array, get the votes from all of them
+ const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+  name,      // The name from the Map
+  vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", false) 
+}));
+
+    io.emit("return_user_name", newArray);
+        
+  })
+
+
 
 
   socket.on("user_joined", (data) => {
     
     idToPlayerName.set(socket.id, data.value)
+  
 
- // converting the map into an array
-    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
-      name,      // The name from the Map
-      vote: " " 
-    }));
+
+
+ // convert the map to an array, get the votes from all of them
+ const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+  name,      // The name from the Map
+  vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", false) 
+}));
 
     io.emit("return_user_name", newArray);
         
@@ -141,16 +158,13 @@ nextApp.prepare().then(() => {
     idToPlayerVote.set(socket.id, data.value);
 
    average = average + Number(targetsValue);
-   console.log(data.value);
-   console.log(data.selected);
-   console.log("YYEYEEEEEEEE BUDDDDDY")
 
    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
     name,      // The name from the Map
-    vote: getOrDefault(idToPlayerVote, id, " ", isSelected) 
+    vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", isSelected) 
   }));
 
-  console.log(newArray)
+
 
       
   io.emit("return_user_name", newArray);
