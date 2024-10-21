@@ -114,8 +114,6 @@ nextApp.prepare().then(() => {
 
   socket.on('disconnect', () => {
 
-    console.log(hostSocket)
-    console.log(socket.id)
     // If the host disconnects, disconnect everyone.
     if (hostSocket ==  socket.id) {
       console.log("tester1234")

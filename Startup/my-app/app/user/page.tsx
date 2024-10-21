@@ -150,8 +150,8 @@ export default function Host() {
 
     // Variables
     let name: string = "Kaiden"
-    let topicName: string = "Food Session"      // TODO: Limit to 36 chars in backend
-    let hostName: string = "Dustin Endres"      // TODO: Limit to 20 chars in backend
+    let topicName: string = getGlobalSession()     // TODO: Limit to 36 chars in backend
+    let hostName: string =   getDisplayHostname()   // TODO: Limit to 20 chars in backend
     let topic: string = "Hi! Today we will be making a project about food. I like food. You like food."
         + " We all love food! So, how long would this project take? I estimate 3.50!"
                                                 // TODO: Limit to 150 chars in backend
@@ -205,7 +205,7 @@ export default function Host() {
                                 variant="h6"
                                 align="center"
                             >
-                                {topicName}
+                               Session Topic:  {topicName}
                             </Typography>
                         </ThemeProvider>
                         <ThemeProvider theme = {textTheme}>
