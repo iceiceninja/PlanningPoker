@@ -79,17 +79,7 @@ export default function HostSession() {
     const [visible, setVisible] = useState(true);
     const open = Boolean(anchor);
     const id = open ? 'simple-popper' : undefined;
-    var buttonPressMap = new Map([
-        ["Pass", false],
-        ["1", false],
-        ["2", false],
-        ["3", false],
-        ["5", false],
-        ["8", false],
-        ["13", false],
-        ["21", false],
-        ["?", false],
-      ]);
+
 
   
     
@@ -129,10 +119,7 @@ export default function HostSession() {
     }
 
     socket.on("return_user_name", (allPlayers) => {
-        console.log("YEYEYEYEYEYYEYEYE BUDDDDYYY");     
         setPlayers(allPlayers);
-        console.log(players);
-        console.log(allPlayers)
         lengthChange = players.length;
       
     })

@@ -40,15 +40,6 @@ export default function HostHome() {
   const [shouldRender, setShouldRender] = useState(false);
   const socketEmissionHolder = []; // Has to be an array otherwise the socket throws an error.
 
-  var buttonPressMap = new Map();
-  buttonPressMap.set("Pass", false);
-  buttonPressMap.set("1", false);
-  buttonPressMap.set("2", false);
-  buttonPressMap.set("3", false);
-  buttonPressMap.set("5", false);
-  buttonPressMap.set("8", false);
-  buttonPressMap.set("13", false);
-  buttonPressMap.set("21", false);
 
 
 
@@ -97,7 +88,6 @@ export default function HostHome() {
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault() // Stops default action of an element from happening
     setUserCount((prevValue) => prevValue + 1); // Increment user count
-    console.log(userCount);
     setHostJoined(true); // Tell client that host has joined **
      socket.emit('user_joined', {value: hostName}); // Tell server host has joined **
     setDisplayHostname(hostName);

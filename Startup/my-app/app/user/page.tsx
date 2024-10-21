@@ -15,11 +15,27 @@ import Timer from "../components/timer";
 import * as React from 'react';
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
 import {PopupBody} from '../components/Style'
-import { Avatar, Box, Button, IconButton, Stack, ThemeProvider, Typography } from '@mui/material';
+import { getGlobalSession, setGlobalSession } from '../../globalSession';
+import { getDisplayHostname, setDisplayHostname } from '../../globalHost';
+import {
+    Avatar,
+    Stack,
+    IconButton,
+    TextField,
+    Box,            
+    Container,
+    Typography,
+    Button,
+    Paper,
+    CircularProgress,
+    ThemeProvider,
+    // Daniel's imports - end
+} from "@mui/material"
 import InfoIcon from '@mui/icons-material/Info';
 import LinkIcon from '@mui/icons-material/Link';
 import { buttonTheme, Style, textTheme } from '../components/Style' 
 import { shadows } from '@mui/system';
+import { Truculenta } from "next/font/google";
 
 export default function Host() {
 
@@ -30,8 +46,9 @@ export default function Host() {
     const open2 = Boolean(anchor2);
     const id2 = open2 ? 'simple-popper' : undefined;
     const [userVotes, setUserVotes] = useState(0);
-    var cardSelected = false;
-    var previousValue = "-1";
+    const [cardSelected, setCardSelected] = useState(false);
+    const [previousValue, setPreviousValue] = useState("-1");
+    var lengthChange = -1;
     var inititalMap = new Map([
         ["Pass", false],
         ["1", false],
@@ -42,6 +59,9 @@ export default function Host() {
         ["13", false],
         ["21", false],
         ["?", false],
+      ]);
+      const [players, setPlayers] = useState([
+        { name: getDisplayHostname(), vote: "" },
       ]);
       const [buttonStates, setButtonStates] = useState(inititalMap);
 
@@ -54,35 +74,44 @@ export default function Host() {
             if(key == event.currentTarget.value) {
                 console.log(event.currentTarget.value)
                 newButtonStates.set(event.currentTarget.value, !newButtonStates.get(event.currentTarget.value));
-                console.log(newButtonStates.get("Pass"))
             }
             else {
                 newButtonStates.set(key, false);
             }
         });
-        console.log('AHWDHFDSAHFSDAJKHADS')
-
-        console.log(newButtonStates.get("Pass"))
-
         setButtonStates(newButtonStates);
 
         //if you click two different cards, it should automatically update.
         if (previousValue != event.currentTarget.value || cardSelected == false) {
-            previousValue = event.currentTarget.value;
-            cardSelected = true;
-            socket.emit("vote-selected", {value: event.currentTarget.value, selected: cardSelected}); // userId, vote value
+            setPreviousValue(event.currentTarget.value);
+            setCardSelected(true)
+            console.log(cardSelected + "asdfasdfsdsafsfs");
+            socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
         }
 
         //if you click the same card twice, its assumed you deselected it.
         else {
-            cardSelected = !cardSelected;
-            socket.emit("vote-selected", {value: event.currentTarget.value, selected: cardSelected}); // userId, vote value
+            if (previousValue != event.currentTarget.value) {
+                setCardSelected(true)
+                socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
+            }
+            else {
+                setCardSelected(false)
+                console.log(cardSelected + "sdhfksadhjfasdklfjdsafjdsafjsdaf;jsda;lfjsdaf;asldfjasdl;fjasl")
+                socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
+            }
         }
     }
 
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
         setAnchor2(anchor2 ? null : event2.currentTarget);
     };
+
+    socket.on("return_user_name", (allPlayers) => {  
+        setPlayers(allPlayers);
+        lengthChange = players.length;
+      
+    })
 
 
 
@@ -255,34 +284,50 @@ export default function Host() {
 
                 </div>
             </Box>
-
-            <Box
+            <ThemeProvider theme = {textTheme}>
+                            <Typography
+                                variant="h6"
+                                align="center"
+                            >
+                        <p>Session topic</p>
+                         <input type="text" />
+                            </Typography>
+                        </ThemeProvider>
+            {/* Player Arrangement: Simulates sitting around a table */}
+             <Box
                 sx={{
-                    width: "40vw",
-                    height: "20vh",
-                    position: "absolute",
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    margin: "auto",
-                    bgcolor: "#F3F1F6",
+                    display: "flex",
+                    flexWrap: "wrap",
                     justifyContent: "center",
-                    alignItems: "center",
-                    padding: 2,
-                    borderRadius: '8px',
-                    boxShadow: 4
+                    gap: 4,
+                    marginBottom: 4,
+                    border: "transparent",
+                    width: "70%",
+                    marginTop: 4
                 }}
-            >
-                <ThemeProvider theme = {textTheme}>
-                    <Typography
-                        variant="body1"
-                        align="center"
+                >
+                {players.map((player, vote) => (
+                    <Paper
+                    key={player.name}
+                    elevation={3}
+                    sx={{
+                        width: 100,  // Size of each player card
+                        height: 100, // Size of each player card
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: 3,
+                        marginRight: 3,
+                    }}
                     >
-                        {topic}
+                    <Typography>{player.name}</Typography>
+                    <Typography>
+                        {player.vote !== null ? player.vote : <CircularProgress size={20} />}
                     </Typography>
-                </ThemeProvider>
-            </Box>
+                    </Paper>
+                ))}
+                </Box>
         </>
     )
 

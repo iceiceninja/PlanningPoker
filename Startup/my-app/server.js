@@ -66,16 +66,21 @@ nextApp.prepare().then(() => {
       
   }
 
-  function getOrDefault(map, key, defaultValue = "", selected) {
+  function getOrDefault(map, id, socketId, defaultValue = "", selected) {
+    if (socketId == id) {
     if (selected) {
-      console.log("YYEEEEEEEE BUDDDDY")
-      return map.get(key) ?? defaultValue;
+      return map.get(id) ?? defaultValue;
     }
 
     else {
-      map.set(key, defaultValue);
-      return map.get(key);
+      console.log(id)
+      map.set(id, defaultValue);
+      return map.get(id);
     }
+  }
+  else {
+    return map.get(id);
+  }
 }
 
 
@@ -123,10 +128,10 @@ nextApp.prepare().then(() => {
     idToPlayerName.set(socket.id, data.value)
 
  // converting the map into an array
-    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
-      name,      // The name from the Map
-      vote: " " 
-    }));
+ const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+  name,      // The name from the Map
+  vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", false) 
+}));
 
     io.emit("return_user_name", newArray);
         
@@ -141,16 +146,13 @@ nextApp.prepare().then(() => {
     idToPlayerVote.set(socket.id, data.value);
 
    average = average + Number(targetsValue);
-   console.log(data.value);
-   console.log(data.selected);
-   console.log("YYEYEEEEEEEE BUDDDDDY")
 
    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
     name,      // The name from the Map
-    vote: getOrDefault(idToPlayerVote, id, " ", isSelected) 
+    vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", isSelected) 
   }));
 
-  console.log(newArray)
+
 
       
   io.emit("return_user_name", newArray);
