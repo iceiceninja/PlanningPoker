@@ -51,6 +51,7 @@ export default function HostHome() {
   });
 
   useEffect(() : any => {
+    console.log(socketEmissionHolder.length)
     if(userCount == 1) {
       router.push('/host')
     }
