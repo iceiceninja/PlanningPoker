@@ -116,6 +116,21 @@ nextApp.prepare().then(() => {
     console.log('user disconnected');
   });
 
+  
+  socket.on("render", (data) => {
+    
+ // convert the map to an array, get the votes from all of them
+ const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+  name,      // The name from the Map
+  vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", false) 
+}));
+
+    io.emit("return_user_name", newArray);
+        
+  })
+
+
+
 
   socket.on("user_joined", (data) => {
     

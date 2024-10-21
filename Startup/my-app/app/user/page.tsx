@@ -65,7 +65,9 @@ export default function Host() {
       ]);
       const [buttonStates, setButtonStates] = useState(inititalMap);
 
-
+      useEffect(() => { 
+        socket.emit("render", "True")
+}, []); 
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
