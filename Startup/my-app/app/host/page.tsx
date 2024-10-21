@@ -289,6 +289,13 @@ export default function Host() {
                         <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card cardHover" : "card cardHover"}  value={"13"}>13</button>
                         <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card cardHover" : "card cardHover"}  value={"21"}>21</button>
                         <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp card cardHover" : "card cardHover"}  value={"?"}>?</button>
+
+                        <div className="container2">
+  <button>Submit Story</button>
+  <button>End Current Round</button>
+  <button>Start CountDown</button>
+  <button>Reset Round </button>
+</div>
                     </Stack>
 
                 </div>
@@ -299,7 +306,12 @@ export default function Host() {
                                 align="center"
                             >
                         <p>Story: </p>
-                         <input type="text" />
+                        <textarea
+        className="textarea-class"
+        maxLength={135}
+        placeholder="Enter up to 135 characters"
+        style={{ width: '300px', height: '100px', resize: 'none' }} // Custom styles
+      />
                             </Typography>
                         </ThemeProvider>
             {/* Player Arrangement: Simulates sitting around a table */}
