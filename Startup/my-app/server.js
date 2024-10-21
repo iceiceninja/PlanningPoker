@@ -78,6 +78,7 @@ nextApp.prepare().then(() => {
       return map.get(id);
     }
   }
+
   else {
     return map.get(id);
   }
@@ -101,23 +102,16 @@ nextApp.prepare().then(() => {
   
 
   socket.on('disconnect', () => {
-    var nextHostId = idForEachPlayerQueue.shift();
+    idToPlayerName.delete(socket.id)
+    idToPlayerVote.delete(socket.id)
+
+    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+      name,      // The name from the Map
+      vote: getOrDefault(idToPlayerVote, id, "randomIdBecauseWeJustWantTheMapAsAnArray" , " ", false) 
+    }));
     
-    //if we find the host, remove the host, and set the new hostid.
-    if(idToPlayerName.get(socket.id) == HOST_NANE) {
-      
+        io.emit("return_user_name", newArray);
 
-      if (idToPlayerName.size == NO_USERS) {
-        socket.emit("no_users_present", "True");
-      }
-
-      idToPlayerName.delete(socket.id);
-      idToPlayerName.set(nextHostId, "host");
-
-      console.log("assigned the new host as " + nextHostId);
-    }
-
-    io.emit("next_host", "True");
 
     console.log('user disconnected');
   });
@@ -126,8 +120,11 @@ nextApp.prepare().then(() => {
   socket.on("user_joined", (data) => {
     
     idToPlayerName.set(socket.id, data.value)
+  
 
- // converting the map into an array
+
+
+ // convert the map to an array, get the votes from all of them
  const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
   name,      // The name from the Map
   vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", false) 
