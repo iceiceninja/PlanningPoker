@@ -48,6 +48,7 @@ nextApp.prepare().then(() => {
   var idToPlayerName = new Map();
   var idToPlayerVote = new Map();
   var hostSocket = "";
+  var sessionTopic = "";
   var storePlayers = [];
   const io = new Server(server);
   const NO_USERS = 0;
@@ -98,7 +99,7 @@ nextApp.prepare().then(() => {
    }
 
 
-   // We have to make it a defautl  value for now so that every other connection besides host goes to userStartUp
+   // We have to make it a default value for now so that every other connection besides host goes to userStartUp
    if ( idToPlayerName.size == NO_USERS) {
     hostSocket = socket.id
     idToPlayerName.set(socket.id, "host")
@@ -190,8 +191,21 @@ nextApp.prepare().then(() => {
   io.emit("return_user_name", newArray);
   });
 
+  socket.on("set_host_session_name", (data) => {
+    sessionTopic = data.value;
+})
+
+socket.on("get_session_name", (data) => {
+  var hostName = idToPlayerName.get(hostSocket)
+  console.log(hostName + " asdfdasfsafsdafsdafsfdfdasfdsa")
+    socket.emit("return_session_name", {session : sessionTopic, host : hostName});
+})
+
 
 });
+
+
+
 
 server.listen(PORT, (err) => {
   if (err) throw err;

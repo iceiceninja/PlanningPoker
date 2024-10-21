@@ -298,7 +298,7 @@ export default function Host() {
                                 variant="h6"
                                 align="center"
                             >
-                        <p>Session topic</p>
+                        <p>Story: </p>
                          <input type="text" />
                             </Typography>
                         </ThemeProvider>
