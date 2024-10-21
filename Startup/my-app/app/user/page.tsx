@@ -41,7 +41,14 @@ export default function Host() {
 
     const router = useRouter(); // Initialize the router
     const [anchor2, setAnchor2] = React.useState(null);
-    const [isClicked, setIsClicked] = useState(false);
+    const [hostName, setHostName] = useState(" ");
+    const [sessionTopicName, setSessionTopicName] = useState(" ");
+        // Variables
+        let name: string = "Kaiden"
+        let topic: string = "Hi! Today we will be making a project about food. I like food. You like food."
+            + " We all love food! So, how long would this project take? I estimate 3.50!"
+                                                    // TODO: Limit to 150 chars in backend
+    
 
     const open2 = Boolean(anchor2);
     const id2 = open2 ? 'simple-popper' : undefined;
@@ -61,10 +68,12 @@ export default function Host() {
         ["?", false],
       ]);
       const [players, setPlayers] = useState([
-        { name: getDisplayHostname(), vote: "" },
+        { name: "", vote: "" },
       ]);
       const [buttonStates, setButtonStates] = useState(inititalMap);
 
+      // This shows the host and every other user that joins, render means render the cards.
+      // See socket.on("return_user_name"), in the backend there is a socket.on("render")
       useEffect(() => { 
         socket.emit("render", "True")
 }, []); 
@@ -109,6 +118,7 @@ export default function Host() {
         setAnchor2(anchor2 ? null : event2.currentTarget);
     };
 
+    // The render above is caught here to set the player cards
     socket.on("return_user_name", (allPlayers) => {  
         setPlayers(allPlayers);
         lengthChange = players.length;
@@ -136,25 +146,21 @@ export default function Host() {
 
     })
 
-    useEffect(() => {
-        socket.on("host_exists", () => {
+      useEffect(() => {
+        socket.emit("host_exists", () => {
           router.push('/user');
         });
       });
 
-    useEffect(() => {
-        socket.on("host_left", () => {
-          router.push('/');
-        });
-    });
+      useEffect(() => { 
+        socket.emit("get_session_name", "True")
+}, []); 
 
-    // Variables
-    let name: string = "Kaiden"
-    let topicName: string = "Food Session"      // TODO: Limit to 36 chars in backend
-    let hostName: string = "Dustin Endres"      // TODO: Limit to 20 chars in backend
-    let topic: string = "Hi! Today we will be making a project about food. I like food. You like food."
-        + " We all love food! So, how long would this project take? I estimate 3.50!"
-                                                // TODO: Limit to 150 chars in backend
+    socket.on("return_session_name", (data) => {
+        console.log("Data: " + data.session + "DataHere:" + data.hsot )
+        setSessionTopicName(data.session);
+        setHostName(data.host)
+    })
 
     return (
         <>
@@ -205,7 +211,7 @@ export default function Host() {
                                 variant="h6"
                                 align="center"
                             >
-                                {topicName}
+                               Session Topic:  {sessionTopicName}
                             </Typography>
                         </ThemeProvider>
                         <ThemeProvider theme = {textTheme}>
@@ -298,7 +304,7 @@ export default function Host() {
                                 variant="h6"
                                 align="center"
                             >
-                        <p>Session topic</p>
+                        <p>Story: </p>
                          <input type="text" />
                             </Typography>
                         </ThemeProvider>

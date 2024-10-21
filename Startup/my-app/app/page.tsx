@@ -91,6 +91,7 @@ export default function HostHome() {
     setUserCount((prevValue) => prevValue + 1); // Increment user count
     setHostJoined(true); // Tell client that host has joined **
      socket.emit('user_joined', {value: hostName}); // Tell server host has joined **
+     socket.emit('set_host_session_name' , {value : sessionTopic});
     setDisplayHostname(hostName);
     setGlobalSession(sessionTopic);
   }
@@ -281,7 +282,7 @@ export default function HostHome() {
                     />
                   
                     <TextField
-                        slotProps={{htmlInput : {maxLength: 20 }}}
+                        slotProps={{htmlInput : {maxLength: 35 }}}
                         label="Session Topic"
                         onChange={e => setSessionTopic(e.target.value)}
                         required
