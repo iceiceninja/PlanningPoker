@@ -149,6 +149,16 @@ if (timeLeft === 0) {
         socket.emit("reset_all_players")
     }
 
+    socket.on("count_down_started" , () => {
+        startTimer()
+    });
+
+    const startTimer = () => {
+        setIsTimerVisible(true);
+        setTimeLeft(60); // Reset the time when the button is pressed
+      };
+
+
     function endCurrentRound() {
         setDisplayVote(true)
         socket.emit("display_all_votes");
