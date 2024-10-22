@@ -114,8 +114,12 @@ export default function Host() {
     };
 
     function submitStory() {
-        console.log("heheheheeheheh")
         socket.emit("story_submitted_host", textAreaValue); 
+    }
+
+    function startCountDown() {
+        console.log("MADE it here");
+        socket.emit("start_count_down", "true");
     }
 
     socket.on("return_user_name", (allPlayers) => {  
@@ -301,9 +305,9 @@ export default function Host() {
 
                         <div className="container2">
   <button onClick={submitStory} >Submit Story</button>
-  <button onClick={sendVote} >End Current Round</button>
-  <button onClick={sendVote} >Start CountDown</button>
   <button onClick={sendVote} >Reset Round </button>
+  <button onClick={startCountDown} >Start CountDown</button>
+  <button onClick={sendVote} >End Current Round</button>
 </div>
                     </Stack>
 

@@ -206,6 +206,10 @@ socket.on("story_submitted_host", (data) => {
   io.emit("get_story_submitted_host", data);
 })
 
+socket.on("start_count_down", () => {
+  io.emit("count_down_started");
+})
+
 
 
 

@@ -43,6 +43,9 @@ export default function Host() {
     const [anchor2, setAnchor2] = React.useState(null);
     const [hostName, setHostName] = useState(" ");
     const [sessionTopicName, setSessionTopicName] = useState(" ");
+    const [timeLeft, setTimeLeft] = useState(60);
+    const [isTimerVisible, setIsTimerVisible] = useState(false);
+
         // Variables
         let name: string = "Kaiden"
         let topic: string = "Hi! Today we will be making a project about food. I like food. You like food."
@@ -116,6 +119,30 @@ export default function Host() {
         }
     }
 
+    useEffect(() => {
+        if (!isTimerVisible || timeLeft === 0) return;
+    
+        const timerId = setInterval(() => {
+          setTimeLeft((prevTime) => prevTime - 1);
+        }, 1000);
+    
+        return () => clearInterval(timerId); // Cleanup the interval when component unmounts
+      }, [isTimerVisible, timeLeft]);
+
+        // Hide the timer when it reaches 0
+  useEffect(() => {
+    if (timeLeft === 0) {
+      setIsTimerVisible(false);
+    }
+  }, [timeLeft]);
+
+    
+      const startTimer = () => {
+        setIsTimerVisible(true);
+        setTimeLeft(60); // Reset the time when the button is pressed
+      };
+
+
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
         setAnchor2(anchor2 ? null : event2.currentTarget);
     };
@@ -151,6 +178,10 @@ export default function Host() {
         console.log(data + "HEHEHEHEH");
         setStoryText(data);
     })
+
+    socket.on("count_down_started" , () => {
+        startTimer()
+    });
 
       useEffect(() => {
         socket.emit("host_exists", () => {
@@ -228,6 +259,7 @@ export default function Host() {
                                 Host: {hostName}
                             </Typography>
                         </ThemeProvider>
+                        {isTimerVisible && `Time Left: ${timeLeft} seconds`}
                     </Stack>
                     <Stack
                         direction="column"
