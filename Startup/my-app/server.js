@@ -68,7 +68,7 @@ nextApp.prepare().then(() => {
       
   }
 
-  function getOrDefault(map, id, socketId, defaultValue = "", selected) {
+  function getOrDefault(map, id, socketId, defaultValue = " ", selected) {
     if (socketId == id) {
     if (selected) {
       return map.get(id) ?? defaultValue;
@@ -178,13 +178,11 @@ nextApp.prepare().then(() => {
 
     idToPlayerVote.set(socket.id, data.value);
 
-   average = average + Number(targetsValue);
-
+      
    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
     name,      // The name from the Map
     vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", isSelected) 
   }));
-
 
 
       
@@ -204,6 +202,37 @@ socket.on("get_session_name", (data) => {
 socket.on("story_submitted_host", (data) => {
   console.log("MADE IT HERE")
   io.emit("get_story_submitted_host", data);
+})
+
+socket.on("start_count_down", () => {
+  io.emit("count_down_started");
+})
+
+socket.on("display_all_votes", () => {
+  io.emit("display_votes", average);
+})
+
+
+socket.on("reset_all_players", () => {
+  console.log("HELLO WORLD!!")
+  const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+    name,      // The name from the Map
+    vote: " " 
+  }));
+
+  const updatedMap = new Map();
+
+  for (const [id, name] of idToPlayerName) {
+    updatedMap.set(id, " " );
+  }
+
+  idToPlayerVote = updatedMap; //Resets all the votes
+  console.log("reset map: ")
+  console.log(updatedMap)
+
+
+  
+      io.emit("reset_players", newArray);
 })
 
 

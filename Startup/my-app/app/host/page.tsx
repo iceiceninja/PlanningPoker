@@ -49,6 +49,9 @@ export default function Host() {
     const [cardSelected, setCardSelected] = useState(false);
     const [previousValue, setPreviousValue] = useState("-1");
     const [textAreaValue, setTextAreaValue] = useState('');
+    const [displayVote, setDisplayVote] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(60);
+    const [isTimerVisible, setIsTimerVisible] = useState(false);
     var lengthChange = -1;
     var inititalMap = new Map([
         ["Pass", false],
@@ -62,7 +65,7 @@ export default function Host() {
         ["?", false],
       ]);
       const [players, setPlayers] = useState([
-        { name: getDisplayHostname(), vote: "" },
+        { name: " ", vote: " " },
       ]);
       const handleTextAreaChange = (event : any) => {
         setTextAreaValue(event.target.value);
@@ -72,6 +75,24 @@ export default function Host() {
       useEffect(() => { 
         socket.emit("render", "True")
 }, []); 
+
+useEffect(() => {
+    if (!isTimerVisible || timeLeft === 0) return;
+
+    const timerId = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => clearInterval(timerId); // Cleanup the interval when component unmounts
+  }, [isTimerVisible, timeLeft]);
+
+    // Hide the timer when it reaches 0
+useEffect(() => {
+if (timeLeft === 0) {
+  setIsTimerVisible(false);
+  socket.emit("display_all_votes");
+}
+}, [timeLeft]);
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
@@ -114,14 +135,56 @@ export default function Host() {
     };
 
     function submitStory() {
-        console.log("heheheheeheheh")
         socket.emit("story_submitted_host", textAreaValue); 
+    }
+
+    function startCountDown() {
+        console.log("MADE it here");
+        socket.emit("start_count_down", "true");
+    }
+
+    function resetRound() {
+        socket.emit("reset_all_players")
+    }
+
+    function endCurrentRound() {
+        socket.emit("display_all_votes");
     }
 
     socket.on("return_user_name", (allPlayers) => {  
         setPlayers(allPlayers);
         lengthChange = players.length;
       
+    })
+    
+    socket.on("reset_players", (allPlayers) => {
+        console.log("HSDHFASDJHFDASFLKHASJK")
+        setButtonStates(inititalMap);
+        setPlayers(allPlayers);
+        setCardSelected(false)
+        setDisplayVote(false)
+        setIsTimerVisible(false)
+        setTimeLeft(60)
+    });
+
+    // ensures the players are correct
+    useEffect(() => {
+        console.log(players); // This will log the updated value of players
+      }, [players]); // Runs whenever players state changes
+    
+       // ensures the cardSelected variable is correct
+    useEffect(() => {
+      }, [cardSelected]); // Runs whenever players state changes
+    
+
+       // ensures votes are correct
+    useEffect(() => {
+      }, [displayVote]); 
+    
+
+
+    socket.on("display_votes", () => {
+        setDisplayVote(true)
     })
 
     // If the host disconnects, all users disconnect too
@@ -225,6 +288,7 @@ export default function Host() {
                                 Host: {hostName}
                             </Typography>
                         </ThemeProvider>
+                        {isTimerVisible && `Time Left: ${timeLeft} seconds`}
                     </Stack>
                     <Stack
                         direction="column"
@@ -281,6 +345,21 @@ export default function Host() {
                 </Stack>
                 <div className = ", footer">
                     <title>Planning Poker - Everfox</title>
+
+                    <Stack               
+                        direction="row" 
+                        spacing={2}
+                        sx={{
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                        marginBottom={5}
+                        >
+                            <button onClick={submitStory} >Submit Story</button>
+                            <button onClick={startCountDown} >Start CountDown</button>
+                            <button onClick={resetRound} >Reset Round </button>
+                            <button onClick={endCurrentRound} >End Current Round</button>
+                </Stack>
                     <Stack               
                         direction="row" 
                         spacing={2}
@@ -289,23 +368,17 @@ export default function Host() {
                             alignItems: "center"
                         }}
                         >
-                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp card cardHover" : "card cardHover"}  value={"Pass"}>Pass</button>
-                        <button onClick={sendVote}  className={buttonStates.get("1") ? "cardUp card cardHover" : "card cardHover"}  value={"1"}>1</button>
-                        <button onClick={sendVote}  className={buttonStates.get("2") ? "cardUp card cardHover" : "card cardHover"}  value={"2"}>2</button>
-                        <button onClick={sendVote}  className={buttonStates.get("3") ? "cardUp card cardHover" : "card cardHover"}  value={"3"}>3</button>
-                        <button onClick={sendVote}  className={buttonStates.get("5") ? "cardUp card cardHover" : "card cardHover"}  value={"5"}>5</button>
-                        <button onClick={sendVote}  className={buttonStates.get("8") ? "cardUp card cardHover" : "card cardHover"}  value={"8"}>8</button>
-                        <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card cardHover" : "card cardHover"}  value={"13"}>13</button>
-                        <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card cardHover" : "card cardHover"}  value={"21"}>21</button>
-                        <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp card cardHover" : "card cardHover"}  value={"?"}>?</button>
-
-                        <div className="container2">
-  <button onClick={submitStory} >Submit Story</button>
-  <button onClick={sendVote} >End Current Round</button>
-  <button onClick={sendVote} >Start CountDown</button>
-  <button onClick={sendVote} >Reset Round </button>
-</div>
+                        <button onClick={sendVote}  className={buttonStates.get("1") ? "cardUp card1 cardHover" : "card1 cardHover"}  value={"1"}>1</button>
+                        <button onClick={sendVote}  className={buttonStates.get("2") ? "cardUp card2 cardHover" : "card2 cardHover"}  value={"2"}>2</button>
+                        <button onClick={sendVote}  className={buttonStates.get("3") ? "cardUp card3 cardHover" : "card3 cardHover"}  value={"3"}>3</button>
+                        <button onClick={sendVote}  className={buttonStates.get("5") ? "cardUp card5 cardHover" : "card5 cardHover"}  value={"5"}>5</button>
+                        <button onClick={sendVote}  className={buttonStates.get("8") ? "cardUp card8 cardHover" : "card8 cardHover"}  value={"8"}>8</button>
+                        <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card13 cardHover" : "card13 cardHover"}  value={"13"}>13</button>
+                        <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card21 cardHover" : "card21 cardHover"}  value={"21"}>21</button>
+                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp cardPass cardHover" : "cardPass cardHover"}  value={"Pass"}>Pass</button>
+                        <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp cardQuestionMark cardHover" : "cardQuestionMark cardHover"}  value={"?"}>?</button>
                     </Stack>
+
 
                 </div>
             </Box>
@@ -340,6 +413,7 @@ export default function Host() {
                 }}
                 >
                 {players.map((player, vote) => (
+                    <div style ={{textAlign: "center"}}>
                     <Paper
                     key={player.name}
                     elevation={3}
@@ -352,13 +426,15 @@ export default function Host() {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
+                       backgroundColor: player.vote == " " ? " " : "lightGray"
                     }}
                     >
-                    <Typography>{player.name}</Typography>
                     <Typography>
-                        {player.vote !== null ? player.vote : <CircularProgress size={20} />}
+                       {displayVote ? player.vote : " "}
                     </Typography>
                     </Paper>
+                    <Typography style={{marginRight: 26, marginTop: 4}}>{player.name}</Typography>
+                    </div>
                 ))}
                 </Box>
         </>

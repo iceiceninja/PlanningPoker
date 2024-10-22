@@ -43,6 +43,9 @@ export default function Host() {
     const [anchor2, setAnchor2] = React.useState(null);
     const [hostName, setHostName] = useState(" ");
     const [sessionTopicName, setSessionTopicName] = useState(" ");
+    const [timeLeft, setTimeLeft] = useState(60);
+    const [isTimerVisible, setIsTimerVisible] = useState(false);
+
         // Variables
         let name: string = "Kaiden"
         let topic: string = "Hi! Today we will be making a project about food. I like food. You like food."
@@ -54,6 +57,7 @@ export default function Host() {
     const id2 = open2 ? 'simple-popper' : undefined;
     const [userVotes, setUserVotes] = useState(0);
     const [cardSelected, setCardSelected] = useState(false);
+    const [displayVote, setDisplayVote] = useState(false);
     const [previousValue, setPreviousValue] = useState("-1");
     var lengthChange = -1;
     var inititalMap = new Map([
@@ -68,10 +72,10 @@ export default function Host() {
         ["?", false],
       ]);
       const [players, setPlayers] = useState([
-        { name: "", vote: "" },
+        { name: " ", vote: " " },
       ]);
       const [buttonStates, setButtonStates] = useState(inititalMap);
-      const [storyText, setStoryText] = useState('Initial Text');
+      const [storyText, setStoryText] = useState('');
 
 
       // This shows the host and every other user that joins, render means render the cards.
@@ -116,6 +120,31 @@ export default function Host() {
         }
     }
 
+    useEffect(() => {
+        if (!isTimerVisible || timeLeft === 0) return;
+    
+        const timerId = setInterval(() => {
+          setTimeLeft((prevTime) => prevTime - 1);
+        }, 1000);
+    
+        return () => clearInterval(timerId); // Cleanup the interval when component unmounts
+      }, [isTimerVisible, timeLeft]);
+
+        // Hide the timer when it reaches 0
+  useEffect(() => {
+    if (timeLeft === 0) {
+      setIsTimerVisible(false);
+      socket.emit("display_all_votes");
+    }
+  }, [timeLeft]);
+
+    
+      const startTimer = () => {
+        setIsTimerVisible(true);
+        setTimeLeft(60); // Reset the time when the button is pressed
+      };
+
+
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
         setAnchor2(anchor2 ? null : event2.currentTarget);
     };
@@ -134,11 +163,16 @@ export default function Host() {
         router.push("/endScreen")   
     })
 
-
-
-    socket.on("display_votes", (msg) => {
-        setUserVotes(msg);
-      });
+    socket.on("reset_players", (allPlayers) => {
+        console.log("HSDHFASDJHFDASFLKHASJK")
+        console.log(allPlayers);
+        setButtonStates(inititalMap);
+        setPlayers(allPlayers);
+        setCardSelected(false)
+        setDisplayVote(false)
+        setIsTimerVisible(false)
+        setTimeLeft(60)
+    });
 
     socket.on('round-topic', (topic: String) => {
         console.log("Round topic is: " + topic);
@@ -152,6 +186,14 @@ export default function Host() {
         setStoryText(data);
     })
 
+    socket.on("count_down_started" , () => {
+        startTimer()
+    });
+
+    socket.on("display_votes", () => {
+        setDisplayVote(true)
+    })
+
       useEffect(() => {
         socket.emit("host_exists", () => {
           router.push('/user');
@@ -161,6 +203,24 @@ export default function Host() {
       useEffect(() => { 
         socket.emit("get_session_name", "True")
 }, []); 
+
+    // ensures the players are correct
+    useEffect(() => {
+        console.log(players); // This will log the updated value of players
+      }, [players]); // Runs whenever players state changes
+    
+       // ensures the cardSelected variable is correct
+    useEffect(() => {
+        console.log(cardSelected); // This will log the updated value of players
+      }, [cardSelected]); // Runs whenever players state changes
+    
+
+       // ensures votes are correct
+    useEffect(() => {
+        console.log(displayVote); 
+      }, [displayVote]); 
+    
+
 
     socket.on("return_session_name", (data) => {
         console.log("Data: " + data.session + "DataHere:" + data.hsot )
@@ -228,6 +288,7 @@ export default function Host() {
                                 Host: {hostName}
                             </Typography>
                         </ThemeProvider>
+                        {isTimerVisible && `Time Left: ${timeLeft} seconds`}
                     </Stack>
                     <Stack
                         direction="column"
@@ -292,15 +353,16 @@ export default function Host() {
                             alignItems: "center"
                         }}
                         >
-                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp card cardHover" : "card cardHover"}  value={"Pass"}>Pass</button>
-                        <button onClick={sendVote}  className={buttonStates.get("1") ? "cardUp card cardHover" : "card cardHover"}  value={"1"}>1</button>
-                        <button onClick={sendVote}  className={buttonStates.get("2") ? "cardUp card cardHover" : "card cardHover"}  value={"2"}>2</button>
-                        <button onClick={sendVote}  className={buttonStates.get("3") ? "cardUp card cardHover" : "card cardHover"}  value={"3"}>3</button>
-                        <button onClick={sendVote}  className={buttonStates.get("5") ? "cardUp card cardHover" : "card cardHover"}  value={"5"}>5</button>
-                        <button onClick={sendVote}  className={buttonStates.get("8") ? "cardUp card cardHover" : "card cardHover"}  value={"8"}>8</button>
-                        <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card cardHover" : "card cardHover"}  value={"13"}>13</button>
-                        <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card cardHover" : "card cardHover"}  value={"21"}>21</button>
-                        <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp card cardHover" : "card cardHover"}  value={"?"}>?</button>
+                      
+                        <button onClick={sendVote}  className={buttonStates.get("1") ? "cardUp card1 cardHover" : "card1 cardHover"}  value={"1"}>1</button>
+                        <button onClick={sendVote}  className={buttonStates.get("2") ? "cardUp card2 cardHover" : "card2 cardHover"}  value={"2"}>2</button>
+                        <button onClick={sendVote}  className={buttonStates.get("3") ? "cardUp card3 cardHover" : "card3 cardHover"}  value={"3"}>3</button>
+                        <button onClick={sendVote}  className={buttonStates.get("5") ? "cardUp card5 cardHover" : "card5 cardHover"}  value={"5"}>5</button>
+                        <button onClick={sendVote}  className={buttonStates.get("8") ? "cardUp card8 cardHover" : "card8 cardHover"}  value={"8"}>8</button>
+                        <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card13 cardHover" : "card13 cardHover"}  value={"13"}>13</button>
+                        <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card21 cardHover" : "card21 cardHover"}  value={"21"}>21</button>
+                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp cardPass cardHover" : "cardPass cardHover"}  value={"Pass"}>Pass</button>
+                        <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp cardQuestionMark cardHover" : "cardQuestionMark cardHover"}  value={"?"}>?</button>
                     </Stack>
 
                 </div>
@@ -332,7 +394,8 @@ export default function Host() {
                     marginTop: 4
                 }}
                 >
-                {players.map((player, vote) => (
+                   {players.map((player, vote) => (
+                    <div style ={{textAlign: "center"}}>
                     <Paper
                     key={player.name}
                     elevation={3}
@@ -345,13 +408,15 @@ export default function Host() {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
+                        backgroundColor: player.vote == " " ? " " : "lightGray"
                     }}
                     >
-                    <Typography>{player.name}</Typography>
                     <Typography>
-                        {player.vote !== null ? player.vote : <CircularProgress size={20} />}
+                       {displayVote ? player.vote : " "}
                     </Typography>
                     </Paper>
+                    <Typography style={{marginRight: 26, marginTop: 4}}>{player.name}</Typography>
+                    </div>
                 ))}
                 </Box>
         </>
