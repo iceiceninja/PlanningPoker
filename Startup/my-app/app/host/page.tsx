@@ -52,6 +52,8 @@ export default function Host() {
     const [displayVote, setDisplayVote] = useState(false);
     const [timeLeft, setTimeLeft] = useState(60);
     const [isTimerVisible, setIsTimerVisible] = useState(false);
+    const [endRoundPressed, setIsEndRoundPressed] = useState(false);
+
     var lengthChange = -1;
     var inititalMap = new Map([
         ["Pass", false],
@@ -135,10 +137,12 @@ if (timeLeft === 0) {
     };
 
     function submitStory() {
+        if (!endRoundPressed)
         socket.emit("story_submitted_host", textAreaValue); 
     }
 
     function startCountDown() {
+        if (!endRoundPressed)
         socket.emit("start_count_down", "true");
     }
 
@@ -175,6 +179,7 @@ if (timeLeft === 0) {
         setCardSelected(false)
         setDisplayVote(false)
         setIsTimerVisible(false)
+        setIsEndRoundPressed(false);
         setTimeLeft(60)
         setTextAreaValue("")
     });
@@ -223,6 +228,9 @@ if (timeLeft === 0) {
 
 
     socket.on("display_votes", () => {
+        setIsEndRoundPressed(true);
+        setIsTimerVisible(false)
+        setTimeLeft(60)
         setDisplayVote(true)
     })
 
@@ -232,11 +240,6 @@ if (timeLeft === 0) {
         router.push("/endScreen")   
     })
 
-
-
-    socket.on("display_votes", (msg) => {
-        setUserVotes(msg);
-      });
 
 
     useEffect(() => {
@@ -250,6 +253,11 @@ if (timeLeft === 0) {
           router.push('/');
         });
     });
+
+        // ensures the players are correct DONT GET RID OF THE CONSOLE LOGS PLEASE
+        useEffect(() => {
+            console.log(endRoundPressed); // This will log the updated value of players
+          }, [endRoundPressed]); // Runs whenever players state changes
 
     
 

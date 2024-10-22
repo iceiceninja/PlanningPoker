@@ -76,7 +76,6 @@ nextApp.prepare().then(() => {
     }
 
     else {
-      console.log(id)
       map.set(id, defaultValue);
       return map.get(id);
     }

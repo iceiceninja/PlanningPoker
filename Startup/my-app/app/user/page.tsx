@@ -45,6 +45,7 @@ export default function Host() {
     const [sessionTopicName, setSessionTopicName] = useState(" ");
     const [timeLeft, setTimeLeft] = useState(60);
     const [isTimerVisible, setIsTimerVisible] = useState(false);
+    const [endRoundPressed, setIsEndRoundPressed] = useState(false);
 
         // Variables
         let name: string = "Kaiden"
@@ -206,6 +207,7 @@ export default function Host() {
     });
 
     socket.on("display_votes", () => {
+        setIsEndRoundPressed(true);
         setIsTimerVisible(false)
         setTimeLeft(60)
         setDisplayVote(true)
@@ -225,10 +227,12 @@ useEffect(() => {
     socket.emit("get_story_submitted_for_new_user", "true")
 }, []); 
 
-    // ensures the players are correct DONT GET RID OF THE CONSOLE LOGS PLEASE
+
+          // ensures the players are correct DONT GET RID OF THE CONSOLE LOGS PLEASE
     useEffect(() => {
         console.log(players); // This will log the updated value of players
       }, [players]); // Runs whenever players state changes
+
 
           // ensures the players are correct
     useEffect(() => {
