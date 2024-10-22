@@ -109,6 +109,8 @@ nextApp.prepare().then(() => {
     idToPlayerName.set(socket.id, "connecting....")
    }
 
+   console.log("user connected")
+
    socket.on("disconnect_each_socket", () => {
       socket.disconnect(true);
    })
@@ -118,7 +120,6 @@ nextApp.prepare().then(() => {
 
     // If the host disconnects, disconnect everyone.
     if (hostSocket ==  socket.id) {
-      console.log("tester1234")
       io.emit('disconnect_all' , "true")
     }
 
@@ -196,12 +197,10 @@ nextApp.prepare().then(() => {
 
 socket.on("get_session_name", (data) => {
   var hostName = idToPlayerName.get(hostSocket)
-  console.log(hostName + " asdfdasfsafsdafsdafsfdfdasfdsa")
     io.emit("return_session_name", {session : sessionTopic, host : hostName});
 })
 
 socket.on("story_submitted_host", (data) => {
-  console.log("MADE IT HERE")
   userStory = data
   io.emit("get_story_submitted_host", userStory);
 })
@@ -220,7 +219,6 @@ socket.on("display_all_votes", () => {
 
 
 socket.on("reset_all_players", () => {
-  console.log("HELLO WORLD!!")
   const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
     name,      // The name from the Map
     vote: "Pass" 
@@ -233,8 +231,6 @@ socket.on("reset_all_players", () => {
   }
 
   idToPlayerVote = updatedMap; //Resets all the votes
-  console.log("reset map: ")
-  console.log(updatedMap)
   userStory = "";
 
   io.emit("get_story_submitted_host", userStory);

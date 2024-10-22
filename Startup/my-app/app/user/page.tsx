@@ -90,7 +90,6 @@ export default function Host() {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
             if(key == event.currentTarget.value) {
-                console.log(event.currentTarget.value)
                 newButtonStates.set(event.currentTarget.value, !newButtonStates.get(event.currentTarget.value));
             }
             else {
@@ -103,7 +102,6 @@ export default function Host() {
         if (previousValue != event.currentTarget.value || cardSelected == false) {
             setPreviousValue(event.currentTarget.value);
             setCardSelected(true)
-            console.log(cardSelected + "asdfasdfsdsafsfs");
             socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
         }
 
@@ -115,7 +113,6 @@ export default function Host() {
             }
             else {
                 setCardSelected(false)
-                console.log(cardSelected + "sdhfksadhjfasdklfjdsafjdsafjsdaf;jsda;lfjsdaf;asldfjasdl;fjasl")
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
             }
         }
@@ -160,14 +157,11 @@ export default function Host() {
 
     // If the host disconnects, all users disconnect too
     socket.on("disconnect_all", (allPlayers) => {  
-        console.log("hahaahhasdfhasdjfkhdasdjasfhadsklfhasdlkasdhlsdikah")
         socket.emit("disconnect_each_socket")  
         router.push("/endScreen")   
     })
 
     socket.on("reset_players", (allPlayers) => {
-        console.log("HSDHFASDJHFDASFLKHASJK")
-        console.log(allPlayers);
         setButtonStates(inititalMap);
         setPlayers(allPlayers);
         setCardSelected(false)
@@ -203,15 +197,7 @@ export default function Host() {
       return " "
     }
 
-    socket.on('round-topic', (topic: String) => {
-        console.log("Round topic is: " + topic);
-    })
-    socket.on('countdown-init', () => { // can pass in an arg to make the timer variable. (10 sec, 1 min, 5 min etc.)
-        console.log("countdown init");
-    })
     socket.on("get_story_submitted_host", (data) => {
-        console.log("HEHEHEHEHE")
-        console.log(data + "HEHEHEHEH");
         setStoryText(data);
     })
 
@@ -236,11 +222,10 @@ export default function Host() {
 }, []); 
 
 useEffect(() => { 
-    console.log("HEHEEELLLLOOO WORLD!")
     socket.emit("get_story_submitted_for_new_user", "true")
 }, []); 
 
-    // ensures the players are correct
+    // ensures the players are correct DONT GET RID OF THE CONSOLE LOGS PLEASE
     useEffect(() => {
         console.log(players); // This will log the updated value of players
       }, [players]); // Runs whenever players state changes
@@ -253,7 +238,7 @@ useEffect(() => {
     
        // ensures the cardSelected variable is correct
     useEffect(() => {
-        console.log(cardSelected); // This will log the updated value of players
+        console.log(cardSelected); // This will log the updated value of players DOP
       }, [cardSelected]); // Runs whenever players state changes
     
 
@@ -265,7 +250,6 @@ useEffect(() => {
 
 
     socket.on("return_session_name", (data) => {
-        console.log("Data: " + data.session + "DataHere:" + data.hsot )
         setSessionTopicName(data.session);
         setHostName(data.host)
     })

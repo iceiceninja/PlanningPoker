@@ -113,7 +113,6 @@ if (timeLeft === 0) {
         if (previousValue != event.currentTarget.value || cardSelected == false) {
             setPreviousValue(event.currentTarget.value);
             setCardSelected(true)
-            console.log(cardSelected + "asdfasdfsdsafsfs");
             socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
         }
 
@@ -125,7 +124,6 @@ if (timeLeft === 0) {
             }
             else {
                 setCardSelected(false)
-                console.log(cardSelected + "sdhfksadhjfasdklfjdsafjdsafjsdaf;jsda;lfjsdaf;asldfjasdl;fjasl")
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
             }
         }
@@ -141,7 +139,6 @@ if (timeLeft === 0) {
     }
 
     function startCountDown() {
-        console.log("MADE it here");
         socket.emit("start_count_down", "true");
     }
 
@@ -173,7 +170,6 @@ if (timeLeft === 0) {
     })
     
     socket.on("reset_players", (allPlayers) => {
-        console.log("HSDHFASDJHFDASFLKHASJK")
         setButtonStates(inititalMap);
         setPlayers(allPlayers);
         setCardSelected(false)
@@ -210,7 +206,7 @@ if (timeLeft === 0) {
       return " "
     }
 
-    // ensures the players are correct
+    // ensures the players are correct DONT REMOVE THESE PLEASE
     useEffect(() => {
         console.log(players); // This will log the updated value of players
       }, [players]); // Runs whenever players state changes
@@ -232,7 +228,6 @@ if (timeLeft === 0) {
 
     // If the host disconnects, all users disconnect too
     socket.on("disconnect_all", (allPlayers) => {  
-        console.log("hahaahhasdfhasdjfkhdasdjasfhadsklfhasdlkasdhlsdikah")
         socket.emit("disconnect_each_socket")  
         router.push("/endScreen")   
     })
@@ -243,13 +238,6 @@ if (timeLeft === 0) {
         setUserVotes(msg);
       });
 
-    socket.on('round-topic', (topic: String) => {
-        console.log("Round topic is: " + topic);
-    })
-    socket.on('countdown-init', () => { // can pass in an arg to make the timer variable. (10 sec, 1 min, 5 min etc.)
-        console.log("countdown init");
-
-    })
 
     useEffect(() => {
         socket.on("host_exists", () => {
