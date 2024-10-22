@@ -57,6 +57,7 @@ export default function Host() {
     const id2 = open2 ? 'simple-popper' : undefined;
     const [userVotes, setUserVotes] = useState(0);
     const [cardSelected, setCardSelected] = useState(false);
+    const [displayVote, setDisplayVote] = useState(false);
     const [previousValue, setPreviousValue] = useState("-1");
     var lengthChange = -1;
     var inititalMap = new Map([
@@ -71,7 +72,7 @@ export default function Host() {
         ["?", false],
       ]);
       const [players, setPlayers] = useState([
-        { name: "", vote: "" },
+        { name: " ", vote: " " },
       ]);
       const [buttonStates, setButtonStates] = useState(inititalMap);
       const [storyText, setStoryText] = useState('');
@@ -133,6 +134,7 @@ export default function Host() {
   useEffect(() => {
     if (timeLeft === 0) {
       setIsTimerVisible(false);
+      socket.emit("display_all_votes");
     }
   }, [timeLeft]);
 
@@ -161,11 +163,14 @@ export default function Host() {
         router.push("/endScreen")   
     })
 
-
-
-    socket.on("display_votes", (msg) => {
-        setUserVotes(msg);
-      });
+    socket.on("reset_players", (allPlayers) => {
+        console.log("HSDHFASDJHFDASFLKHASJK")
+        console.log(allPlayers);
+        setButtonStates(inititalMap);
+        setPlayers(allPlayers);
+        setCardSelected(false)
+        setDisplayVote(false)
+    });
 
     socket.on('round-topic', (topic: String) => {
         console.log("Round topic is: " + topic);
@@ -183,6 +188,10 @@ export default function Host() {
         startTimer()
     });
 
+    socket.on("display_votes", () => {
+        setDisplayVote(true)
+    })
+
       useEffect(() => {
         socket.emit("host_exists", () => {
           router.push('/user');
@@ -192,6 +201,24 @@ export default function Host() {
       useEffect(() => { 
         socket.emit("get_session_name", "True")
 }, []); 
+
+    // ensures the players are correct
+    useEffect(() => {
+        console.log(players); // This will log the updated value of players
+      }, [players]); // Runs whenever players state changes
+    
+       // ensures the cardSelected variable is correct
+    useEffect(() => {
+        console.log(cardSelected); // This will log the updated value of players
+      }, [cardSelected]); // Runs whenever players state changes
+    
+
+       // ensures votes are correct
+    useEffect(() => {
+        console.log(displayVote); 
+      }, [displayVote]); 
+    
+
 
     socket.on("return_session_name", (data) => {
         console.log("Data: " + data.session + "DataHere:" + data.hsot )
@@ -365,7 +392,8 @@ export default function Host() {
                     marginTop: 4
                 }}
                 >
-                {players.map((player, vote) => (
+                   {players.map((player, vote) => (
+                    <div style ={{textAlign: "center"}}>
                     <Paper
                     key={player.name}
                     elevation={3}
@@ -378,13 +406,15 @@ export default function Host() {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
+                        backgroundColor: player.vote == " " ? " " : "lightGray"
                     }}
                     >
-                    <Typography>{player.name}</Typography>
                     <Typography>
-                        {player.vote !== null ? player.vote : <CircularProgress size={20} />}
+                       {displayVote ? player.vote : " "}
                     </Typography>
                     </Paper>
+                    <Typography style={{marginRight: 26, marginTop: 4}}>{player.name}</Typography>
+                    </div>
                 ))}
                 </Box>
         </>

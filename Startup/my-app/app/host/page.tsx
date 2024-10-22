@@ -49,6 +49,10 @@ export default function Host() {
     const [cardSelected, setCardSelected] = useState(false);
     const [previousValue, setPreviousValue] = useState("-1");
     const [textAreaValue, setTextAreaValue] = useState('');
+    const [displayVote, setDisplayVote] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(60);
+    const [isTimerVisible, setIsTimerVisible] = useState(false);
+    const [totalVote, setTotalVote] = useState(0);
     var lengthChange = -1;
     var inititalMap = new Map([
         ["Pass", false],
@@ -62,7 +66,7 @@ export default function Host() {
         ["?", false],
       ]);
       const [players, setPlayers] = useState([
-        { name: getDisplayHostname(), vote: "" },
+        { name: " ", vote: " " },
       ]);
       const handleTextAreaChange = (event : any) => {
         setTextAreaValue(event.target.value);
@@ -72,6 +76,24 @@ export default function Host() {
       useEffect(() => { 
         socket.emit("render", "True")
 }, []); 
+
+useEffect(() => {
+    if (!isTimerVisible || timeLeft === 0) return;
+
+    const timerId = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => clearInterval(timerId); // Cleanup the interval when component unmounts
+  }, [isTimerVisible, timeLeft]);
+
+    // Hide the timer when it reaches 0
+useEffect(() => {
+if (timeLeft === 0) {
+  setIsTimerVisible(false);
+  socket.emit("display_all_votes");
+}
+}, [timeLeft]);
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
@@ -123,13 +145,47 @@ export default function Host() {
     }
 
     function resetRound() {
+        socket.emit("reset_all_players")
+    }
 
+    function endCurrentRound() {
+        socket.emit("display_all_votes");
     }
 
     socket.on("return_user_name", (allPlayers) => {  
         setPlayers(allPlayers);
         lengthChange = players.length;
       
+    })
+    
+    socket.on("reset_players", (allPlayers) => {
+        console.log("HSDHFASDJHFDASFLKHASJK")
+        setButtonStates(inititalMap);
+        setPlayers(allPlayers);
+        setCardSelected(false)
+        setDisplayVote(false)
+    });
+
+    // ensures the players are correct
+    useEffect(() => {
+        console.log(players); // This will log the updated value of players
+      }, [players]); // Runs whenever players state changes
+    
+       // ensures the cardSelected variable is correct
+    useEffect(() => {
+        console.log(cardSelected); // This will log the updated value of players
+      }, [cardSelected]); // Runs whenever players state changes
+    
+
+       // ensures votes are correct
+    useEffect(() => {
+        console.log(displayVote); 
+      }, [displayVote]); 
+    
+
+
+    socket.on("display_votes", () => {
+        setDisplayVote(true)
     })
 
     // If the host disconnects, all users disconnect too
@@ -233,6 +289,7 @@ export default function Host() {
                                 Host: {hostName}
                             </Typography>
                         </ThemeProvider>
+                        {isTimerVisible && `Time Left: ${timeLeft} seconds`}
                     </Stack>
                     <Stack
                         direction="column"
@@ -302,7 +359,7 @@ export default function Host() {
                             <button onClick={submitStory} >Submit Story</button>
                             <button onClick={startCountDown} >Start CountDown</button>
                             <button onClick={resetRound} >Reset Round </button>
-                            <button onClick={resetRound} >End Current Round</button>
+                            <button onClick={endCurrentRound} >End Current Round</button>
                 </Stack>
                     <Stack               
                         direction="row" 
@@ -370,13 +427,14 @@ export default function Host() {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
+                       backgroundColor: player.vote == " " ? " " : "lightGray"
                     }}
                     >
                     <Typography>
-                        {player.vote !== null ? player.vote : <CircularProgress size={20} />}
+                       {displayVote ? player.vote : " "}
                     </Typography>
                     </Paper>
-                    <Typography style={{marginRight: 26}}>{player.name}</Typography>
+                    <Typography style={{marginRight: 26, marginTop: 4}}>{player.name}</Typography>
                     </div>
                 ))}
                 </Box>
