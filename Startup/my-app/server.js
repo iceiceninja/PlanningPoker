@@ -198,8 +198,15 @@ nextApp.prepare().then(() => {
 socket.on("get_session_name", (data) => {
   var hostName = idToPlayerName.get(hostSocket)
   console.log(hostName + " asdfdasfsafsdafsdafsfdfdasfdsa")
-    socket.emit("return_session_name", {session : sessionTopic, host : hostName});
+    io.emit("return_session_name", {session : sessionTopic, host : hostName});
 })
+
+socket.on("story_submitted_host", (data) => {
+  console.log("MADE IT HERE")
+  io.emit("get_story_submitted_host", data);
+})
+
+
 
 
 });

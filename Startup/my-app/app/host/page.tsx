@@ -48,6 +48,7 @@ export default function Host() {
     const [userVotes, setUserVotes] = useState(0);
     const [cardSelected, setCardSelected] = useState(false);
     const [previousValue, setPreviousValue] = useState("-1");
+    const [textAreaValue, setTextAreaValue] = useState('');
     var lengthChange = -1;
     var inititalMap = new Map([
         ["Pass", false],
@@ -63,6 +64,9 @@ export default function Host() {
       const [players, setPlayers] = useState([
         { name: getDisplayHostname(), vote: "" },
       ]);
+      const handleTextAreaChange = (event : any) => {
+        setTextAreaValue(event.target.value);
+      };
       const [buttonStates, setButtonStates] = useState(inititalMap);
 
       useEffect(() => { 
@@ -108,6 +112,11 @@ export default function Host() {
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
         setAnchor2(anchor2 ? null : event2.currentTarget);
     };
+
+    function submitStory() {
+        console.log("heheheheeheheh")
+        socket.emit("story_submitted_host", textAreaValue); 
+    }
 
     socket.on("return_user_name", (allPlayers) => {  
         setPlayers(allPlayers);
@@ -291,10 +300,10 @@ export default function Host() {
                         <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp card cardHover" : "card cardHover"}  value={"?"}>?</button>
 
                         <div className="container2">
-  <button>Submit Story</button>
-  <button>End Current Round</button>
-  <button>Start CountDown</button>
-  <button>Reset Round </button>
+  <button onClick={submitStory} >Submit Story</button>
+  <button onClick={sendVote} >End Current Round</button>
+  <button onClick={sendVote} >Start CountDown</button>
+  <button onClick={sendVote} >Reset Round </button>
 </div>
                     </Stack>
 
@@ -307,10 +316,13 @@ export default function Host() {
                             >
                         <p>Story: </p>
                         <textarea
+        value={textAreaValue} 
+        onChange={handleTextAreaChange}
         className="textarea-class"
         maxLength={135}
         placeholder="Enter up to 135 characters"
-        style={{ width: '300px', height: '100px', resize: 'none' }} // Custom styles
+
+        style={{ width: '400px', height: '100px', resize: 'none' }} // Custom styles
       />
                             </Typography>
                         </ThemeProvider>
