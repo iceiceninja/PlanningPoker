@@ -86,6 +86,7 @@ export default function Host() {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
+        if (!displayVote) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
             if(key == event.currentTarget.value) {
@@ -118,6 +119,7 @@ export default function Host() {
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
             }
         }
+    }
     }
 
     useEffect(() => {
@@ -411,9 +413,9 @@ export default function Host() {
                         backgroundColor: player.vote == "Pass" ? " " : "lightGray"
                     }}
                     >
-                    <Typography>
-                       {displayVote ? player.vote : " "}
-                    </Typography>
+                    <Typography sx={{ fontSize: 30 }}>
+                {displayVote ? player.vote : " "}
+                </Typography>
                     </Paper>
                     <Typography style={{marginRight: 26, marginTop: 4}}>{player.name}</Typography>
                     </div>

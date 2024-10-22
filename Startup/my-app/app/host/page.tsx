@@ -96,6 +96,7 @@ if (timeLeft === 0) {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
+        if (!displayVote) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
             if(key == event.currentTarget.value) {
@@ -129,6 +130,7 @@ if (timeLeft === 0) {
             }
         }
     }
+    }
 
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
         setAnchor2(anchor2 ? null : event2.currentTarget);
@@ -148,6 +150,7 @@ if (timeLeft === 0) {
     }
 
     function endCurrentRound() {
+        setDisplayVote(true)
         socket.emit("display_all_votes");
     }
 
@@ -429,7 +432,7 @@ if (timeLeft === 0) {
                         backgroundColor: player.vote == "Pass" ? " " : "lightGray"
                     }}
                     >
-                    <Typography>
+                     <Typography sx={{ fontSize: 30 }}>
                        {displayVote ? player.vote : " "}
                     </Typography>
                     </Paper>
