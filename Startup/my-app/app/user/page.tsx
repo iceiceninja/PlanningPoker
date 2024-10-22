@@ -176,6 +176,33 @@ export default function Host() {
         setTimeLeft(60)
     });
 
+    const backgroundColor = (vote : any) => {
+        if(displayVote) {
+        if (vote === "Pass") {
+          return "Pass";
+        } 
+        else if (vote === "1" || vote == "2") {
+          return "cyan";
+        } else if (vote === "3" || vote === "5") {
+          return "lightGreen";
+        } 
+          else if (vote === "8" || vote === "13" || vote === "21") {
+            return "rgb(248, 189, 79)";
+          } 
+
+          else if (vote === '?') {
+            return "violet";
+          } 
+        else {
+          return "lightGray"; // Default case
+        }
+      }
+      if (vote != "Pass")
+      return "lightGray"
+
+      return " "
+    }
+
     socket.on('round-topic', (topic: String) => {
         console.log("Round topic is: " + topic);
     })
@@ -410,14 +437,14 @@ export default function Host() {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
-                        backgroundColor: player.vote == "Pass" ? " " : "lightGray"
+                        backgroundColor: backgroundColor(player.vote)
                     }}
                     >
                     <Typography sx={{ fontSize: 30 }}>
                 {displayVote ? player.vote : " "}
                 </Typography>
                     </Paper>
-                    <Typography style={{marginRight: 26, marginTop: 4}}>{player.name}</Typography>
+                    <Typography style={{marginRight: 26, marginTop: 4, fontWeight: "bold"}}>{player.name}</Typography>
                     </div>
                 ))}
                 </Box>
