@@ -161,6 +161,8 @@ if (timeLeft === 0) {
 
     function endCurrentRound() {
         setDisplayVote(true)
+        setIsTimerVisible(false)
+        setTimeLeft(60)
         socket.emit("display_all_votes");
     }
 
@@ -178,6 +180,7 @@ if (timeLeft === 0) {
         setDisplayVote(false)
         setIsTimerVisible(false)
         setTimeLeft(60)
+        setTextAreaValue("")
     });
 
     const backgroundColor = (vote : any) => {

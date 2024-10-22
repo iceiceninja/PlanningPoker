@@ -47,6 +47,7 @@ nextApp.prepare().then(() => {
   var idForEachPlayerQueue = [];
   var idToPlayerName = new Map();
   var idToPlayerVote = new Map();
+  var userStory = "";
   var hostSocket = "";
   var sessionTopic = "";
   var storePlayers = [];
@@ -64,7 +65,7 @@ nextApp.prepare().then(() => {
         socket.emit("host_exists", "True");
       }
 
-      idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "user");
+      idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "connecting....");
       
   }
 
@@ -105,7 +106,7 @@ nextApp.prepare().then(() => {
     idToPlayerName.set(socket.id, "host")
    }
    else {
-    idToPlayerName.set(socket.id, "user")
+    idToPlayerName.set(socket.id, "connecting....")
    }
 
    socket.on("disconnect_each_socket", () => {
@@ -201,7 +202,12 @@ socket.on("get_session_name", (data) => {
 
 socket.on("story_submitted_host", (data) => {
   console.log("MADE IT HERE")
-  io.emit("get_story_submitted_host", data);
+  userStory = data
+  io.emit("get_story_submitted_host", userStory);
+})
+
+socket.on("get_story_submitted_for_new_user", () => {
+  io.emit("get_story_submitted_host", userStory);
 })
 
 socket.on("start_count_down", () => {
@@ -229,9 +235,9 @@ socket.on("reset_all_players", () => {
   idToPlayerVote = updatedMap; //Resets all the votes
   console.log("reset map: ")
   console.log(updatedMap)
+  userStory = "";
 
-
-  
+  io.emit("get_story_submitted_host", userStory);
       io.emit("reset_players", newArray);
 })
 

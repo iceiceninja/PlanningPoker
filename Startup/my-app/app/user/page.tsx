@@ -220,6 +220,8 @@ export default function Host() {
     });
 
     socket.on("display_votes", () => {
+        setIsTimerVisible(false)
+        setTimeLeft(60)
         setDisplayVote(true)
     })
 
@@ -233,10 +235,21 @@ export default function Host() {
         socket.emit("get_session_name", "True")
 }, []); 
 
+useEffect(() => { 
+    console.log("HEHEEELLLLOOO WORLD!")
+    socket.emit("get_story_submitted_for_new_user", "true")
+}, []); 
+
     // ensures the players are correct
     useEffect(() => {
         console.log(players); // This will log the updated value of players
       }, [players]); // Runs whenever players state changes
+
+          // ensures the players are correct
+    useEffect(() => {
+        console.log(players); // This will log the updated value of players
+      }, [storyText]); // Runs whenever players state changes
+    
     
        // ensures the cardSelected variable is correct
     useEffect(() => {
