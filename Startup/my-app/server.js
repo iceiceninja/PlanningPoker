@@ -119,6 +119,9 @@ nextApp.prepare().then(() => {
 
     // If the host disconnects, disconnect everyone.
     if (hostSocket ==  socket.id) {
+
+
+
       io.emit('disconnect_all' , "true")
     }
 
