@@ -44,16 +44,39 @@ export default function HostHome() {
 
 
 
-  socket.on("host_currently_exists", () => {
+  socket.on("host_currently_exists", (data) => {
+    console.log(data);
+    if(data == "True")
     router.push('/userStartUp')
+  
+    if(data == "False") {
+      setShouldRender(true);
+    }
   },);
 
   useEffect(() => { 
     socket.emit("check_if_host_exists", "true")
 }, []); 
 
-  
+useEffect(() : any => {
+  console.log(socketEmissionHolder.length)
+  if(userCount == 1) {
+    router.push('/host')
+  } 
 
+}, [userCount]);
+
+  
+    // Loading Screen
+    if (!shouldRender) {
+      return (
+        <div>
+          <title>Planning Poker - Everfox</title>
+          <Stack sx={{ width: "100vw", height: "100vh", justifyContent: "center", alignItems: "center",  }} >
+            <CircularProgress />
+          </Stack>
+        </div>);
+    }
 
     
   
