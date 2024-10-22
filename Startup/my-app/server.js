@@ -220,14 +220,14 @@ socket.on("display_all_votes", () => {
 })
 
 socket.on("check_if_host_exists", () => {
-  var hostExists = ""
-  if(idToPlayerName.size == 1 || idToPlayerName.size == 0) {
-    hostExists = "False";
-  }
-  else {
-    hostExists = "True";
-  }
-  io.emit("host_currently_exists", hostExists);
+var hostInfo = "hostNotJoined"
+if(hostSocket == socket.id) {
+      hostInfo = "hostNotJoined";
+}
+else {
+  hostInfo = "";
+}
+  socket.emit("host_currently_exists", hostInfo);
 })
 
 
