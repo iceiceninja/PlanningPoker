@@ -71,6 +71,8 @@ export default function Host() {
         { name: "", vote: "" },
       ]);
       const [buttonStates, setButtonStates] = useState(inititalMap);
+      const [storyText, setStoryText] = useState('Initial Text');
+
 
       // This shows the host and every other user that joins, render means render the cards.
       // See socket.on("return_user_name"), in the backend there is a socket.on("render")
@@ -143,7 +145,11 @@ export default function Host() {
     })
     socket.on('countdown-init', () => { // can pass in an arg to make the timer variable. (10 sec, 1 min, 5 min etc.)
         console.log("countdown init");
-
+    })
+    socket.on("get_story_submitted_host", (data) => {
+        console.log("HEHEHEHEHE")
+        console.log(data + "HEHEHEHEH");
+        setStoryText(data);
     })
 
       useEffect(() => {
@@ -305,7 +311,12 @@ export default function Host() {
                                 align="center"
                             >
                         <p>Story: </p>
-                         <input type="text" />
+                        <textarea
+        value={storyText}
+        className="textarea-class"
+        readOnly
+        style={{ width: '400px', height: '100px', resize: 'none' }} // Custom styles
+      />
                             </Typography>
                         </ThemeProvider>
             {/* Player Arrangement: Simulates sitting around a table */}

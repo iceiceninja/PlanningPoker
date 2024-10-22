@@ -41,6 +41,10 @@ html {
   background-image: linear-gradient(-180deg, #1D95C9 0%, #17759C 100%);
 }
 
+.textarea-class {
+  font-size: 20px;
+}
+
 .card1 {
   /* Add shadows to create the "card" effect */
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
@@ -212,6 +216,25 @@ html {
   border-width: 0;
   
 }
+.container2 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Optional: space between buttons */
+  margin: 10rem;
+}
+
+button {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.input-for-session {
+  width: 30rem; /* Adjust the width to your preference */
+  height: 10rem; /* You can adjust the height as well */
+  font-size: 16px; /* Increase the text size inside the input */
+  box-sizing: border-box; /* Ensures padding and border are included in the total width/height */
+}
+
 
 
 /* Add some padding inside the card container */
