@@ -170,6 +170,8 @@ export default function Host() {
         setPlayers(allPlayers);
         setCardSelected(false)
         setDisplayVote(false)
+        setIsTimerVisible(false)
+        setTimeLeft(60)
     });
 
     socket.on('round-topic', (topic: String) => {

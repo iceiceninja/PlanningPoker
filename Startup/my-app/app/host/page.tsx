@@ -52,7 +52,6 @@ export default function Host() {
     const [displayVote, setDisplayVote] = useState(false);
     const [timeLeft, setTimeLeft] = useState(60);
     const [isTimerVisible, setIsTimerVisible] = useState(false);
-    const [totalVote, setTotalVote] = useState(0);
     var lengthChange = -1;
     var inititalMap = new Map([
         ["Pass", false],
@@ -164,6 +163,8 @@ if (timeLeft === 0) {
         setPlayers(allPlayers);
         setCardSelected(false)
         setDisplayVote(false)
+        setIsTimerVisible(false)
+        setTimeLeft(60)
     });
 
     // ensures the players are correct
@@ -173,13 +174,11 @@ if (timeLeft === 0) {
     
        // ensures the cardSelected variable is correct
     useEffect(() => {
-        console.log(cardSelected); // This will log the updated value of players
       }, [cardSelected]); // Runs whenever players state changes
     
 
        // ensures votes are correct
     useEffect(() => {
-        console.log(displayVote); 
       }, [displayVote]); 
     
 

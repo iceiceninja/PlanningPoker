@@ -178,16 +178,11 @@ nextApp.prepare().then(() => {
 
     idToPlayerVote.set(socket.id, data.value);
 
-   if(!isSelected) { // if its deslected, subtract it.
-    averaeg = average - Number(targetsValue);
-   }
-   average = average + Number(targetsValue);
-
+      
    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
     name,      // The name from the Map
     vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", isSelected) 
   }));
-
 
 
       
@@ -214,8 +209,7 @@ socket.on("start_count_down", () => {
 })
 
 socket.on("display_all_votes", () => {
-  var average = average
-  io.emit("display_votes");
+  io.emit("display_votes", average);
 })
 
 
@@ -226,7 +220,15 @@ socket.on("reset_all_players", () => {
     vote: " " 
   }));
 
-  idToPlayerVote = newArray; //Resets all the votes
+  const updatedMap = new Map();
+
+  for (const [id, name] of idToPlayerName) {
+    updatedMap.set(id, " " );
+  }
+
+  idToPlayerVote = updatedMap; //Resets all the votes
+  console.log("reset map: ")
+  console.log(updatedMap)
 
 
   
