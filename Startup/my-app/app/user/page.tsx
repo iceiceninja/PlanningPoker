@@ -72,7 +72,7 @@ export default function Host() {
         ["?", false],
       ]);
       const [players, setPlayers] = useState([
-        { name: " ", vote: " " },
+        { name: " ", vote: "Pass" },
       ]);
       const [buttonStates, setButtonStates] = useState(inititalMap);
       const [storyText, setStoryText] = useState('');
@@ -86,6 +86,7 @@ export default function Host() {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
+        if (!displayVote) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
             if(key == event.currentTarget.value) {
@@ -118,6 +119,7 @@ export default function Host() {
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
             }
         }
+    }
     }
 
     useEffect(() => {
@@ -174,6 +176,33 @@ export default function Host() {
         setTimeLeft(60)
     });
 
+    const backgroundColor = (vote : any) => {
+        if(displayVote) {
+        if (vote === "Pass") {
+          return "Pass";
+        } 
+        else if (vote === "1" || vote == "2") {
+          return "cyan";
+        } else if (vote === "3" || vote === "5") {
+          return "lightGreen";
+        } 
+          else if (vote === "8" || vote === "13" || vote === "21") {
+            return "rgb(248, 189, 79)";
+          } 
+
+          else if (vote === '?') {
+            return "violet";
+          } 
+        else {
+          return "lightGray"; // Default case
+        }
+      }
+      if (vote != "Pass")
+      return "lightGray"
+
+      return " "
+    }
+
     socket.on('round-topic', (topic: String) => {
         console.log("Round topic is: " + topic);
     })
@@ -191,6 +220,8 @@ export default function Host() {
     });
 
     socket.on("display_votes", () => {
+        setIsTimerVisible(false)
+        setTimeLeft(60)
         setDisplayVote(true)
     })
 
@@ -204,10 +235,21 @@ export default function Host() {
         socket.emit("get_session_name", "True")
 }, []); 
 
+useEffect(() => { 
+    console.log("HEHEEELLLLOOO WORLD!")
+    socket.emit("get_story_submitted_for_new_user", "true")
+}, []); 
+
     // ensures the players are correct
     useEffect(() => {
         console.log(players); // This will log the updated value of players
       }, [players]); // Runs whenever players state changes
+
+          // ensures the players are correct
+    useEffect(() => {
+        console.log(players); // This will log the updated value of players
+      }, [storyText]); // Runs whenever players state changes
+    
     
        // ensures the cardSelected variable is correct
     useEffect(() => {
@@ -267,7 +309,7 @@ export default function Host() {
                             bgcolor: "#F3F1F6",
                             borderRadius: '8px',
                             width: "50vw",
-                            height: "10vh",
+                            height: "12vh",
                             maxWidth: 500,
                             boxShadow: 4
                         }}
@@ -408,14 +450,14 @@ export default function Host() {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
-                        backgroundColor: player.vote == " " ? " " : "lightGray"
+                        backgroundColor: backgroundColor(player.vote)
                     }}
                     >
-                    <Typography>
-                       {displayVote ? player.vote : " "}
-                    </Typography>
+                    <Typography sx={{ fontSize: 30 }}>
+                {displayVote ? player.vote : " "}
+                </Typography>
                     </Paper>
-                    <Typography style={{marginRight: 26, marginTop: 4}}>{player.name}</Typography>
+                    <Typography style={{marginRight: 26, marginTop: 4, fontWeight: "bold"}}>{player.name}</Typography>
                     </div>
                 ))}
                 </Box>

@@ -47,6 +47,7 @@ nextApp.prepare().then(() => {
   var idForEachPlayerQueue = [];
   var idToPlayerName = new Map();
   var idToPlayerVote = new Map();
+  var userStory = "";
   var hostSocket = "";
   var sessionTopic = "";
   var storePlayers = [];
@@ -64,11 +65,11 @@ nextApp.prepare().then(() => {
         socket.emit("host_exists", "True");
       }
 
-      idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "user");
+      idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "connecting....");
       
   }
 
-  function getOrDefault(map, id, socketId, defaultValue = " ", selected) {
+  function getOrDefault(map, id, socketId, defaultValue = "Pass", selected) {
     if (socketId == id) {
     if (selected) {
       return map.get(id) ?? defaultValue;
@@ -105,7 +106,7 @@ nextApp.prepare().then(() => {
     idToPlayerName.set(socket.id, "host")
    }
    else {
-    idToPlayerName.set(socket.id, "user")
+    idToPlayerName.set(socket.id, "connecting....")
    }
 
    socket.on("disconnect_each_socket", () => {
@@ -128,7 +129,7 @@ nextApp.prepare().then(() => {
 
     const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
       name,      // The name from the Map
-      vote: getOrDefault(idToPlayerVote, id, "randomIdBecauseWeJustWantTheMapAsAnArray" , " ", false) 
+      vote: getOrDefault(idToPlayerVote, id, "randomIdBecauseWeJustWantTheMapAsAnArray" , "Pass", false) 
     }));
     
         io.emit("return_user_name", newArray);
@@ -143,7 +144,7 @@ nextApp.prepare().then(() => {
  // convert the map to an array, get the votes from all of them
  const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
   name,      // The name from the Map
-  vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", false) 
+  vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", false) 
 }));
 
     io.emit("return_user_name", newArray);
@@ -163,7 +164,7 @@ nextApp.prepare().then(() => {
  // convert the map to an array, get the votes from all of them
  const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
   name,      // The name from the Map
-  vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", false) 
+  vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", false) 
 }));
 
     io.emit("return_user_name", newArray);
@@ -181,7 +182,7 @@ nextApp.prepare().then(() => {
       
    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
     name,      // The name from the Map
-    vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", isSelected) 
+    vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", isSelected) 
   }));
 
 
@@ -201,7 +202,12 @@ socket.on("get_session_name", (data) => {
 
 socket.on("story_submitted_host", (data) => {
   console.log("MADE IT HERE")
-  io.emit("get_story_submitted_host", data);
+  userStory = data
+  io.emit("get_story_submitted_host", userStory);
+})
+
+socket.on("get_story_submitted_for_new_user", () => {
+  io.emit("get_story_submitted_host", userStory);
 })
 
 socket.on("start_count_down", () => {
@@ -217,21 +223,21 @@ socket.on("reset_all_players", () => {
   console.log("HELLO WORLD!!")
   const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
     name,      // The name from the Map
-    vote: " " 
+    vote: "Pass" 
   }));
 
   const updatedMap = new Map();
 
   for (const [id, name] of idToPlayerName) {
-    updatedMap.set(id, " " );
+    updatedMap.set(id, "Pass" );
   }
 
   idToPlayerVote = updatedMap; //Resets all the votes
   console.log("reset map: ")
   console.log(updatedMap)
+  userStory = "";
 
-
-  
+  io.emit("get_story_submitted_host", userStory);
       io.emit("reset_players", newArray);
 })
 

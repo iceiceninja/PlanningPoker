@@ -65,7 +65,7 @@ export default function Host() {
         ["?", false],
       ]);
       const [players, setPlayers] = useState([
-        { name: " ", vote: " " },
+        { name: " ", vote: "Pass" },
       ]);
       const handleTextAreaChange = (event : any) => {
         setTextAreaValue(event.target.value);
@@ -96,6 +96,7 @@ if (timeLeft === 0) {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
+        if (!displayVote) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
             if(key == event.currentTarget.value) {
@@ -129,6 +130,7 @@ if (timeLeft === 0) {
             }
         }
     }
+    }
 
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
         setAnchor2(anchor2 ? null : event2.currentTarget);
@@ -147,7 +149,20 @@ if (timeLeft === 0) {
         socket.emit("reset_all_players")
     }
 
+    socket.on("count_down_started" , () => {
+        startTimer()
+    });
+
+    const startTimer = () => {
+        setIsTimerVisible(true);
+        setTimeLeft(60); // Reset the time when the button is pressed
+      };
+
+
     function endCurrentRound() {
+        setDisplayVote(true)
+        setIsTimerVisible(false)
+        setTimeLeft(60)
         socket.emit("display_all_votes");
     }
 
@@ -165,7 +180,35 @@ if (timeLeft === 0) {
         setDisplayVote(false)
         setIsTimerVisible(false)
         setTimeLeft(60)
+        setTextAreaValue("")
     });
+
+    const backgroundColor = (vote : any) => {
+        if(displayVote) {
+        if (vote === "Pass") {
+          return "Pass";
+        } 
+        else if (vote === "1" || vote == "2") {
+          return "cyan";
+        } else if (vote === "3" || vote === "5") {
+          return "lightGreen";
+        } 
+          else if (vote === "8" || vote === "13" || vote === "21") {
+            return "rgb(248, 189, 79)";
+          } 
+
+          else if (vote === '?') {
+            return "violet";
+          } 
+        else {
+          return "lightGray"; // Default case
+        }
+      }
+      if (vote != "Pass")
+      return "lightGray"
+
+      return " "
+    }
 
     // ensures the players are correct
     useEffect(() => {
@@ -220,6 +263,8 @@ if (timeLeft === 0) {
         });
     });
 
+    
+
     // Variables
     let name: string = "Kaiden"
     let topicName: string = getGlobalSession()     // TODO: Limit to 36 chars in backend
@@ -267,7 +312,7 @@ if (timeLeft === 0) {
                             bgcolor: "#F3F1F6",
                             borderRadius: '8px',
                             width: "50vw",
-                            height: "10vh",
+                            height: "12vh",
                             maxWidth: 500,
                             boxShadow: 4
                         }}
@@ -412,7 +457,9 @@ if (timeLeft === 0) {
                     marginTop: 4
                 }}
                 >
+                    
                 {players.map((player, vote) => (
+                    
                     <div style ={{textAlign: "center"}}>
                     <Paper
                     key={player.name}
@@ -426,14 +473,14 @@ if (timeLeft === 0) {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
-                       backgroundColor: player.vote == " " ? " " : "lightGray"
+                        backgroundColor: backgroundColor(player.vote)
                     }}
                     >
-                    <Typography>
+                     <Typography sx={{ fontSize: 30 }}>
                        {displayVote ? player.vote : " "}
                     </Typography>
                     </Paper>
-                    <Typography style={{marginRight: 26, marginTop: 4}}>{player.name}</Typography>
+                    <Typography style={{marginRight: 26, marginTop: 4,  fontWeight: "bold"}}>{player.name}</Typography>
                     </div>
                 ))}
                 </Box>
