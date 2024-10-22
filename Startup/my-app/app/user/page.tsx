@@ -269,7 +269,7 @@ export default function Host() {
                             bgcolor: "#F3F1F6",
                             borderRadius: '8px',
                             width: "50vw",
-                            height: "10vh",
+                            height: "12vh",
                             maxWidth: 500,
                             boxShadow: 4
                         }}
