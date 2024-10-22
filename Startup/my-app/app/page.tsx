@@ -45,13 +45,17 @@ export default function HostHome() {
 
 
   socket.on("host_currently_exists", (data) => {
-    console.log(data);
-    if(data == "True")
-    router.push('/userStartUp')
+    setDisplayHostname(data);
   
-    if(data == "False") {
+    if(data == "hostNotJoined" && getDisplayHostname() == "hostNotJoined") {
       setShouldRender(true);
     }
+    
+    else if (data != "hostNotJoined" && getDisplayHostname() != "hostNotJoined") {
+      router.push("/userStartUp")
+    }
+
+    socket.off("host_currently_exists");
   },);
 
   useEffect(() => { 
@@ -60,7 +64,7 @@ export default function HostHome() {
 
 useEffect(() : any => {
   console.log(socketEmissionHolder.length)
-  if(userCount == 1) {
+  if(userCount >= 1) {
     router.push('/host')
   } 
 
