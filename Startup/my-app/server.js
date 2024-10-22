@@ -68,7 +68,7 @@ nextApp.prepare().then(() => {
       
   }
 
-  function getOrDefault(map, id, socketId, defaultValue = " ", selected) {
+  function getOrDefault(map, id, socketId, defaultValue = "Pass", selected) {
     if (socketId == id) {
     if (selected) {
       return map.get(id) ?? defaultValue;
@@ -128,7 +128,7 @@ nextApp.prepare().then(() => {
 
     const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
       name,      // The name from the Map
-      vote: getOrDefault(idToPlayerVote, id, "randomIdBecauseWeJustWantTheMapAsAnArray" , " ", false) 
+      vote: getOrDefault(idToPlayerVote, id, "randomIdBecauseWeJustWantTheMapAsAnArray" , "Pass", false) 
     }));
     
         io.emit("return_user_name", newArray);
@@ -143,7 +143,7 @@ nextApp.prepare().then(() => {
  // convert the map to an array, get the votes from all of them
  const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
   name,      // The name from the Map
-  vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", false) 
+  vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", false) 
 }));
 
     io.emit("return_user_name", newArray);
@@ -163,7 +163,7 @@ nextApp.prepare().then(() => {
  // convert the map to an array, get the votes from all of them
  const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
   name,      // The name from the Map
-  vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", false) 
+  vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", false) 
 }));
 
     io.emit("return_user_name", newArray);
@@ -181,7 +181,7 @@ nextApp.prepare().then(() => {
       
    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
     name,      // The name from the Map
-    vote: getOrDefault(idToPlayerVote, id, socket.id,  " ", isSelected) 
+    vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", isSelected) 
   }));
 
 
@@ -217,13 +217,13 @@ socket.on("reset_all_players", () => {
   console.log("HELLO WORLD!!")
   const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
     name,      // The name from the Map
-    vote: " " 
+    vote: "Pass" 
   }));
 
   const updatedMap = new Map();
 
   for (const [id, name] of idToPlayerName) {
-    updatedMap.set(id, " " );
+    updatedMap.set(id, "Pass" );
   }
 
   idToPlayerVote = updatedMap; //Resets all the votes

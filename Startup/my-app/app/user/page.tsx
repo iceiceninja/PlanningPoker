@@ -72,7 +72,7 @@ export default function Host() {
         ["?", false],
       ]);
       const [players, setPlayers] = useState([
-        { name: " ", vote: " " },
+        { name: " ", vote: "Pass" },
       ]);
       const [buttonStates, setButtonStates] = useState(inititalMap);
       const [storyText, setStoryText] = useState('');
@@ -408,7 +408,7 @@ export default function Host() {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
-                        backgroundColor: player.vote == " " ? " " : "lightGray"
+                        backgroundColor: player.vote == "Pass" ? " " : "lightGray"
                     }}
                     >
                     <Typography>

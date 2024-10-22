@@ -65,7 +65,7 @@ export default function Host() {
         ["?", false],
       ]);
       const [players, setPlayers] = useState([
-        { name: " ", vote: " " },
+        { name: " ", vote: "Pass" },
       ]);
       const handleTextAreaChange = (event : any) => {
         setTextAreaValue(event.target.value);
@@ -426,7 +426,7 @@ if (timeLeft === 0) {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
-                       backgroundColor: player.vote == " " ? " " : "lightGray"
+                        backgroundColor: player.vote == "Pass" ? " " : "lightGray"
                     }}
                     >
                     <Typography>
