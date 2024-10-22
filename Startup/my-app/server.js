@@ -219,6 +219,19 @@ socket.on("display_all_votes", () => {
   io.emit("display_votes", average);
 })
 
+socket.on("check_if_host_exists", () => {
+  var hostExists = ""
+  if(idToPlayerName == 0) {
+    hostExists = true;
+  }
+  else {
+    hostExists = true;
+  }
+  io.emit("host_currently_exists", hostExists);
+})
+
+
+
 
 socket.on("reset_all_players", () => {
   const newArray = Array.from(idToPlayerName).map(([id, name]) => ({

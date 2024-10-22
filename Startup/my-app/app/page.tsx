@@ -43,43 +43,17 @@ export default function HostHome() {
 
 
 
-  // Loading Timer [1000ms = 1s]
-  useEffect(() => { setTimeout(() => {setLoading(false)}, 3000); }, []);  
 
-  socket.on("host_exists", () => {
-    socketEmissionHolder.push("1");
-  });
+  socket.on("host_currently_exists", () => {
+    router.push('/userStartUp')
+  },);
 
-  useEffect(() : any => {
-    console.log(socketEmissionHolder.length)
-    if(userCount == 1) {
-      router.push('/host')
-    }
-
-    const timer = setTimeout(() => {
-     if (socketEmissionHolder.length >= 1) {
-      router.push('/userStartUp')
-    }
-    else {
-      setShouldRender(true)
-    }
-  }, 700); 
+  useEffect(() => { 
+    socket.emit("check_if_host_exists", "true")
+}, []); 
 
   
-  }, [userCount]);
 
-
-
-    // Loading Screen
-    if (!shouldRender) {
-      return (
-        <div>
-          <title>Planning Poker - Everfox</title>
-          <Stack sx={{ width: "100vw", height: "100vh", justifyContent: "center", alignItems: "center",  }} >
-            <CircularProgress />
-          </Stack>
-        </div>);
-    }
 
     
   
