@@ -122,6 +122,10 @@ export default function Host() {
         socket.emit("start_count_down", "true");
     }
 
+    function resetRound() {
+
+    }
+
     socket.on("return_user_name", (allPlayers) => {  
         setPlayers(allPlayers);
         lengthChange = players.length;
@@ -285,6 +289,21 @@ export default function Host() {
                 </Stack>
                 <div className = ", footer">
                     <title>Planning Poker - Everfox</title>
+
+                    <Stack               
+                        direction="row" 
+                        spacing={2}
+                        sx={{
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                        marginBottom={5}
+                        >
+                            <button onClick={submitStory} >Submit Story</button>
+                            <button onClick={startCountDown} >Start CountDown</button>
+                            <button onClick={resetRound} >Reset Round </button>
+                            <button onClick={resetRound} >End Current Round</button>
+                </Stack>
                     <Stack               
                         direction="row" 
                         spacing={2}
@@ -293,23 +312,17 @@ export default function Host() {
                             alignItems: "center"
                         }}
                         >
-                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp card cardHover" : "card cardHover"}  value={"Pass"}>Pass</button>
-                        <button onClick={sendVote}  className={buttonStates.get("1") ? "cardUp card cardHover" : "card cardHover"}  value={"1"}>1</button>
-                        <button onClick={sendVote}  className={buttonStates.get("2") ? "cardUp card cardHover" : "card cardHover"}  value={"2"}>2</button>
-                        <button onClick={sendVote}  className={buttonStates.get("3") ? "cardUp card cardHover" : "card cardHover"}  value={"3"}>3</button>
-                        <button onClick={sendVote}  className={buttonStates.get("5") ? "cardUp card cardHover" : "card cardHover"}  value={"5"}>5</button>
-                        <button onClick={sendVote}  className={buttonStates.get("8") ? "cardUp card cardHover" : "card cardHover"}  value={"8"}>8</button>
-                        <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card cardHover" : "card cardHover"}  value={"13"}>13</button>
-                        <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card cardHover" : "card cardHover"}  value={"21"}>21</button>
-                        <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp card cardHover" : "card cardHover"}  value={"?"}>?</button>
-
-                        <div className="container2">
-  <button onClick={submitStory} >Submit Story</button>
-  <button onClick={sendVote} >Reset Round </button>
-  <button onClick={startCountDown} >Start CountDown</button>
-  <button onClick={sendVote} >End Current Round</button>
-</div>
+                        <button onClick={sendVote}  className={buttonStates.get("1") ? "cardUp card1 cardHover" : "card1 cardHover"}  value={"1"}>1</button>
+                        <button onClick={sendVote}  className={buttonStates.get("2") ? "cardUp card2 cardHover" : "card2 cardHover"}  value={"2"}>2</button>
+                        <button onClick={sendVote}  className={buttonStates.get("3") ? "cardUp card3 cardHover" : "card3 cardHover"}  value={"3"}>3</button>
+                        <button onClick={sendVote}  className={buttonStates.get("5") ? "cardUp card5 cardHover" : "card5 cardHover"}  value={"5"}>5</button>
+                        <button onClick={sendVote}  className={buttonStates.get("8") ? "cardUp card8 cardHover" : "card8 cardHover"}  value={"8"}>8</button>
+                        <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card13 cardHover" : "card13 cardHover"}  value={"13"}>13</button>
+                        <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card21 cardHover" : "card21 cardHover"}  value={"21"}>21</button>
+                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp cardPass cardHover" : "cardPass cardHover"}  value={"Pass"}>Pass</button>
+                        <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp cardQuestionMark cardHover" : "cardQuestionMark cardHover"}  value={"?"}>?</button>
                     </Stack>
+
 
                 </div>
             </Box>
@@ -344,6 +357,7 @@ export default function Host() {
                 }}
                 >
                 {players.map((player, vote) => (
+                    <div style ={{textAlign: "center"}}>
                     <Paper
                     key={player.name}
                     elevation={3}
@@ -358,11 +372,12 @@ export default function Host() {
                         marginRight: 3,
                     }}
                     >
-                    <Typography>{player.name}</Typography>
                     <Typography>
                         {player.vote !== null ? player.vote : <CircularProgress size={20} />}
                     </Typography>
                     </Paper>
+                    <Typography style={{marginRight: 26}}>{player.name}</Typography>
+                    </div>
                 ))}
                 </Box>
         </>
