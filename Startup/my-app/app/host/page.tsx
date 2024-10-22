@@ -52,6 +52,8 @@ export default function Host() {
     const [displayVote, setDisplayVote] = useState(false);
     const [timeLeft, setTimeLeft] = useState(60);
     const [isTimerVisible, setIsTimerVisible] = useState(false);
+    const [endRoundPressed, setIsEndRoundPressed] = useState(false);
+
     var lengthChange = -1;
     var inititalMap = new Map([
         ["Pass", false],
@@ -113,7 +115,6 @@ if (timeLeft === 0) {
         if (previousValue != event.currentTarget.value || cardSelected == false) {
             setPreviousValue(event.currentTarget.value);
             setCardSelected(true)
-            console.log(cardSelected + "asdfasdfsdsafsfs");
             socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
         }
 
@@ -125,7 +126,6 @@ if (timeLeft === 0) {
             }
             else {
                 setCardSelected(false)
-                console.log(cardSelected + "sdhfksadhjfasdklfjdsafjdsafjsdaf;jsda;lfjsdaf;asldfjasdl;fjasl")
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
             }
         }
@@ -137,11 +137,12 @@ if (timeLeft === 0) {
     };
 
     function submitStory() {
+        if (!endRoundPressed)
         socket.emit("story_submitted_host", textAreaValue); 
     }
 
     function startCountDown() {
-        console.log("MADE it here");
+        if (!endRoundPressed)
         socket.emit("start_count_down", "true");
     }
 
@@ -173,12 +174,12 @@ if (timeLeft === 0) {
     })
     
     socket.on("reset_players", (allPlayers) => {
-        console.log("HSDHFASDJHFDASFLKHASJK")
         setButtonStates(inititalMap);
         setPlayers(allPlayers);
         setCardSelected(false)
         setDisplayVote(false)
         setIsTimerVisible(false)
+        setIsEndRoundPressed(false);
         setTimeLeft(60)
         setTextAreaValue("")
     });
@@ -210,7 +211,7 @@ if (timeLeft === 0) {
       return " "
     }
 
-    // ensures the players are correct
+    // ensures the players are correct DONT REMOVE THESE PLEASE
     useEffect(() => {
         console.log(players); // This will log the updated value of players
       }, [players]); // Runs whenever players state changes
@@ -227,29 +228,19 @@ if (timeLeft === 0) {
 
 
     socket.on("display_votes", () => {
+        setIsEndRoundPressed(true);
+        setIsTimerVisible(false)
+        setTimeLeft(60)
         setDisplayVote(true)
     })
 
     // If the host disconnects, all users disconnect too
     socket.on("disconnect_all", (allPlayers) => {  
-        console.log("hahaahhasdfhasdjfkhdasdjasfhadsklfhasdlkasdhlsdikah")
         socket.emit("disconnect_each_socket")  
         router.push("/endScreen")   
     })
 
 
-
-    socket.on("display_votes", (msg) => {
-        setUserVotes(msg);
-      });
-
-    socket.on('round-topic', (topic: String) => {
-        console.log("Round topic is: " + topic);
-    })
-    socket.on('countdown-init', () => { // can pass in an arg to make the timer variable. (10 sec, 1 min, 5 min etc.)
-        console.log("countdown init");
-
-    })
 
     useEffect(() => {
         socket.on("host_exists", () => {
@@ -262,6 +253,11 @@ if (timeLeft === 0) {
           router.push('/');
         });
     });
+
+        // ensures the players are correct DONT GET RID OF THE CONSOLE LOGS PLEASE
+        useEffect(() => {
+            console.log(endRoundPressed); // This will log the updated value of players
+          }, [endRoundPressed]); // Runs whenever players state changes
 
     
 
