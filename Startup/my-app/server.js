@@ -221,11 +221,11 @@ socket.on("display_all_votes", () => {
 
 socket.on("check_if_host_exists", () => {
   var hostExists = ""
-  if(idToPlayerName == 0) {
-    hostExists = true;
+  if(idToPlayerName.size == 1 || idToPlayerName.size == 0) {
+    hostExists = "False";
   }
   else {
-    hostExists = true;
+    hostExists = "True";
   }
   io.emit("host_currently_exists", hostExists);
 })
