@@ -68,7 +68,7 @@ useEffect(() : any => {
     router.push('/host')
   } 
 
-}, [userCount]);
+}, [userCount, router, socketEmissionHolder.length]);
 
   
     // Loading Screen
