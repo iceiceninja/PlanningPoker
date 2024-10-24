@@ -1,3 +1,5 @@
+
+
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
@@ -6,11 +8,11 @@ const express = require('express');
 const path = require('path');  // This helps resolve paths correctly
 const short = require('short-uuid');
 const { io } = require('socket.io-client');
-
 const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
 const handle = nextApp.getRequestHandler();
 const expressApp = express();
 const os = require('os'); // Import os module to get network information
+const { SystemSecurityUpdate } = require('@mui/icons-material');
 const PORT = process.env.PORT || 3000;  // Default to port 4000 instead of 3000
 
 // Serve static files from the: 
@@ -32,6 +34,7 @@ function getHostIPAddress() {
   return '127.0.0.1'; // Fallback to localhost if no other IP found
 }
 
+
 nextApp.prepare().then(() => {
   const server = createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
@@ -39,118 +42,231 @@ nextApp.prepare().then(() => {
   });
   // Example object to store user votes
   playerVotes = {};
+  const HOST_EXISTS = 1;
+  const HOST_NANE = "host";
+  var idForEachPlayerQueue = [];
+  var idToPlayerName = new Map();
+  var idToPlayerVote = new Map();
+  var userStory = "";
+  var hostSocket = "";
+  var sessionTopic = "";
+  var storePlayers = [];
+  const io = new Server(server);
+  const NO_USERS = 0;
+  var average = 0;
 
-  function storeVote(userId, vote) {
-    playerVotes[userId] = vote;
+
+
+  function onUserJoin(socket) {
+     // We have to make sure not to push the host into the queue.
+    if (idToPlayerName.size >= HOST_EXISTS) 
+      {
+        idForEachPlayerQueue.push(socket.id)
+        socket.emit("host_exists", "True");
+      }
+
+      idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "connecting....");
+      
   }
 
-  // const io = new Server(server, {
-  //   cors: {
-  //     origin: "*",
-  //     methods: ["GET", "POST"],
-  //   },
-  // });
+  function getOrDefault(map, id, socketId, defaultValue = "Pass", selected) {
+    if (socketId == id) {
+    if (selected) {
+      return map.get(id) ?? defaultValue;
+    }
 
-  // Host connection
-  /*
-    In a server:
-      The first user to join is the host
-      The rest of the users are users
-      If the host user leaves, the user who connected
-      first out of the remaining users will become the host
-      Potential issue:
-        If you refresh your page as a host, you are no longer the host
-        Add a timer to fix this
-  */
+    else {
+      map.set(id, defaultValue);
+      return map.get(id);
+    }
+  }
 
-  // Variables
-  let playerids = []; // Player list with ids
-  const io = new Server(server); // Server instance
+  else {
+    return map.get(id);
+  }
+}
+
+
 
   // When user (client) joins the server
   io.on('connection', (socket) => {
 
-    // Add id to player id list
-    playerids.push(socket.id)
+  // We have to make sure not to push the host into the queue.
+  if (idToPlayerName.size >= HOST_EXISTS) 
+   {
+     idForEachPlayerQueue.push(socket.id)
+     socket.emit("host_exists", "True");
+   }
 
-    // Testing
-    console.log('user[' + socket.id + '] connected: ' + playerids.length)
 
-    // User joined
-    socket.emit("user_joined", "True") // this doesn't do anything right now
+   // We have to make it a default value for now so that every other connection besides host goes to userStartUp
+   if ( idToPlayerName.size == NO_USERS) {
+    hostSocket = socket.id
+    idToPlayerName.set(socket.id, "host")
+   }
+   else {
+    idToPlayerName.set(socket.id, "connecting....")
+   }
 
-    // If Host is in Server
-    if (playerids.length > 1) {
-      socket.emit("host_exists", "True");
-      console.log("Host Exists user[" + playerids[0] + "]\n");
+   console.log("user connected")
 
-      // Tell client that it's a user [only once]
-      // console.log("send to user page");
-      socket.once("clientType", (callback) => { callback({ clientType: "user" }); });
+   socket.on("disconnect_each_socket", () => {
+      socket.disconnect(true);
+   })
+  
 
-    } else {
-      console.log("Host Joined user[" + playerids[0] + "]\n");
+  socket.on('disconnect', () => {
 
-      // Tell client that it's the host [only once]
-      // console.log("send to host page");
-      socket.once("clientType", (callback) => { callback({ clientType: "host" }); });
+    // If the host disconnects, disconnect everyone.
+    if (hostSocket ==  socket.id) {
+
+
+
+      io.emit('disconnect_all' , "true")
     }
 
-    // If user leaves
-    socket.on('disconnect', () => {
 
-      // If host disconnected, initialize new host
-      if (socket.id == playerids[0]) {
+    idToPlayerName.delete(socket.id)
+    idToPlayerVote.delete(socket.id)
 
-        // Dequeue host id from player id list
-        prev_host = playerids.shift()
-        console.log("Host Left: user[" + prev_host + "]")
 
-        // If server is empty
-        if (playerids.length == 0) {
-          console.log("No Host: 0 users\n")
-        } else {
-          console.log("New Host: user[" + playerids[0] + "]: " + playerids.length + "\n")
-        }
-      }
-      // If user is not the host, remove from player list normally
-      else {
+    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+      name,      // The name from the Map
+      vote: getOrDefault(idToPlayerVote, id, "randomIdBecauseWeJustWantTheMapAsAnArray" , "Pass", false) 
+    }));
+    
+        io.emit("return_user_name", newArray);
 
-        // Remove user from list
-        playerids.splice(playerids.indexOf(socket.id), 1)
 
-        // Normal Disconnect message
-        console.log('user[' + socket.id + '] disconnected: ' + playerids.length)
-        console.log("")
-      }
-    });
+    console.log('user disconnected');
   });
 
-
-  server.listen(PORT, (err) => {
-    if (err) throw err;
-    const hostIP = getHostIPAddress();
-    console.log(`Server is running at http://${hostIP}:${PORT}`);
-  });
-});
-
-{/* Leftover Code
-
-  var hostExists = false;
-  var host = " ";
-  let idToPlayerName = {};
   
-  if (hostExists) {
-     socket.emit("host_exists", "True");
-     console.log("host already exists");   
+  socket.on("render", (data) => {
+    
+ // convert the map to an array, get the votes from all of them
+ const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+  name,      // The name from the Map
+  vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", false) 
+}));
+
+    io.emit("return_user_name", newArray);
+        
+  })
+
+
+
+
+  socket.on("user_joined", (data) => {
+    
+    idToPlayerName.set(socket.id, data.value)
+  
+
+
+
+ // convert the map to an array, get the votes from all of them
+ const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+  name,      // The name from the Map
+  vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", false) 
+}));
+
+    io.emit("return_user_name", newArray);
+        
+  })
+
+
+
+  socket.on("vote-selected", (data) => {
+    var targetsValue = data.value;
+    var isSelected = data.selected;
+
+    idToPlayerVote.set(socket.id, data.value);
+
+      
+   const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+    name,      // The name from the Map
+    vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", isSelected) 
+  }));
+
+
+      
+  io.emit("return_user_name", newArray);
+  });
+
+  socket.on("set_host_session_name", (data) => {
+    sessionTopic = data.value;
+})
+
+socket.on("get_session_name", (data) => {
+  var hostName = idToPlayerName.get(hostSocket)
+    io.emit("return_session_name", {session : sessionTopic, host : hostName});
+})
+
+socket.on("story_submitted_host", (data) => {
+  userStory = data
+  io.emit("get_story_submitted_host", userStory);
+})
+
+socket.on("get_story_submitted_for_new_user", () => {
+  io.emit("get_story_submitted_host", userStory);
+})
+
+socket.on("start_count_down", () => {
+  io.emit("count_down_started");
+})
+
+socket.on("display_all_votes", () => {
+  io.emit("display_votes", average);
+})
+
+socket.on("check_if_host_exists", () => {
+var hostInfo = "hostNotJoined"
+if(hostSocket == socket.id) {
+      hostInfo = "hostNotJoined";
+}
+else {
+  hostInfo = "";
+}
+  socket.emit("host_currently_exists", hostInfo);
+})
+
+
+
+
+socket.on("reset_all_players", () => {
+  const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+    name,      // The name from the Map
+    vote: "Pass" 
+  }));
+
+  const updatedMap = new Map();
+
+  for (const [id, name] of idToPlayerName) {
+    updatedMap.set(id, "Pass" );
   }
 
-  // socket.emit("host_left", "True");
-  // hostExits = false;
+  idToPlayerVote = updatedMap; //Resets all the votes
+  userStory = "";
 
-  socket.on('host_joined', (msg) => {
-    // idToPlayerName[socket.id] = "host";
-    // console.log(msg.hostName);
-  });
+  io.emit("get_story_submitted_host", userStory);
+      io.emit("reset_players", newArray);
+})
 
-*/}
+
+
+
+});
+
+
+
+
+server.listen(PORT, (err) => {
+  if (err) throw err;
+  const hostIP = getHostIPAddress();
+  console.log(`Server is running at http://${hostIP}:${PORT}`);
+});
+
+
+  
+    });
+

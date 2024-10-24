@@ -59,8 +59,48 @@ textTheme.typography.h5 = {
   [textTheme.breakpoints.up('sm')]: { fontSize: '1.5rem', },  // Small width: Screen Width >= 600px
   [textTheme.breakpoints.up('md')]: { fontSize: '1.7rem', },  // Medium width: Screen Width >= 900px
 }
+
+// Host/User Top Nav Topic Text Box
+textTheme.typography.h6 = {
+  fontSize: '1.1rem',                                         // Extra Small Width: Screen Width < 600px
+  [textTheme.breakpoints.up('sm')]: { fontSize: '1.3rem', },  // Small width: Screen Width >= 600px
+  [textTheme.breakpoints.up('md')]: { fontSize: '2.0rem', },  // Medium width: Screen Width >= 900px
+}
+
+// Host/User Top Nav Host Text Box
+textTheme.typography.subtitle1 = {
+  fontSize: '1.0rem',                                         // Extra Small Width: Screen Width < 600px
+  [textTheme.breakpoints.up('sm')]: { fontSize: '1.1rem', },  // Small width: Screen Width >= 600px
+  [textTheme.breakpoints.up('md')]: { fontSize: '1.5rem', },  // Medium width: Screen Width >= 900px
+}
+
+// Host/User Top Nav Right Buttons
+textTheme.typography.button = {
+  fontSize: '0.5rem',                                         // Extra Small Width: Screen Width < 600px
+  [textTheme.breakpoints.up('sm')]: { fontSize: '0.6rem', },  // Small width: Screen Width >= 600px
+  [textTheme.breakpoints.up('md')]: { fontSize: '0.9rem', },  // Medium width: Screen Width >= 900px
+}
+
+// Host/User Center Text Box
+textTheme.typography.body1 = {
+  fontSize: '1.0rem',                                         // Extra Small Width: Screen Width < 600px
+  [textTheme.breakpoints.up('sm')]: { fontSize: '1.1rem', },  // Small width: Screen Width >= 600px
+  [textTheme.breakpoints.up('md')]: { fontSize: '1.5rem', },  // Medium width: Screen Width >= 900px
+}
+
+// Button
+const buttonTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#F3F1F6",
+      contrastText: "#000000"
+    }
+  }
+});
+
 export {
   PopupBody,
   Style, 
-  textTheme
+  textTheme,
+  buttonTheme
 };
