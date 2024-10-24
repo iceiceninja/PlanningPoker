@@ -44,6 +44,8 @@ COPY --from=build /app/server.js ./
 COPY --from=build /app/app ./app
 COPY --from=build /app/images ./images
 COPY --from=build /app/socket.js ./
+COPY --from=build /app/globalHost.tsx ./
+COPY --from=build /app/globalSession.tsx ./
 # Install only production dependencies
 RUN npm install --omit=dev
 

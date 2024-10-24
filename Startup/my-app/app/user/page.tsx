@@ -237,7 +237,7 @@ useEffect(() => {
           // ensures the players are correct
     useEffect(() => {
         console.log(players); // This will log the updated value of players
-      }, [storyText]); // Runs whenever players state changes
+      }, [storyText, players]); // Runs whenever players state changes
     
     
        // ensures the cardSelected variable is correct
@@ -425,9 +425,8 @@ useEffect(() => {
                 }}
                 >
                    {players.map((player, vote) => (
-                    <div style ={{textAlign: "center"}}>
+                       <div key={player.name} style ={{textAlign: "center"}}>
                     <Paper
-                    key={player.name}
                     elevation={3}
                     sx={{
                         width: 100,  // Size of each player card

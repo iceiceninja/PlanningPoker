@@ -20,7 +20,7 @@ import { Box, Button, Typography, Modal, TextField, Stack, CircularProgress
 import everfox_logo from '../../images/everfox_logo.png'
 import cards from '../../images/cards.png'
 
-export default function userStartUp() {
+export default function UserStartUp() {
     
   const router = useRouter(); // Initialize the router
   const [open, setOpen] = useState(false);          // Modal State
