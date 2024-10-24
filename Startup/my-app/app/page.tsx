@@ -119,9 +119,9 @@ useEffect(() : any => {
             borderRadius: 1,
             bgcolor: "#F3F1F6",
             boxShadow: 2,
-            width: "75vw",
+            width: "90vw",
             height: "75vh",
-            maxWidth: '750px'
+            maxWidth: '1050px '
           }}
         >
           {/* Box has 3 rows */}
