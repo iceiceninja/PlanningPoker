@@ -184,6 +184,11 @@ nextApp.prepare().then(() => {
 
     idToPlayerVote.set(socket.id, data.value);
 
+    if(!isSelected) { // if its deslected, subtract it.
+      average = average - Number(targetsValue);
+     }
+     average = average + Number(targetsValue);
+
       
    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
     name,      // The name from the Map

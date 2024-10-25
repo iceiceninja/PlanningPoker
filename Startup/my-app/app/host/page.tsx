@@ -172,6 +172,7 @@ if (timeLeft === 0) {
     })
     
     socket.on("reset_players", (allPlayers) => {
+        setUserVotes(0)
         setButtonStates(inititalMap);
         setPlayers(allPlayers);
         setCardSelected(false)
@@ -427,6 +428,7 @@ if (timeLeft === 0) {
                                 align="center"
                             >
                         <p>Story: </p>
+                        <p> {userVotes} </p>
                         <textarea
         value={textAreaValue} 
         onChange={handleTextAreaChange}
