@@ -87,7 +87,6 @@ export default function Host() {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
-        if (!displayVote) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
             if(key == event.currentTarget.value) {
@@ -117,7 +116,6 @@ export default function Host() {
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
             }
         }
-    }
     }
 
     useEffect(() => {
@@ -420,7 +418,7 @@ useEffect(() => {
                     gap: 4,
                     marginBottom: 4,
                     border: "transparent",
-                    width: "70%",
+                    width: "100%",
                     marginTop: 4
                 }}
                 >

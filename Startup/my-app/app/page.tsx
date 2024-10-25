@@ -38,9 +38,8 @@ export default function HostHome() {
   const [userCount, setUserCount] = useState(0);          // User count 
   const [loading, setLoading] = useState(true);           // Loading State 
   const [shouldRender, setShouldRender] = useState(false);
+  const [canJoin, setCanJoin] = useState("");
   const socketEmissionHolder = []; // Has to be an array otherwise the socket throws an error.
-
-
 
 
 
@@ -58,9 +57,30 @@ export default function HostHome() {
     socket.off("host_currently_exists");
   },);
 
-  useEffect(() => { 
-    socket.emit("check_if_host_exists", "true")
-}, []); 
+  useEffect(() : any => {
+    console.log(canJoin)
+
+    if(canJoin == "False")
+      router.push("/maxCapacityScreen");
+
+    else {
+      socket.emit("check_cannot_join", "True")
+
+      console.log(canJoin + "ahsdfhsdfksfjdl;fjs");
+  
+      if(canJoin == "True")
+      socket.emit("check_if_host_exists", "True")
+    }
+
+
+
+  [canJoin]})
+
+  socket.on("can_join", (data) => {
+    setCanJoin(data)
+
+   })
+
 
 useEffect(() : any => {
   console.log(socketEmissionHolder.length)
