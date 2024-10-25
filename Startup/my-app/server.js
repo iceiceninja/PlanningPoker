@@ -91,15 +91,8 @@ nextApp.prepare().then(() => {
   // When user (client) joins the server
   io.on('connection', (socket) => {
 
-  // Set the limit to 20.
-  if(idToPlayerName.size == 20) {
-    console.log(idToPlayerName.size)
-    socket.emit("cannot_join", "true");
-  }
-
-
   // We have to make sure not to push the host into the queue.
-  else if (idToPlayerName.size >= HOST_EXISTS) 
+   if (idToPlayerName.size >= HOST_EXISTS) 
    {
      idForEachPlayerQueue.push(socket.id)
      socket.emit("host_exists", "True");
@@ -238,6 +231,16 @@ else {
 }
   socket.emit("host_currently_exists", hostInfo);
 })
+
+socket.on("check_cannot_join", () => {
+  if (idToPlayerName.size > 20) {
+    socket.emit("can_join", "False");
+  }
+
+  else {
+    socket.emit("can_join", "True");
+  }
+});
 
 
 
