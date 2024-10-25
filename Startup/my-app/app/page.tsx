@@ -41,8 +41,9 @@ export default function HostHome() {
   const socketEmissionHolder = []; // Has to be an array otherwise the socket throws an error.
 
 
-
-
+  socket.on("cannot_join", (data) => {
+    router.push("/maxCapacityScreen")
+  })
 
   socket.on("host_currently_exists", (data) => {
     setDisplayHostname(data);
@@ -59,6 +60,9 @@ export default function HostHome() {
   },);
 
   useEffect(() => { 
+    socket.emit("check_cannt_join", ("true"))
+
+
     socket.emit("check_if_host_exists", "true")
 }, []); 
 

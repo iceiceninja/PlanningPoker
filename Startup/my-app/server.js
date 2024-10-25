@@ -91,8 +91,15 @@ nextApp.prepare().then(() => {
   // When user (client) joins the server
   io.on('connection', (socket) => {
 
+  // Set the limit to 20.
+  if(idToPlayerName.size == 20) {
+    console.log(idToPlayerName.size)
+    socket.emit("cannot_join", "true");
+  }
+
+
   // We have to make sure not to push the host into the queue.
-  if (idToPlayerName.size >= HOST_EXISTS) 
+  else if (idToPlayerName.size >= HOST_EXISTS) 
    {
      idForEachPlayerQueue.push(socket.id)
      socket.emit("host_exists", "True");
@@ -100,13 +107,15 @@ nextApp.prepare().then(() => {
 
 
    // We have to make it a default value for now so that every other connection besides host goes to userStartUp
-   if ( idToPlayerName.size == NO_USERS) {
+  else  if ( idToPlayerName.size == NO_USERS) {
     hostSocket = socket.id
     idToPlayerName.set(socket.id, "host")
    }
    else {
     idToPlayerName.set(socket.id, "connecting....")
    }
+
+   console.log(idToPlayerName.size);
 
    console.log("user connected")
 
