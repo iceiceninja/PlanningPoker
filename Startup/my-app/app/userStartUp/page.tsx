@@ -38,7 +38,6 @@ export default function UserStartUp() {
 
     return (
        <div>
-         <title>Planning Poker - Everfox</title>
  
          {/* Whole Screen: Column with vertical centering*/}
          <Stack
