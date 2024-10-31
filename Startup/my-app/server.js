@@ -92,8 +92,7 @@ nextApp.prepare().then(() => {
   io.on('connection', (socket) => {
 
   // We have to make sure not to push the host into the queue.
-   if (idToPlayerName.size >= HOST_EXISTS) 
-   {
+   if (idToPlayerName.size >= HOST_EXISTS) { 
      idForEachPlayerQueue.push(socket.id)
      socket.emit("host_exists", "True");
    }
@@ -146,54 +145,41 @@ nextApp.prepare().then(() => {
   
   socket.on("render", (data) => {
     
- // convert the map to an array, get the votes from all of them
- const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
-  name,      // The name from the Map
-  vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", false) 
-}));
+    // convert the map to an array, get the votes from all of them
+    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+      name,      // The name from the Map
+      vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", false) 
+    }));
+      io.emit("return_user_name", newArray);
+    })
 
-    io.emit("return_user_name", newArray);
-        
-  })
-
-
-
-
-  socket.on("user_joined", (data) => {
-    
-    idToPlayerName.set(socket.id, data.value)
-  
-
-
-
- // convert the map to an array, get the votes from all of them
- const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
-  name,      // The name from the Map
-  vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", false) 
-}));
-
-    io.emit("return_user_name", newArray);
-        
-  })
-
-
-
-  socket.on("vote-selected", (data) => {
-    var targetsValue = data.value;
-    var isSelected = data.selected;
-
-    idToPlayerVote.set(socket.id, data.value);
-
+    // When user joins
+    socket.on("user_joined", (data) => {
       
-   const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
-    name,      // The name from the Map
-    vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", isSelected) 
-  }));
-
-
+      idToPlayerName.set(socket.id, data.value) // Add user to player list
       
-  io.emit("return_user_name", newArray);
-  });
+      const newArray = Array.from(idToPlayerName).map(([id, name]) => ({ // Map to Array, get all votes
+        name,      // The name from the Map
+        vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", false)  
+      }));
+
+      io.emit("return_user_name", newArray);
+          
+    })
+
+    socket.on("vote-selected", (data) => {
+      var targetsValue = data.value;
+      var isSelected = data.selected;
+
+      idToPlayerVote.set(socket.id, data.value);
+
+      const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
+        name,      // The name from the Map
+        vote: getOrDefault(idToPlayerVote, id, socket.id,  "Pass", isSelected) 
+      }));
+
+      io.emit("return_user_name", newArray);
+    });
 
   socket.on("set_host_session_name", (data) => {
     sessionTopic = data.value;

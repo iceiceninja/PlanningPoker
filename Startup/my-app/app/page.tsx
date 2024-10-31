@@ -10,7 +10,6 @@ import socket from '../socket';
 // React Library Imports
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import Favicon from "react-favicon";
 
 // MUI Imports
 import { Box, Button, Typography, Modal, TextField, Stack, CircularProgress
@@ -20,10 +19,10 @@ import { ThemeProvider } from '@mui/material/styles';
 // Folder imports
 import everfox_logo from '../images/everfox_logo.png'
 import cards from '../images/cards.png'
+import server_icon from '../images/server_icon.png'
 import {Style, textTheme } from './components/Style' 
 import { getDisplayHostname, setDisplayHostname } from '../globalHost';
 import { getGlobalSession, setGlobalSession } from '../globalSession';
-
 
 export default function HostHome() {
 
@@ -40,55 +39,32 @@ export default function HostHome() {
   const [shouldRender, setShouldRender] = useState(false);
   const [canJoin, setCanJoin] = useState("");
   const socketEmissionHolder = []; // Has to be an array otherwise the socket throws an error.
-
-
+  const hostIP = window.location.host;
 
   socket.on("host_currently_exists", (data) => {
-    setDisplayHostname(data);
-  
-    if(data == "hostNotJoined" && getDisplayHostname() == "hostNotJoined") {
-      setShouldRender(true);
-    }
-    
-    else if (data != "hostNotJoined" && getDisplayHostname() != "hostNotJoined") {
-      router.push("/userStartUp")
-    }
-
-    socket.off("host_currently_exists");
+    setDisplayHostname(data); // Display host name
+    if (data == "hostNotJoined" && getDisplayHostname() == "hostNotJoined") { setShouldRender(true); } // End loading screen, load normal screen
+    else if (data != "hostNotJoined" && getDisplayHostname() != "hostNotJoined") { router.push("/userStartUp") } // Navigate to user start up screen
+    socket.off("host_currently_exists"); // turn off host exists socket
   },);
 
   useEffect(() : any => {
     console.log(canJoin)
-
-    if(canJoin == "False")
-      router.push("/maxCapacityScreen");
-
+    if (canJoin == "False") { router.push("/maxCapacityScreen"); } // If 20+ users, navigate to max capacity screen
     else {
       socket.emit("check_cannot_join", "True")
-
       console.log(canJoin + "ahsdfhsdfksfjdl;fjs");
-  
-      if(canJoin == "True")
-      socket.emit("check_if_host_exists", "True")
+      if(canJoin == "True") { socket.emit("check_if_host_exists", "True") }
     }
-
-
-
   [canJoin]})
 
-  socket.on("can_join", (data) => {
-    setCanJoin(data)
-
-   })
+  socket.on("can_join", (data) => { setCanJoin(data) })
 
 
-useEffect(() : any => {
-  console.log(socketEmissionHolder.length)
-  if(userCount >= 1) {
-    router.push('/host')
-  } 
-
-}, [userCount, router, socketEmissionHolder.length]);
+  useEffect(() : any => {
+    console.log(socketEmissionHolder.length)
+    if(userCount >= 1) { router.push('/host') } 
+  }, [userCount, router, socketEmissionHolder.length]);
 
   
     // Loading Screen
@@ -106,16 +82,16 @@ useEffect(() : any => {
   
     // Direct to setup screens for host or user
 
-  // Input Validation **
-  const handleSubmit = (event: { preventDefault: () => void; }) => {
-    event.preventDefault() // Stops default action of an element from happening
-    setUserCount((prevValue) => prevValue + 1); // Increment user count
-    setHostJoined(true); // Tell client that host has joined **
-     socket.emit('user_joined', {value: hostName}); // Tell server host has joined **
-     socket.emit('set_host_session_name' , {value : sessionTopic});
-    setDisplayHostname(hostName);
-    setGlobalSession(sessionTopic);
-  }
+    // Input Validation **
+    const handleSubmit = (event: { preventDefault: () => void; }) => {
+      event.preventDefault() // Stops default action of an element from happening
+      setUserCount((prevValue) => prevValue + 1); // Increment user count
+      setHostJoined(true); // Tell client that host has joined **
+      socket.emit('user_joined', {value: hostName}); // Tell server host has joined **
+      socket.emit('set_host_session_name' , {value : sessionTopic});
+      setDisplayHostname(hostName);
+      setGlobalSession(sessionTopic);
+    }
   
 
   return (
@@ -125,14 +101,16 @@ useEffect(() : any => {
       <Stack
         direction = "column"
         sx = {{
-          width: "100vw",
-          height: "100vh",
-          justifyContent: "center",
+          width: "96vw",
+          height: "96vh",
+          justifyContent: "space-between",
           alignItems: "center",
         }}
       >
+        {/* Top Box (for spcae-between justifyContent)*/}
+        <Box></Box>
 
-        {/* Center Box */}
+        {/* Center Box with all content*/}
         <Box
           sx = {{
             borderRadius: 1,
@@ -140,7 +118,8 @@ useEffect(() : any => {
             boxShadow: 2,
             width: "90vw",
             height: "75vh",
-            maxWidth: '1050px '
+            maxWidth: '1050px',
+            maxHeight: '548px'
           }}
         >
           {/* Box has 3 rows */}
@@ -150,27 +129,42 @@ useEffect(() : any => {
                 width: "100%",
                 height: "100%",
                 justifyContent: "space-between",
-                alignItems: "center"
+                alignItems: "center",
+                border: 0
               }}
           >
             {/* 1st Row: Title, session ID */}
-            <Box>
+            <Stack
+              direction = "row"
+              spacing = {1}
+              sx = {{
+                width: '100%',
+                justifyContent: "center",
+                alignItems: "center",
+                border: 0
+              }}
+            >
               <ThemeProvider theme = {textTheme}>
-                <Typography
+                <Typography 
                   variant = "h3"
+                  sx = {{
+                    fontWeight: 'regular'
+                  }}
                 >
-                  Host Startup
+                  Host
                 </Typography>
               </ThemeProvider>
-            </Box>
+            </Stack>
 
             {/* 2nd Row: Login */}
             <Stack
               direction = "row"
               spacing = {0}
               sx={{
+                width: '100%',
                 justifyContent: "center",
                 alignItems: "center",
+                border: 0
               }}
             >
                 {/* App title and logo, with getting started button */}
@@ -209,24 +203,19 @@ useEffect(() : any => {
                       [theme.breakpoints.up('xs')]: { width: '6vh', height: '6vh'},
                       [theme.breakpoints.up('sm')]: { width: '8vh', height: '8vh'},
                       [theme.breakpoints.up('md')]: { width: '10vh', height: '10vh'},
-                      border: 0 })
+                      border: 0,
+                      maxWidth: '73px', maxHeight: '73px' })
                     }
                   /> 
-                  <Box sx={{ m: 0 }} /> 
-                  {/*getting started */}
-                  <Button 
-                    type = "button" 
-                    variant= "contained" 
-                    className="button-12" 
-                    onClick={handleOpen}
+                  {/* Getting started */}
+                  <Button type = "button" variant= "contained" className="button-12" onClick={handleOpen}
                     sx = { (theme) => ({
                       [theme.breakpoints.up('xs')]: { width: '15vh', height: '5vh',   fontSize: '.57rem'},
                       [theme.breakpoints.up('sm')]: { width: '25vh', height: '5.5vh', fontSize: '.90rem'},
                       [theme.breakpoints.up('md')]: { width: '30vh', height: '6vh',   fontSize: '1.0rem'},
-                      border: 0,
-                      padding: 0,
-                     })
-                    }
+                      border: 0, padding: 0,
+                      maxWidth: '207.8px', maxHeight: '44.4px'
+                    })}
                   >
                     Getting Started!
                   </Button>
@@ -239,7 +228,7 @@ useEffect(() : any => {
                   >
              
                     <Box sx = {Style}>
-                    
+                    <ThemeProvider theme = {textTheme}>
                       <Typography id="modal-modal-title" variant="h6" component="h2">
                         Welcome to Everfox&apos;s Planning Poker Application!
                       </Typography>
@@ -249,6 +238,7 @@ useEffect(() : any => {
                         After clicking the &quot;Start a Session&quot; button, you will be prompted with a
                         round screen where you can start the planning poker process!
                       </Typography>
+                    </ThemeProvider>
                     </Box>
                   </Modal>
                 </Stack>
@@ -294,9 +284,8 @@ useEffect(() : any => {
                             '& .MuiFormLabel-root': { fontSize: '1.0rem', marginTop: '.4.5vh'},
                             '& .MuiInputBase-input': { fontSize: '1.0rem', marginTop: '.5vh'}   
                           },
-                          border: 0,
-                          padding: 0,
-                          margin: 0
+                          border: 0, padding: 0, margin: 0,
+                          maxWidth: '207.8px', maxHeight: '44.4px'
                          })                         
                         }
                     />
@@ -314,7 +303,7 @@ useEffect(() : any => {
                           [theme.breakpoints.up('xs')]: { 
                             width: '15vh', height: '5vh', fontSize: '.57rem', 
                             '& .MuiFormLabel-root': { fontSize: '.60rem', marginTop: '.9vh'},      
-                            '& .MuiInputBase-input': { fontSize: '.60rem', marginTop: '.5vh'}                
+                            '& .MuiInputBase-input': { fontSize: '.60rem', marginTop: '1vh'}                
                           },
                           [theme.breakpoints.up('sm')]: { 
                             width: '25vh', height: '5.5vh', fontSize: '.90rem', 
@@ -326,8 +315,8 @@ useEffect(() : any => {
                             '& .MuiFormLabel-root': { fontSize: '1.0rem', marginTop: '.5vh'},
                             '& .MuiInputBase-input': { fontSize: '1.0rem', marginTop: '.5vh'}  
                           },
-                          border: 0,
-                          padding: 0,
+                          border: 0, padding: 0,
+                          maxWidth: '207.8px', maxHeight: '44.4px'
                          })
                         }
                     />
@@ -340,8 +329,8 @@ useEffect(() : any => {
                         [theme.breakpoints.up('xs')]: { width: '15vh', height: '5vh',   fontSize: '.57rem'},
                         [theme.breakpoints.up('sm')]: { width: '25vh', height: '5.5vh', fontSize: '.90rem'},
                         [theme.breakpoints.up('md')]: { width: '30vh', height: '6vh',   fontSize: '1.0rem'},
-                        border: 0,
-                        padding: 0,
+                        border: 0, padding: 0,
+                        maxWidth: '207.8px', maxHeight: '44.4px'
                        })
                       }
                     >
@@ -351,38 +340,52 @@ useEffect(() : any => {
             </Stack>
 
             {/* 3rd Row: Logo and company name */}
-            <Box>
-              <Stack
-                direction = "row"
-                spacing = {1}
-                sx = {{
-                  justifyContent: "center",
-                  alignItems: "center"
-                }}
-              >
-                <Box 
-                component = "img"
-                src = {everfox_logo.src} 
-                alt = "everfox logo"
-                sx = { (theme) => ({
-                  [theme.breakpoints.up('xs')]: { width: '3.5vh', height: '3.5vh'},
-                  [theme.breakpoints.up('sm')]: { width: '4vh', height: '4vh'},
-                  [theme.breakpoints.up('md')]: { width: '6vh', height: '6vh'},
-                  border: 0 })
-                }/> 
+            <Stack
+              direction = "row"
+              spacing = {1}
+              sx = {{
+                width: '100%',
+                justifyContent: "center",
+                alignItems: "center",
+                border: 0
+              }}
+            >
+              <Box 
+              component = "img"
+              src = {everfox_logo.src} 
+              alt = "everfox logo"
+              sx = { (theme) => ({
+                [theme.breakpoints.up('xs')]: { width: '3.5vh', height: '3.5vh'},
+                [theme.breakpoints.up('sm')]: { width: '4vh', height: '4vh'},
+                [theme.breakpoints.up('md')]: { width: '6vh', height: '6vh'},
+                border: 0,
+                maxWidth: '43.8px', maxHeight: '43.8px' })
+              }/> 
 
-                <ThemeProvider theme = {textTheme}>
-                  <Typography
-                    variant = "h5"
-                  >
-                    Everfox
-                  </Typography>
-                </ThemeProvider>
+              <ThemeProvider theme = {textTheme}>
+                <Typography
+                  variant = "h5"
+                  sx = {{
+                    fontWeight: 500
+                  }}
+                >
+                  Everfox
+                </Typography>
+              </ThemeProvider>
 
-              </Stack>
-            </Box>
+            </Stack>
           </Stack>
         </Box>
+
+        {/* Bottom Box: URL*/}
+        <Box>
+          <Typography>
+            {hostIP}
+
+          </Typography>
+          
+        </Box>
+
       </Stack>
     </div>
   );
