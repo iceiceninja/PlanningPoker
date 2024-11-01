@@ -46,7 +46,7 @@ export default function Host() {
     const [timeLeft, setTimeLeft] = useState(60);
     const [isTimerVisible, setIsTimerVisible] = useState(false);
     const [endRoundPressed, setIsEndRoundPressed] = useState(false);
-
+    const [checkVoteAllowedByHost, setChecked] = useState(false);
         // Variables
         let name: string = "Kaiden"
         let topic: string = "Hi! Today we will be making a project about food. I like food. You like food."
@@ -87,6 +87,8 @@ export default function Host() {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
+
+        if (!endRoundPressed || endRoundPressed && checkVoteAllowedByHost) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
             if(key == event.currentTarget.value) {
@@ -117,6 +119,7 @@ export default function Host() {
             }
         }
     }
+    }
 
     useEffect(() => {
         if (!isTimerVisible || timeLeft === 0) return;
@@ -136,6 +139,12 @@ export default function Host() {
     }
   }, [timeLeft]);
 
+
+  // Makes sure checked is updated
+  useEffect(() => {
+
+  }, [checkVoteAllowedByHost]);
+
     
       const startTimer = () => {
         setIsTimerVisible(true);
@@ -151,7 +160,11 @@ export default function Host() {
     socket.on("return_user_name", (allPlayers) => {  
         setPlayers(allPlayers);
         lengthChange = players.length;
-      
+    })
+
+    socket.on("check_if_can_change_votes", (data) => {
+        console.log(data);
+        setChecked(data);
     })
 
     // If the host disconnects, all users disconnect too
