@@ -269,6 +269,10 @@ socket.on("reset_all_players", () => {
       io.emit("reset_players", newArray);
 })
 
+socket.on("allow_change_votes", (data) => {
+  io.emit("check_if_can_change_votes", data);
+})
+
 
 
 

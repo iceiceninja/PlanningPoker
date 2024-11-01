@@ -107,7 +107,7 @@ if (timeLeft === 0) {
 
 useEffect(() => {
     console.log(checked);
-    socket.emit("allow_change_votes");
+    socket.emit("allow_change_votes", checked);
     }, [checked]);
 
     // sendVote(e)
