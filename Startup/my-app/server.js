@@ -256,6 +256,8 @@ socket.on("reset_all_players", () => {
     vote: "Pass" 
   }));
 
+  
+
   const updatedMap = new Map();
 
   for (const [id, name] of idToPlayerName) {

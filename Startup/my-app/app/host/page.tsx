@@ -75,6 +75,7 @@ export default function Host() {
 
 
 
+  console.log(getDisplayHostname())
 
 
     var lengthChange = -1;
@@ -358,7 +359,7 @@ useEffect(() => {
                                 variant="subtitle1"
                                 align="center"
                             >
-                                Host: {hostName}
+                                Host: {getDisplayHostname()}
                             </Typography>
                         </ThemeProvider>
                         {isTimerVisible && `Time Left: ${timeLeft} seconds`}

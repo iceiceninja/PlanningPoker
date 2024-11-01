@@ -162,7 +162,6 @@ export default function Host() {
     })
 
     socket.on("check_if_can_change_votes", (data) => {
-        console.log(data);
         setChecked(data);
     })
 
