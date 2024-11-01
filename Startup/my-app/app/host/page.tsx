@@ -98,7 +98,6 @@ if (timeLeft === 0) {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
-        if (!displayVote) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
             if(key == event.currentTarget.value) {
@@ -129,7 +128,6 @@ if (timeLeft === 0) {
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
             }
         }
-    }
     }
 
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
@@ -449,7 +447,7 @@ if (timeLeft === 0) {
                     gap: 4,
                     marginBottom: 4,
                     border: "transparent",
-                    width: "70%",
+                    width: "100%",
                     marginTop: 4
                 }}
                 >
@@ -476,7 +474,7 @@ if (timeLeft === 0) {
                        {displayVote ? player.vote : " "}
                     </Typography>
                     </Paper>
-                    <Typography style={{marginRight: 26, marginTop: 4,  fontWeight: "bold"}}>{player.name}</Typography>
+                    <Typography style={{marginRight: 26, marginTop: 4, fontWeight: "bold"}}>{player.name}</Typography>
                     </div>
                 ))}
                 </Box>

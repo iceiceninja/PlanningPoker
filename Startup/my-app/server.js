@@ -92,7 +92,7 @@ nextApp.prepare().then(() => {
   io.on('connection', (socket) => {
 
   // We have to make sure not to push the host into the queue.
-  if (idToPlayerName.size >= HOST_EXISTS) 
+   if (idToPlayerName.size >= HOST_EXISTS) 
    {
      idForEachPlayerQueue.push(socket.id)
      socket.emit("host_exists", "True");
@@ -100,13 +100,15 @@ nextApp.prepare().then(() => {
 
 
    // We have to make it a default value for now so that every other connection besides host goes to userStartUp
-   if ( idToPlayerName.size == NO_USERS) {
+  else  if ( idToPlayerName.size == NO_USERS) {
     hostSocket = socket.id
     idToPlayerName.set(socket.id, "host")
    }
    else {
     idToPlayerName.set(socket.id, "connecting....")
    }
+
+   console.log(idToPlayerName.size);
 
    console.log("user connected")
 
@@ -229,6 +231,16 @@ else {
 }
   socket.emit("host_currently_exists", hostInfo);
 })
+
+socket.on("check_cannot_join", () => {
+  if (idToPlayerName.size > 20) {
+    socket.emit("can_join", "False");
+  }
+
+  else {
+    socket.emit("can_join", "True");
+  }
+});
 
 
 
