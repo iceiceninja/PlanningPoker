@@ -456,9 +456,9 @@ if (timeLeft === 0) {
                     
                 {players.map((player, vote) => (
                     
-                    <div style ={{textAlign: "center"}}>
+                    <div key={player.name} style ={{textAlign: "center"}}>
                     <Paper
-                    key={player.name}
+                    
                     elevation={3}
                     sx={{
                         width: 100,  // Size of each player card
