@@ -69,7 +69,7 @@ export default function Host() {
     if (!timerStarted)
     setTimeLeft(Number(event.target.value)); // Update the state with the input value
 
-    
+
     setTimeLeftInput(event.target.value);
   };
 
@@ -169,7 +169,7 @@ useEffect(() => {
 
     function startCountDown() {
         if (!endRoundPressed)
-        socket.emit("start_count_down", (timeLeft));
+        socket.emit("start_count_down", (Number(timeLeftInput)));
     }
 
     function resetRound() {
@@ -192,6 +192,7 @@ useEffect(() => {
         setIsTimerVisible(false)
         setTimeLeft(60)
         setTimeLeftInput('')
+        setTimerStarted(false)
         socket.emit("display_all_votes");
     }
 
@@ -202,6 +203,7 @@ useEffect(() => {
     })
     
     socket.on("reset_players", (allPlayers) => {
+        setTimerStarted(false)
         setUserVotes(0)
         setButtonStates(inititalMap);
         setPlayers(allPlayers);

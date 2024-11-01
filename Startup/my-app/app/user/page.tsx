@@ -148,7 +148,6 @@ export default function Host() {
     
       const startTimer = () => {
         setIsTimerVisible(true);
-        setTimeLeft(timeLeft); // Reset the time when the button is pressed
       };
 
 
