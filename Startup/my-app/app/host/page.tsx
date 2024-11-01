@@ -34,6 +34,9 @@ import {
 import InfoIcon from '@mui/icons-material/Info';
 import LinkIcon from '@mui/icons-material/Link';
 import { buttonTheme, Style, textTheme } from '../components/Style' 
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { shadows } from '@mui/system';
 import { Truculenta } from "next/font/google";
 
@@ -53,6 +56,12 @@ export default function Host() {
     const [timeLeft, setTimeLeft] = useState(60);
     const [isTimerVisible, setIsTimerVisible] = useState(false);
     const [endRoundPressed, setIsEndRoundPressed] = useState(false);
+    const [checked, setChecked] = useState(false);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+  };;
+
 
     var lengthChange = -1;
     var inititalMap = new Map([
@@ -95,6 +104,11 @@ if (timeLeft === 0) {
   socket.emit("display_all_votes");
 }
 }, [timeLeft]);
+
+useEffect(() => {
+    console.log(checked);
+    socket.emit("allow_change_votes");
+    }, [checked]);
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
@@ -399,6 +413,13 @@ if (timeLeft === 0) {
                             <button onClick={startCountDown} >Start CountDown</button>
                             <button onClick={resetRound} >Reset Round </button>
                             <button onClick={endCurrentRound} >End Current Round</button>
+                            <FormGroup>
+                            <FormControlLabel control={     <Checkbox
+                         checked={checked}
+                          onChange={handleChange}
+                      inputProps={{ 'aria-label': 'controlled' }}
+                  />} label="Change Vote Allowed" />
+                            </FormGroup>
                 </Stack>
                     <Stack               
                         direction="row" 
