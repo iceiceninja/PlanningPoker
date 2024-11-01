@@ -148,7 +148,7 @@ export default function Host() {
     
       const startTimer = () => {
         setIsTimerVisible(true);
-        setTimeLeft(60); // Reset the time when the button is pressed
+        setTimeLeft(timeLeft); // Reset the time when the button is pressed
       };
 
 
@@ -213,7 +213,8 @@ export default function Host() {
         setStoryText(data);
     })
 
-    socket.on("count_down_started" , () => {
+    socket.on("count_down_started" , (data) => {
+        setTimeLeft(data);
         startTimer()
     });
 

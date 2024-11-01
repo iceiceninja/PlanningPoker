@@ -210,7 +210,6 @@ socket.on("get_session_name", (data) => {
 })
 
 socket.on("story_submitted_host", (data) => {
-  userStory = data
   io.emit("get_story_submitted_host", userStory);
 })
 
@@ -218,8 +217,9 @@ socket.on("get_story_submitted_for_new_user", () => {
   io.emit("get_story_submitted_host", userStory);
 })
 
-socket.on("start_count_down", () => {
-  io.emit("count_down_started");
+socket.on("start_count_down", (data) => {
+  console.log("dshafashfd" + data)
+  io.emit("count_down_started", data);
 })
 
 socket.on("display_all_votes", () => {

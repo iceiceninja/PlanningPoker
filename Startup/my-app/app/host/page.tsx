@@ -53,14 +53,28 @@ export default function Host() {
     const [previousValue, setPreviousValue] = useState("-1");
     const [textAreaValue, setTextAreaValue] = useState('');
     const [displayVote, setDisplayVote] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(60);
+    const [timeLeftInput, setTimeLeftInput] = useState(''); 
+    const [timeLeft, setTimeLeft] = useState(40);       
     const [isTimerVisible, setIsTimerVisible] = useState(false);
     const [endRoundPressed, setIsEndRoundPressed] = useState(false);
     const [checked, setChecked] = useState(false);
+    const [timerStarted, setTimerStarted] = useState(false);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  const setCheckedValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
   };;
+
+  const setTimerValueWhenChanged = (event :  any) => {
+    if (!timerStarted)
+    setTimeLeft(Number(event.target.value)); // Update the state with the input value
+
+    
+    setTimeLeftInput(event.target.value);
+  };
+
+
+
 
 
     var lengthChange = -1;
@@ -155,7 +169,7 @@ useEffect(() => {
 
     function startCountDown() {
         if (!endRoundPressed)
-        socket.emit("start_count_down", "true");
+        socket.emit("start_count_down", (timeLeft));
     }
 
     function resetRound() {
@@ -167,8 +181,9 @@ useEffect(() => {
     });
 
     const startTimer = () => {
+        setTimerStarted(true)
         setIsTimerVisible(true);
-        setTimeLeft(60); // Reset the time when the button is pressed
+        setTimeLeft(Number(timeLeftInput)); // Reset the time to the new input when the button is pressed
       };
 
 
@@ -176,6 +191,7 @@ useEffect(() => {
         setDisplayVote(true)
         setIsTimerVisible(false)
         setTimeLeft(60)
+        setTimeLeftInput('')
         socket.emit("display_all_votes");
     }
 
@@ -195,6 +211,7 @@ useEffect(() => {
         setIsEndRoundPressed(false);
         setTimeLeft(60)
         setTextAreaValue("")
+        setTimeLeftInput('')
     });
 
     const backgroundColor = (vote : any) => {
@@ -410,13 +427,24 @@ useEffect(() => {
                         marginBottom={5}
                         >
                             <button onClick={submitStory} >Submit Story</button>
+                            <Stack
+                        direction="column">
+                            <TextField 
+                            id="standard-basic" 
+                            label="Set Count Down" 
+                            value={timeLeftInput}   
+                            onChange={setTimerValueWhenChanged}   
+                            variant="standard" 
+                            type="number" // Allows only numeric input
+                            />
                             <button onClick={startCountDown} >Start CountDown</button>
+                            </Stack>
                             <button onClick={resetRound} >Reset Round </button>
                             <button onClick={endCurrentRound} >End Current Round</button>
                             <FormGroup>
                             <FormControlLabel control={     <Checkbox
                          checked={checked}
-                          onChange={handleChange}
+                          onChange={setCheckedValue}
                       inputProps={{ 'aria-label': 'controlled' }}
                   />} label="Change Vote Allowed" />
                             </FormGroup>
