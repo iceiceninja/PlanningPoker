@@ -171,22 +171,20 @@ useEffect(() => {
   const renderAverage = (value : any) => {
     if (value != 0){
        return  (<Paper          
-        elevation={3}
         sx={{
-            width: 70,  // Size of each player card
-            height: 70, // Size of each player card
-            display: "inline-block",
-            flexDirection: "column",
+            width: 10,  // Size of each player card
+            height: 10, // Size of each player card
+            display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            textAlign: "center",
             padding: 3,
             marginRight: 3,
+            fontSize: 15,
             backgroundColor: backgroundColor(String(value))
         }}
         >
-         <Typography sx={{ fontSize: 30 }}>
-           {displayVote ? value: " "}
-        </Typography>
+             Average: {displayVote ? value: " "}
         </Paper>
        )
     }
@@ -366,7 +364,7 @@ useEffect(() => {
                             bgcolor: "#F3F1F6",
                             borderRadius: '8px',
                             width: "50vw",
-                            height: "12vh",
+                            height: "13.2vh",
                             maxWidth: 500,
                             boxShadow: 4
                         }}
@@ -388,6 +386,7 @@ useEffect(() => {
                             </Typography>
                         </ThemeProvider>
                         {isTimerVisible && `Time Left: ${timeLeft} seconds`}
+                 {displayVote ? renderAverage(averageOfAllVotes) : ""}
                     </Stack>
                     <Stack
                         direction="column"
@@ -504,8 +503,8 @@ useEffect(() => {
                                 variant="h6"
                                 align="center"
                             >
-                        <p>Story:   {displayVote ? renderAverage(averageOfAllVotes) : ""}</p> 
-                       
+                        <p >Story: </p> 
+
                         <textarea
         value={textAreaValue} 
         onChange={handleTextAreaChange}
