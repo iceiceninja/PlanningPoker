@@ -48,7 +48,7 @@ export default function Host() {
 
     const open2 = Boolean(anchor2);
     const id2 = open2 ? 'simple-popper' : undefined;
-    const [userVotes, setUserVotes] = useState(0);
+    const [averageOfAllVotes, setAverageOfAllVotes] = useState(0);
     const [cardSelected, setCardSelected] = useState(false);
     const [previousValue, setPreviousValue] = useState("-1");
     const [textAreaValue, setTextAreaValue] = useState('');
@@ -168,6 +168,30 @@ useEffect(() => {
         socket.emit("story_submitted_host", textAreaValue); 
     }
 
+  const renderAverage = (value : any) => {
+    if (value != 0){
+       return  (<Paper          
+        elevation={3}
+        sx={{
+            width: 70,  // Size of each player card
+            height: 70, // Size of each player card
+            display: "inline-block",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 3,
+            marginRight: 3,
+            backgroundColor: backgroundColor(String(value))
+        }}
+        >
+         <Typography sx={{ fontSize: 30 }}>
+           {displayVote ? value: " "}
+        </Typography>
+        </Paper>
+       )
+    }
+}
+
     function startCountDown() {
         if (!endRoundPressed)
         socket.emit("start_count_down", (Number(timeLeftInput)));
@@ -205,7 +229,7 @@ useEffect(() => {
     
     socket.on("reset_players", (allPlayers) => {
         setTimerStarted(false)
-        setUserVotes(0)
+        setAverageOfAllVotes(0)
         setButtonStates(inititalMap);
         setPlayers(allPlayers);
         setCardSelected(false)
@@ -260,11 +284,12 @@ useEffect(() => {
     
 
 
-    socket.on("display_votes", () => {
+    socket.on("display_votes", (averageOfAllVotes) => {
         setIsEndRoundPressed(true);
         setIsTimerVisible(false)
         setTimeLeft(60)
         setDisplayVote(true)
+        setAverageOfAllVotes(averageOfAllVotes);
     })
 
     // If the host disconnects, all users disconnect too
@@ -427,7 +452,7 @@ useEffect(() => {
                             justifyContent: "center",
                             alignItems: "center"
                         }}
-                        marginBottom={5}
+                        marginBottom={2}
                         >
                             <button onClick={submitStory} >Submit Story</button>
                             <Stack
@@ -479,8 +504,8 @@ useEffect(() => {
                                 variant="h6"
                                 align="center"
                             >
-                        <p>Story: </p>
-                        <p> {userVotes} </p>
+                        <p>Story:   {displayVote ? renderAverage(averageOfAllVotes) : ""}</p> 
+                       
                         <textarea
         value={textAreaValue} 
         onChange={handleTextAreaChange}
@@ -492,6 +517,7 @@ useEffect(() => {
       />
                             </Typography>
                         </ThemeProvider>
+                        
             {/* Player Arrangement: Simulates sitting around a table */}
              <Box
                 sx={{
@@ -505,6 +531,8 @@ useEffect(() => {
                     marginTop: 4
                 }}
                 >
+
+                    
                     
                 {players.map((player, vote) => (
                     

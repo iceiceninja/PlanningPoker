@@ -86,6 +86,23 @@ nextApp.prepare().then(() => {
   }
 }
 
+function calculateClosest(average ) {
+  const numbers = [1, 2, 3, 5, 8, 13, 21];
+let closestNumber = numbers[0];
+let smallestDistance = Math.abs(numbers[0] - average);
+
+for (let i = 1; i < numbers.length; i++) {
+    const distance = Math.abs(numbers[i] - average);
+    if (distance < smallestDistance) {
+        smallestDistance = distance;
+        closestNumber = numbers[i];
+    }
+}
+
+return closestNumber;
+
+}
+
 
 
   // When user (client) joins the server
@@ -223,6 +240,8 @@ socket.on("start_count_down", (data) => {
 })
 
 socket.on("display_all_votes", () => {
+  var newAverage = calculateClosest(average);
+
   io.emit("display_votes", average);
 })
 
@@ -269,6 +288,8 @@ socket.on("reset_all_players", () => {
 
   io.emit("get_story_submitted_host", userStory);
       io.emit("reset_players", newArray);
+
+  average = 0;
 })
 
 socket.on("allow_change_votes", (data) => {
