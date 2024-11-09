@@ -199,16 +199,7 @@ return closestNumber;
     var targetsValue = data.value;
     var isSelected = data.selected;
 
-    if (idToPlayerVote.get(socket.id) != "Pass" && isSelected) {
-      average = average - idToPlayerVote.get(socket.id);
-    }
-
-    if(!isSelected) { // if its deslected, subtract it.
-      average = average - Number(targetsValue);
-     }
-
-     idToPlayerVote.set(socket.id, data.value);
-     average = average + Number(targetsValue);
+     idToPlayerVote.set(socket.id, targetsValue);
 
       
    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
@@ -278,7 +269,36 @@ socket.on("check_cannot_join", () => {
   }
 });
 
+socket.on("update_average", (data) => {
+  var targetsValue = data.value;
+  var isSelected = data.selected;
+  var total = 0;
 
+  average += Number(targetsValue);
+  console.log(isSelected);
+
+  if (idToPlayerVote.get(socket.id) != "Pass" && isSelected) { //if the user selects a new card, subtract the old card
+    average = average - idToPlayerVote.get(socket.id);
+    console.log("Case 1:")
+  }
+
+ else if(!isSelected) { // if its deslected, subtract it.
+  console.log("Case 2:")
+    average = average - Number(targetsValue);
+   }
+
+   for (const [key, value] of idToPlayerVote) {
+       if (value != "Pass") {
+         total++;
+       }
+   }
+   console.log(average);
+   var newAverage = total == 0 ? 0 :calculateClosest(average / total);
+   console.log(newAverage);
+
+   socket.emit("set_new_average", newAverage);
+
+});
 
 
 socket.on("reset_all_players", () => {

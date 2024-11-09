@@ -127,6 +127,7 @@ useEffect(() => {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
+        if (!endRoundPressed || endRoundPressed && !checked) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
             if(key == event.currentTarget.value) {
@@ -143,6 +144,7 @@ useEffect(() => {
         if (previousValue != event.currentTarget.value || cardSelected == false) {
             setPreviousValue(event.currentTarget.value);
             setCardSelected(true)
+            socket.emit("update_average", {value: event.currentTarget.value, selected: true});
             socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
         }
 
@@ -150,14 +152,20 @@ useEffect(() => {
         else {
             if (previousValue != event.currentTarget.value) {
                 setCardSelected(true)
+                socket.emit("update_average", {value: event.currentTarget.value, selected: false});
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
             }
             else {
                 setCardSelected(false)
+                socket.emit("update_average", {value: event.currentTarget.value, selected: false});
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
             }
+
         }
+
     }
+}
+
 
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
         setAnchor2(anchor2 ? null : event2.currentTarget);
@@ -224,6 +232,10 @@ useEffect(() => {
         setPlayers(allPlayers);
         lengthChange = players.length;
       
+    })
+
+    socket.on("set_new_average", (average) => {
+        setAverageOfAllVotes(average);
     })
     
     socket.on("reset_players", (allPlayers) => {
