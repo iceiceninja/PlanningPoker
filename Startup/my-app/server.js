@@ -284,7 +284,7 @@ socket.on("update_average", (data) => {
 
  else if(!isSelected) { // if its deslected, subtract it.
   console.log("Case 2:")
-    average = average - Number(targetsValue);
+    average = (average - Number(targetsValue) )* 2; // do twice to remove it since we added it earlier
    }
 
    for (const [key, value] of idToPlayerVote) {
@@ -296,7 +296,7 @@ socket.on("update_average", (data) => {
    var newAverage = total == 0 ? 0 :calculateClosest(average / total);
    console.log(newAverage);
 
-   socket.emit("set_new_average", newAverage);
+   io.emit("set_new_average", newAverage);
 
 });
 

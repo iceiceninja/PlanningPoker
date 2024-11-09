@@ -127,7 +127,7 @@ useEffect(() => {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
-        if (!endRoundPressed || endRoundPressed && !checked) {
+        if (!endRoundPressed || endRoundPressed && checked) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
             if(key == event.currentTarget.value) {
