@@ -143,18 +143,38 @@ return closestNumber;
 
       io.emit('disconnect_all' , "true")
     }
+    
 
 
     idToPlayerName.delete(socket.id)
+
+    
+    average = average - idToPlayerVote.get(socket.id); //remove it from the average before deleting
+
+
     idToPlayerVote.delete(socket.id)
+    var total = 0;
 
 
     const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
       name,      // The name from the Map
       vote: getOrDefault(idToPlayerVote, id, "randomIdBecauseWeJustWantTheMapAsAnArray" , "Pass", false) 
     }));
+
+      for (const [key, value] of idToPlayerVote) {
+      if (value != "Pass") {
+        total++;
+      }
+  }
     
         io.emit("return_user_name", newArray);
+
+
+        console.log(average);
+
+        var newAverage = total == 0 ? 0 :calculateClosest(average / total);
+
+        io.emit("set_new_average", newAverage);
 
 
     console.log('user disconnected');
@@ -231,7 +251,6 @@ socket.on("get_story_submitted_for_new_user", () => {
 })
 
 socket.on("start_count_down", (data) => {
-  console.log("dshafashfd" + data)
   io.emit("count_down_started", data);
 })
 
@@ -280,18 +299,22 @@ socket.on("update_average", (data) => {
   var total = 0;
 
   average += Number(targetsValue);
-  console.log("Average Before" + average)
+
 
   if (idToPlayerVote.get(socket.id) != "Pass" && isSelected) { //if the user selects a new card, subtract the old card
-    average = average - idToPlayerVote.get(socket.id);
+    average = average - idToPlayerVote.get(socket.id); 
+    idToPlayerVote.set(socket.id, targetsValue);
   }
 
  else if(!isSelected) { // if its deslected, subtract it.
   console.log("Case 2:")
-  console.log(targetsValue);
     average = (average - Number(targetsValue) ); // do twice to remove it since we added it earlier
     average = (average - Number(targetsValue) );
-    console.log("After average: " + average);
+    idToPlayerVote.set(socket.id, "Pass");
+   }
+
+   else { //From pass, you select this value
+    idToPlayerVote.set(socket.id, targetsValue);
    }
 
    for (const [key, value] of idToPlayerVote) {
@@ -299,6 +322,7 @@ socket.on("update_average", (data) => {
          total++;
        }
    }
+
    var newAverage = total == 0 ? 0 :calculateClosest(average / total);
    averageWithCorrectCard = newAverage;
    io.emit("set_new_average", newAverage);
