@@ -54,8 +54,9 @@ nextApp.prepare().then(() => {
   const io = new Server(server);
   const NO_USERS = 0;
   var average = 0;
-  var roundedEnded = false;
+  var roundEnded = false;
   var averageWithCorrectCard = 0;
+  var canChangeVote = false;
 
   function onUserJoin(socket) {
      // We have to make sure not to push the host into the queue.
@@ -148,7 +149,7 @@ return closestNumber;
 
     idToPlayerName.delete(socket.id)
 
-    
+    if(idToPlayerVote.get(socket.id) != "Pass")
     average = average - idToPlayerVote.get(socket.id); //remove it from the average before deleting
 
 
@@ -173,7 +174,7 @@ return closestNumber;
         console.log(average);
 
         var newAverage = total == 0 ? 0 :calculateClosest(average / total);
-
+        averageWithCorrectCard = newAverage;
         io.emit("set_new_average", newAverage);
 
 
@@ -182,6 +183,8 @@ return closestNumber;
 
   
   socket.on("render", (data) => {
+    var currentAverage = average;
+    
     
  // convert the map to an array, get the votes from all of them
  const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
@@ -264,7 +267,7 @@ socket.on("display_all_votes", () => {
   }
   var newAverage = total == 0 ? 0 :calculateClosest(average / total);
   averageWithCorrectCard = newAverage;
-  roundedEnded = true;
+  roundEnded = true;
   io.emit("display_votes", newAverage);
 })
 
@@ -289,8 +292,8 @@ socket.on("check_cannot_join", () => {
   }
 });
 
-socket.on("check_if_round_ended", () => {
-  socket.emit("get_round_ended", {value: averageWithCorrectCard, didRoundEnd: roundedEnded});
+socket.on("get_all_information", () => {
+  socket.emit("return_all_information", {currentAverage: averageWithCorrectCard, isRoundOver: roundEnded, changeVote: canChangeVote});
 })
 
 socket.on("update_average", (data) => {
@@ -352,12 +355,17 @@ socket.on("reset_all_players", () => {
 
   average = 0;
   averageWithCorrectCard = 0;
-  roundedEnded = false;
+  roundEnded = false;
+  canChangeVote = false;
 })
 
 socket.on("allow_change_votes", (data) => {
+  canChangeVote = data;
   io.emit("check_if_can_change_votes", data);
 })
+
+
+
 
 
 
