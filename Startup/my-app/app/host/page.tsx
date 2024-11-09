@@ -152,7 +152,7 @@ useEffect(() => {
         else {
             if (previousValue != event.currentTarget.value) {
                 setCardSelected(true)
-                socket.emit("update_average", {value: event.currentTarget.value, selected: false});
+                socket.emit("update_average", {value: event.currentTarget.value, selected: true});
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
             }
             else {
@@ -172,7 +172,7 @@ useEffect(() => {
     };
 
     function submitStory() {
-        if (!endRoundPressed)
+        console.log(textAreaValue);
         socket.emit("story_submitted_host", textAreaValue); 
     }
 
@@ -235,6 +235,7 @@ useEffect(() => {
     })
 
     socket.on("set_new_average", (average) => {
+        console.log(average + "asdhfsdhafdhfsf") 
         setAverageOfAllVotes(average);
     })
     

@@ -54,8 +54,8 @@ nextApp.prepare().then(() => {
   const io = new Server(server);
   const NO_USERS = 0;
   var average = 0;
-
-
+  var roundedEnded = false;
+  var averageWithCorrectCard = 0;
 
   function onUserJoin(socket) {
      // We have to make sure not to push the host into the queue.
@@ -143,18 +143,38 @@ return closestNumber;
 
       io.emit('disconnect_all' , "true")
     }
+    
 
 
     idToPlayerName.delete(socket.id)
+
+    
+    average = average - idToPlayerVote.get(socket.id); //remove it from the average before deleting
+
+
     idToPlayerVote.delete(socket.id)
+    var total = 0;
 
 
     const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
       name,      // The name from the Map
       vote: getOrDefault(idToPlayerVote, id, "randomIdBecauseWeJustWantTheMapAsAnArray" , "Pass", false) 
     }));
+
+      for (const [key, value] of idToPlayerVote) {
+      if (value != "Pass") {
+        total++;
+      }
+  }
     
         io.emit("return_user_name", newArray);
+
+
+        console.log(average);
+
+        var newAverage = total == 0 ? 0 :calculateClosest(average / total);
+
+        io.emit("set_new_average", newAverage);
 
 
     console.log('user disconnected');
@@ -222,6 +242,7 @@ socket.on("get_session_name", (data) => {
 })
 
 socket.on("story_submitted_host", (data) => {
+  userStory = data;
   io.emit("get_story_submitted_host", userStory);
 })
 
@@ -230,7 +251,6 @@ socket.on("get_story_submitted_for_new_user", () => {
 })
 
 socket.on("start_count_down", (data) => {
-  console.log("dshafashfd" + data)
   io.emit("count_down_started", data);
 })
 
@@ -243,8 +263,8 @@ socket.on("display_all_votes", () => {
       }
   }
   var newAverage = total == 0 ? 0 :calculateClosest(average / total);
-
-  console.log(average);
+  averageWithCorrectCard = newAverage;
+  roundedEnded = true;
   io.emit("display_votes", newAverage);
 })
 
@@ -269,22 +289,32 @@ socket.on("check_cannot_join", () => {
   }
 });
 
+socket.on("check_if_round_ended", () => {
+  socket.emit("get_round_ended", {value: averageWithCorrectCard, didRoundEnd: roundedEnded});
+})
+
 socket.on("update_average", (data) => {
   var targetsValue = data.value;
   var isSelected = data.selected;
   var total = 0;
 
   average += Number(targetsValue);
-  console.log(isSelected);
+
 
   if (idToPlayerVote.get(socket.id) != "Pass" && isSelected) { //if the user selects a new card, subtract the old card
-    average = average - idToPlayerVote.get(socket.id);
-    console.log("Case 1:")
+    average = average - idToPlayerVote.get(socket.id); 
+    idToPlayerVote.set(socket.id, targetsValue);
   }
 
  else if(!isSelected) { // if its deslected, subtract it.
   console.log("Case 2:")
-    average = (average - Number(targetsValue) )* 2; // do twice to remove it since we added it earlier
+    average = (average - Number(targetsValue) ); // do twice to remove it since we added it earlier
+    average = (average - Number(targetsValue) );
+    idToPlayerVote.set(socket.id, "Pass");
+   }
+
+   else { //From pass, you select this value
+    idToPlayerVote.set(socket.id, targetsValue);
    }
 
    for (const [key, value] of idToPlayerVote) {
@@ -292,10 +322,9 @@ socket.on("update_average", (data) => {
          total++;
        }
    }
-   console.log(average);
-   var newAverage = total == 0 ? 0 :calculateClosest(average / total);
-   console.log(newAverage);
 
+   var newAverage = total == 0 ? 0 :calculateClosest(average / total);
+   averageWithCorrectCard = newAverage;
    io.emit("set_new_average", newAverage);
 
 });
@@ -322,6 +351,8 @@ socket.on("reset_all_players", () => {
       io.emit("reset_players", newArray);
 
   average = 0;
+  averageWithCorrectCard = 0;
+  roundedEnded = false;
 })
 
 socket.on("allow_change_votes", (data) => {
