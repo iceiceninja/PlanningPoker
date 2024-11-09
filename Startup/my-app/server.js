@@ -126,7 +126,6 @@ return closestNumber;
     idToPlayerName.set(socket.id, "connecting....")
    }
 
-   console.log(idToPlayerName.size);
 
    console.log("user connected")
 
@@ -171,7 +170,6 @@ return closestNumber;
         io.emit("return_user_name", newArray);
 
 
-        console.log(average);
 
         var newAverage = total == 0 ? 0 :calculateClosest(average / total);
         averageWithCorrectCard = newAverage;
@@ -310,7 +308,6 @@ socket.on("update_average", (data) => {
   }
 
  else if(!isSelected) { // if its deslected, subtract it.
-  console.log("Case 2:")
     average = (average - Number(targetsValue) ); // do twice to remove it since we added it earlier
     average = (average - Number(targetsValue) );
     idToPlayerVote.set(socket.id, "Pass");
