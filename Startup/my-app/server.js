@@ -86,6 +86,23 @@ nextApp.prepare().then(() => {
   }
 }
 
+function calculateClosest(average ) {
+  const numbers = [1, 2, 3, 5, 8, 13, 21];
+let closestNumber = numbers[0];
+let smallestDistance = Math.abs(numbers[0] - average);
+
+for (let i = 1; i < numbers.length; i++) {
+    const distance = Math.abs(numbers[i] - average);
+    if (distance < smallestDistance) {
+        smallestDistance = distance;
+        closestNumber = numbers[i];
+    }
+}
+
+return closestNumber;
+
+}
+
 
 
   // When user (client) joins the server
@@ -182,12 +199,7 @@ nextApp.prepare().then(() => {
     var targetsValue = data.value;
     var isSelected = data.selected;
 
-    idToPlayerVote.set(socket.id, data.value);
-
-    if(!isSelected) { // if its deslected, subtract it.
-      average = average - Number(targetsValue);
-     }
-     average = average + Number(targetsValue);
+     idToPlayerVote.set(socket.id, targetsValue);
 
       
    const newArray = Array.from(idToPlayerName).map(([id, name]) => ({
@@ -210,7 +222,6 @@ socket.on("get_session_name", (data) => {
 })
 
 socket.on("story_submitted_host", (data) => {
-  userStory = data
   io.emit("get_story_submitted_host", userStory);
 })
 
@@ -218,12 +229,23 @@ socket.on("get_story_submitted_for_new_user", () => {
   io.emit("get_story_submitted_host", userStory);
 })
 
-socket.on("start_count_down", () => {
-  io.emit("count_down_started");
+socket.on("start_count_down", (data) => {
+  console.log("dshafashfd" + data)
+  io.emit("count_down_started", data);
 })
 
 socket.on("display_all_votes", () => {
-  io.emit("display_votes", average);
+  var total = 0;
+
+  for (const [key, value] of idToPlayerVote) {
+      if (value != "Pass") {
+        total++;
+      }
+  }
+  var newAverage = total == 0 ? 0 :calculateClosest(average / total);
+
+  console.log(average);
+  io.emit("display_votes", newAverage);
 })
 
 socket.on("check_if_host_exists", () => {
@@ -247,7 +269,36 @@ socket.on("check_cannot_join", () => {
   }
 });
 
+socket.on("update_average", (data) => {
+  var targetsValue = data.value;
+  var isSelected = data.selected;
+  var total = 0;
 
+  average += Number(targetsValue);
+  console.log(isSelected);
+
+  if (idToPlayerVote.get(socket.id) != "Pass" && isSelected) { //if the user selects a new card, subtract the old card
+    average = average - idToPlayerVote.get(socket.id);
+    console.log("Case 1:")
+  }
+
+ else if(!isSelected) { // if its deslected, subtract it.
+  console.log("Case 2:")
+    average = (average - Number(targetsValue) )* 2; // do twice to remove it since we added it earlier
+   }
+
+   for (const [key, value] of idToPlayerVote) {
+       if (value != "Pass") {
+         total++;
+       }
+   }
+   console.log(average);
+   var newAverage = total == 0 ? 0 :calculateClosest(average / total);
+   console.log(newAverage);
+
+   io.emit("set_new_average", newAverage);
+
+});
 
 
 socket.on("reset_all_players", () => {
@@ -255,6 +306,8 @@ socket.on("reset_all_players", () => {
     name,      // The name from the Map
     vote: "Pass" 
   }));
+
+  
 
   const updatedMap = new Map();
 
@@ -267,6 +320,8 @@ socket.on("reset_all_players", () => {
 
   io.emit("get_story_submitted_host", userStory);
       io.emit("reset_players", newArray);
+
+  average = 0;
 })
 
 socket.on("allow_change_votes", (data) => {

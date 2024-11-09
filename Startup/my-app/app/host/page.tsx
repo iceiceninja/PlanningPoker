@@ -48,19 +48,34 @@ export default function Host() {
 
     const open2 = Boolean(anchor2);
     const id2 = open2 ? 'simple-popper' : undefined;
-    const [userVotes, setUserVotes] = useState(0);
+    const [averageOfAllVotes, setAverageOfAllVotes] = useState(0);
     const [cardSelected, setCardSelected] = useState(false);
     const [previousValue, setPreviousValue] = useState("-1");
     const [textAreaValue, setTextAreaValue] = useState('');
     const [displayVote, setDisplayVote] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(60);
+    const [timeLeftInput, setTimeLeftInput] = useState(''); 
+    const [timeLeft, setTimeLeft] = useState(40);       
     const [isTimerVisible, setIsTimerVisible] = useState(false);
     const [endRoundPressed, setIsEndRoundPressed] = useState(false);
     const [checked, setChecked] = useState(false);
+    const [timerStarted, setTimerStarted] = useState(false);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  const setCheckedValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
   };;
+
+  const setTimerValueWhenChanged = (event :  any) => {
+    if (!timerStarted)
+    setTimeLeft(Number(event.target.value)); // Update the state with the input value
+
+
+    setTimeLeftInput(event.target.value);
+  };
+
+
+
+  console.log(getDisplayHostname())
 
 
     var lengthChange = -1;
@@ -112,6 +127,7 @@ useEffect(() => {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
+        if (!endRoundPressed || endRoundPressed && checked) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
             if(key == event.currentTarget.value) {
@@ -128,6 +144,7 @@ useEffect(() => {
         if (previousValue != event.currentTarget.value || cardSelected == false) {
             setPreviousValue(event.currentTarget.value);
             setCardSelected(true)
+            socket.emit("update_average", {value: event.currentTarget.value, selected: true});
             socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
         }
 
@@ -135,14 +152,20 @@ useEffect(() => {
         else {
             if (previousValue != event.currentTarget.value) {
                 setCardSelected(true)
+                socket.emit("update_average", {value: event.currentTarget.value, selected: false});
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
             }
             else {
                 setCardSelected(false)
+                socket.emit("update_average", {value: event.currentTarget.value, selected: false});
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
             }
+
         }
+
     }
+}
+
 
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
         setAnchor2(anchor2 ? null : event2.currentTarget);
@@ -153,9 +176,32 @@ useEffect(() => {
         socket.emit("story_submitted_host", textAreaValue); 
     }
 
+  const renderAverage = (value : any) => {
+    if (value != 0){
+       return  (<Paper          
+        sx={{
+            width: 60,  // Size of each player card
+            height: 7, // Size of each player card
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            padding: 3,
+            marginRight: 3,
+            marginBottom: 3,
+            fontSize: 15,
+            backgroundColor: backgroundColor(String(value))
+        }}
+        >
+             Average: {displayVote ? value: " "}
+        </Paper>
+       )
+    }
+}
+
     function startCountDown() {
         if (!endRoundPressed)
-        socket.emit("start_count_down", "true");
+        socket.emit("start_count_down", (Number(timeLeftInput)));
     }
 
     function resetRound() {
@@ -167,8 +213,9 @@ useEffect(() => {
     });
 
     const startTimer = () => {
+        setTimerStarted(true)
         setIsTimerVisible(true);
-        setTimeLeft(60); // Reset the time when the button is pressed
+        setTimeLeft(Number(timeLeftInput)); // Reset the time to the new input when the button is pressed
       };
 
 
@@ -176,6 +223,8 @@ useEffect(() => {
         setDisplayVote(true)
         setIsTimerVisible(false)
         setTimeLeft(60)
+        setTimeLeftInput('')
+        setTimerStarted(false)
         socket.emit("display_all_votes");
     }
 
@@ -184,9 +233,14 @@ useEffect(() => {
         lengthChange = players.length;
       
     })
+
+    socket.on("set_new_average", (average) => {
+        setAverageOfAllVotes(average);
+    })
     
     socket.on("reset_players", (allPlayers) => {
-        setUserVotes(0)
+        setTimerStarted(false)
+        setAverageOfAllVotes(0)
         setButtonStates(inititalMap);
         setPlayers(allPlayers);
         setCardSelected(false)
@@ -195,6 +249,7 @@ useEffect(() => {
         setIsEndRoundPressed(false);
         setTimeLeft(60)
         setTextAreaValue("")
+        setTimeLeftInput('')
     });
 
     const backgroundColor = (vote : any) => {
@@ -240,11 +295,12 @@ useEffect(() => {
     
 
 
-    socket.on("display_votes", () => {
+    socket.on("display_votes", (averageOfAllVotes) => {
         setIsEndRoundPressed(true);
         setIsTimerVisible(false)
         setTimeLeft(60)
         setDisplayVote(true)
+        setAverageOfAllVotes(averageOfAllVotes);
     })
 
     // If the host disconnects, all users disconnect too
@@ -321,7 +377,7 @@ useEffect(() => {
                             bgcolor: "#F3F1F6",
                             borderRadius: '8px',
                             width: "50vw",
-                            height: "12vh",
+                            height: "13.8vh",
                             maxWidth: 500,
                             boxShadow: 4
                         }}
@@ -339,10 +395,11 @@ useEffect(() => {
                                 variant="subtitle1"
                                 align="center"
                             >
-                                Host: {hostName}
+                                Host: {getDisplayHostname()}
                             </Typography>
                         </ThemeProvider>
                         {isTimerVisible && `Time Left: ${timeLeft} seconds`}
+                 {displayVote ? renderAverage(averageOfAllVotes) : ""}
                     </Stack>
                     <Stack
                         direction="column"
@@ -407,16 +464,27 @@ useEffect(() => {
                             justifyContent: "center",
                             alignItems: "center"
                         }}
-                        marginBottom={5}
+                        marginBottom={2}
                         >
                             <button onClick={submitStory} >Submit Story</button>
+                            <Stack
+                        direction="column">
+                            <TextField 
+                            id="standard-basic" 
+                            label="Set Count Down" 
+                            value={timeLeftInput}   
+                            onChange={setTimerValueWhenChanged}   
+                            variant="standard" 
+                            type="number" // Allows only numeric input
+                            />
                             <button onClick={startCountDown} >Start CountDown</button>
+                            </Stack>
                             <button onClick={resetRound} >Reset Round </button>
                             <button onClick={endCurrentRound} >End Current Round</button>
                             <FormGroup>
                             <FormControlLabel control={     <Checkbox
                          checked={checked}
-                          onChange={handleChange}
+                          onChange={setCheckedValue}
                       inputProps={{ 'aria-label': 'controlled' }}
                   />} label="Change Vote Allowed" />
                             </FormGroup>
@@ -448,8 +516,8 @@ useEffect(() => {
                                 variant="h6"
                                 align="center"
                             >
-                        <p>Story: </p>
-                        <p> {userVotes} </p>
+                        <p >Story: </p> 
+
                         <textarea
         value={textAreaValue} 
         onChange={handleTextAreaChange}
@@ -461,6 +529,7 @@ useEffect(() => {
       />
                             </Typography>
                         </ThemeProvider>
+                        
             {/* Player Arrangement: Simulates sitting around a table */}
              <Box
                 sx={{
@@ -474,6 +543,8 @@ useEffect(() => {
                     marginTop: 4
                 }}
                 >
+
+                    
                     
                 {players.map((player, vote) => (
                     

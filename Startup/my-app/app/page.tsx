@@ -44,13 +44,12 @@ export default function HostHome() {
 
 
   socket.on("host_currently_exists", (data) => {
-    setDisplayHostname(data);
   
-    if(data == "hostNotJoined" && getDisplayHostname() == "hostNotJoined") {
+    if(data == "hostNotJoined") {
       setShouldRender(true);
     }
     
-    else if (data != "hostNotJoined" && getDisplayHostname() != "hostNotJoined") {
+    else if (data != "hostNotJoined") {
       router.push("/userStartUp")
     }
 
@@ -58,28 +57,24 @@ export default function HostHome() {
   },);
 
   useEffect(() : any => {
-    console.log(canJoin)
-
     if(canJoin == "False")
       router.push("/maxCapacityScreen");
 
     else {
       socket.emit("check_cannot_join", "True")
 
-      console.log(canJoin + "ahsdfhsdfksfjdl;fjs");
-  
       if(canJoin == "True")
       socket.emit("check_if_host_exists", "True")
     }
 
-
-
   [canJoin]})
+
 
   socket.on("can_join", (data) => {
     setCanJoin(data)
 
    })
+
 
 
 useEffect(() : any => {
@@ -89,6 +84,11 @@ useEffect(() : any => {
   } 
 
 }, [userCount, router, socketEmissionHolder.length]);
+
+   //ensures the hostname is registered.
+   useEffect(() : any => {
+    console.log(hostName);
+  [hostName]})
 
   
     // Loading Screen
@@ -108,12 +108,13 @@ useEffect(() : any => {
 
   // Input Validation **
   const handleSubmit = (event: { preventDefault: () => void; }) => {
+    console.log(hostName + " HAHAHSDFHSDKFJALS;FJDSL;FK ")
     event.preventDefault() // Stops default action of an element from happening
     setUserCount((prevValue) => prevValue + 1); // Increment user count
+    setDisplayHostname(hostName);
     setHostJoined(true); // Tell client that host has joined **
      socket.emit('user_joined', {value: hostName}); // Tell server host has joined **
      socket.emit('set_host_session_name' , {value : sessionTopic});
-    setDisplayHostname(hostName);
     setGlobalSession(sessionTopic);
   }
   

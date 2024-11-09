@@ -41,6 +41,7 @@ export default function Host() {
 
     const router = useRouter(); // Initialize the router
     const [anchor2, setAnchor2] = React.useState(null);
+    const [averageOfAllVotes, setAverageOfAllVotes] = useState(0);
     const [hostName, setHostName] = useState(" ");
     const [sessionTopicName, setSessionTopicName] = useState(" ");
     const [timeLeft, setTimeLeft] = useState(60);
@@ -89,36 +90,42 @@ export default function Host() {
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
 
         if (!endRoundPressed || endRoundPressed && checkVoteAllowedByHost) {
-        const newButtonStates = new Map(buttonStates);
-        newButtonStates.forEach((value, key) => {
-            if(key == event.currentTarget.value) {
-                newButtonStates.set(event.currentTarget.value, !newButtonStates.get(event.currentTarget.value));
-            }
-            else {
-                newButtonStates.set(key, false);
-            }
-        });
-        setButtonStates(newButtonStates);
-
-        //if you click two different cards, it should automatically update.
-        if (previousValue != event.currentTarget.value || cardSelected == false) {
-            setPreviousValue(event.currentTarget.value);
-            setCardSelected(true)
-            socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
-        }
-
-        //if you click the same card twice, its assumed you deselected it.
-        else {
-            if (previousValue != event.currentTarget.value) {
+            const newButtonStates = new Map(buttonStates);
+            newButtonStates.forEach((value, key) => {
+                if(key == event.currentTarget.value) {
+                    console.log(event.currentTarget.value)
+                    newButtonStates.set(event.currentTarget.value, !newButtonStates.get(event.currentTarget.value));
+                }
+                else {
+                    newButtonStates.set(key, false);
+                }
+            });
+            setButtonStates(newButtonStates);
+    
+            //if you click two different cards, it should automatically update.
+            if (previousValue != event.currentTarget.value || cardSelected == false) {
+                setPreviousValue(event.currentTarget.value);
                 setCardSelected(true)
+                socket.emit("update_average", {value: event.currentTarget.value, selected: true});
                 socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
             }
+    
+            //if you click the same card twice, its assumed you deselected it.
             else {
-                setCardSelected(false)
-                socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
+                if (previousValue != event.currentTarget.value) {
+                    setCardSelected(true)
+                    socket.emit("update_average", {value: event.currentTarget.value, selected: false});
+                    socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
+                }
+                else {
+                    setCardSelected(false)
+                    socket.emit("update_average", {value: event.currentTarget.value, selected: false});
+                    socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
+                }
+    
             }
+    
         }
-    }
     }
 
     useEffect(() => {
@@ -148,13 +155,36 @@ export default function Host() {
     
       const startTimer = () => {
         setIsTimerVisible(true);
-        setTimeLeft(60); // Reset the time when the button is pressed
       };
 
 
     const handleClick2 = (event2: { currentTarget: React.SetStateAction<null>; }) => {
         setAnchor2(anchor2 ? null : event2.currentTarget);
     };
+
+    
+  const renderAverage = (value : any) => {
+    if (value != 0){
+       return  (<Paper          
+        sx={{
+            width: 60,  // Size of each player card
+            height: 7, // Size of each player card
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            padding: 3,
+            marginRight: 3,
+            marginBottom: 3,
+            fontSize: 15,
+            backgroundColor: backgroundColor(String(value))
+        }}
+        >
+             Average: {displayVote ? value: " "}
+        </Paper>
+       )
+    }
+}
 
     // The render above is caught here to set the player cards
     socket.on("return_user_name", (allPlayers) => {  
@@ -163,8 +193,12 @@ export default function Host() {
     })
 
     socket.on("check_if_can_change_votes", (data) => {
-        console.log(data);
         setChecked(data);
+    })
+
+    
+    socket.on("set_new_average", (average) => {
+        setAverageOfAllVotes(average);
     })
 
     // If the host disconnects, all users disconnect too
@@ -174,6 +208,7 @@ export default function Host() {
     })
 
     socket.on("reset_players", (allPlayers) => {
+        setAverageOfAllVotes(0)
         setButtonStates(inititalMap);
         setPlayers(allPlayers);
         setCardSelected(false)
@@ -213,15 +248,18 @@ export default function Host() {
         setStoryText(data);
     })
 
-    socket.on("count_down_started" , () => {
+
+    socket.on("count_down_started" , (data) => {
+        setTimeLeft(data);
         startTimer()
     });
 
-    socket.on("display_votes", () => {
+    socket.on("display_votes", (averageOfAllVotes) => {
         setIsEndRoundPressed(true);
         setIsTimerVisible(false)
         setTimeLeft(60)
         setDisplayVote(true)
+        setAverageOfAllVotes(averageOfAllVotes);
     })
 
       useEffect(() => {
@@ -330,6 +368,7 @@ useEffect(() => {
                             </Typography>
                         </ThemeProvider>
                         {isTimerVisible && `Time Left: ${timeLeft} seconds`}
+                        {displayVote ? renderAverage(averageOfAllVotes) : ""}
                     </Stack>
                     <Stack
                         direction="column"
