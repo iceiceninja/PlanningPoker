@@ -172,7 +172,7 @@ useEffect(() => {
     };
 
     function submitStory() {
-        if (!endRoundPressed)
+        console.log(textAreaValue);
         socket.emit("story_submitted_host", textAreaValue); 
     }
 

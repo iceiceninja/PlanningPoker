@@ -245,6 +245,8 @@ export default function Host() {
     }
 
     socket.on("get_story_submitted_host", (data) => {
+        console.log(data);
+        console.log("I GOT HERE" + data)
         setStoryText(data);
     })
 
@@ -261,6 +263,21 @@ export default function Host() {
         setDisplayVote(true)
         setAverageOfAllVotes(averageOfAllVotes);
     })
+
+
+    // socket.emit("check_if_round_ended", "true");
+    
+    // socket.on("get_round_ended", (data) => {
+    //     var averageOfCurrentRound = data.value;
+    //     var roundEnd = data.didRoundEnd 
+
+    //     console.log(roundEnd);
+    //     console.log(averageOfCurrentRound);
+
+    //     if (roundEnd) {
+    //         setAverageOfAllVotes(averageOfCurrentRound)
+    //     }
+    // });
 
       useEffect(() => {
         socket.emit("host_exists", () => {

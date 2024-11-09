@@ -54,8 +54,8 @@ nextApp.prepare().then(() => {
   const io = new Server(server);
   const NO_USERS = 0;
   var average = 0;
-
-
+  var roundedEnded = false;
+  var averageWithCorrectCard = 0;
 
   function onUserJoin(socket) {
      // We have to make sure not to push the host into the queue.
@@ -222,6 +222,7 @@ socket.on("get_session_name", (data) => {
 })
 
 socket.on("story_submitted_host", (data) => {
+  userStory = data;
   io.emit("get_story_submitted_host", userStory);
 })
 
@@ -243,8 +244,8 @@ socket.on("display_all_votes", () => {
       }
   }
   var newAverage = total == 0 ? 0 :calculateClosest(average / total);
-
-  console.log(average);
+  averageWithCorrectCard = newAverage;
+  roundedEnded = true;
   io.emit("display_votes", newAverage);
 })
 
@@ -269,22 +270,28 @@ socket.on("check_cannot_join", () => {
   }
 });
 
+socket.on("check_if_round_ended", () => {
+  socket.emit("get_round_ended", {value: averageWithCorrectCard, didRoundEnd: roundedEnded});
+})
+
 socket.on("update_average", (data) => {
   var targetsValue = data.value;
   var isSelected = data.selected;
   var total = 0;
 
   average += Number(targetsValue);
-  console.log(isSelected);
+  console.log("Average Before" + average)
 
   if (idToPlayerVote.get(socket.id) != "Pass" && isSelected) { //if the user selects a new card, subtract the old card
     average = average - idToPlayerVote.get(socket.id);
-    console.log("Case 1:")
   }
 
  else if(!isSelected) { // if its deslected, subtract it.
   console.log("Case 2:")
-    average = (average - Number(targetsValue) )* 2; // do twice to remove it since we added it earlier
+  console.log(targetsValue);
+    average = (average - Number(targetsValue) ); // do twice to remove it since we added it earlier
+    average = (average - Number(targetsValue) );
+    console.log("After average: " + average);
    }
 
    for (const [key, value] of idToPlayerVote) {
@@ -292,10 +299,8 @@ socket.on("update_average", (data) => {
          total++;
        }
    }
-   console.log(average);
    var newAverage = total == 0 ? 0 :calculateClosest(average / total);
-   console.log(newAverage);
-
+   averageWithCorrectCard = newAverage;
    io.emit("set_new_average", newAverage);
 
 });
@@ -322,6 +327,8 @@ socket.on("reset_all_players", () => {
       io.emit("reset_players", newArray);
 
   average = 0;
+  averageWithCorrectCard = 0;
+  roundedEnded = false;
 })
 
 socket.on("allow_change_votes", (data) => {
