@@ -188,13 +188,6 @@ export default function Host() {
     }
 }
 
-useEffect(() => {
-    if (timeLeft === 0) {
-      setIsTimerVisible(false);
-      socket.emit("get");
-    }
-  }, [timeLeft]);
-
   useEffect(() => {
     socket.emit("get_all_information")
   }, );
