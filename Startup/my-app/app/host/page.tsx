@@ -172,14 +172,15 @@ useEffect(() => {
     if (value != 0){
        return  (<Paper          
         sx={{
-            width: 10,  // Size of each player card
-            height: 10, // Size of each player card
+            width: 60,  // Size of each player card
+            height: 7, // Size of each player card
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
             padding: 3,
             marginRight: 3,
+            marginBottom: 3,
             fontSize: 15,
             backgroundColor: backgroundColor(String(value))
         }}
@@ -364,7 +365,7 @@ useEffect(() => {
                             bgcolor: "#F3F1F6",
                             borderRadius: '8px',
                             width: "50vw",
-                            height: "13.2vh",
+                            height: "13.8vh",
                             maxWidth: 500,
                             boxShadow: 4
                         }}

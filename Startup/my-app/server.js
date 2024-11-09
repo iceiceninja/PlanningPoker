@@ -199,11 +199,15 @@ return closestNumber;
     var targetsValue = data.value;
     var isSelected = data.selected;
 
-    idToPlayerVote.set(socket.id, data.value);
+    if (idToPlayerVote.get(socket.id) != "Pass" && isSelected) {
+      average = average - idToPlayerVote.get(socket.id);
+    }
 
     if(!isSelected) { // if its deslected, subtract it.
       average = average - Number(targetsValue);
      }
+
+     idToPlayerVote.set(socket.id, data.value);
      average = average + Number(targetsValue);
 
       
@@ -240,9 +244,17 @@ socket.on("start_count_down", (data) => {
 })
 
 socket.on("display_all_votes", () => {
-  var newAverage = calculateClosest(average);
+  var total = 0;
 
-  io.emit("display_votes", average);
+  for (const [key, value] of idToPlayerVote) {
+      if (value != "Pass") {
+        total++;
+      }
+  }
+  var newAverage = total == 0 ? 0 :calculateClosest(average / total);
+
+  console.log(average);
+  io.emit("display_votes", newAverage);
 })
 
 socket.on("check_if_host_exists", () => {
