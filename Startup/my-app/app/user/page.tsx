@@ -86,6 +86,8 @@ export default function Host() {
         socket.emit("render", "True")
 }, []); 
 
+
+
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
 
@@ -186,11 +188,38 @@ export default function Host() {
     }
 }
 
-    // The render above is caught here to set the player cards
+useEffect(() => {
+    if (timeLeft === 0) {
+      setIsTimerVisible(false);
+      socket.emit("get");
+    }
+  }, [timeLeft]);
+
+  useEffect(() => {
+    socket.emit("get_all_information")
+  }, );
+
+
+
+    // The render above is caught here to set the player cards, and all other information.
     socket.on("return_user_name", (allPlayers) => {  
-        setPlayers(allPlayers);
+        setPlayers(allPlayers);     
         lengthChange = players.length;
     })
+
+    socket.on("return_all_information", (data) => {
+        var currentAverage = data.currentAverage;
+        var isRoundOver = data.isRoundOver;
+        var canChangeVote = data.changeVote;
+
+        setChecked(canChangeVote);
+
+        if(isRoundOver) {
+            setIsEndRoundPressed(true);
+        }
+        setDisplayVote(isRoundOver);
+        setAverageOfAllVotes(currentAverage)
+    });
 
     socket.on("check_if_can_change_votes", (data) => {
         setChecked(data);
@@ -246,7 +275,6 @@ export default function Host() {
 
     socket.on("get_story_submitted_host", (data) => {
         console.log(data);
-        console.log("I GOT HERE" + data)
         setStoryText(data);
     })
 
@@ -263,21 +291,6 @@ export default function Host() {
         setDisplayVote(true)
         setAverageOfAllVotes(averageOfAllVotes);
     })
-
-
-    // socket.emit("check_if_round_ended", "true");
-    
-    // socket.on("get_round_ended", (data) => {
-    //     var averageOfCurrentRound = data.value;
-    //     var roundEnd = data.didRoundEnd 
-
-    //     console.log(roundEnd);
-    //     console.log(averageOfCurrentRound);
-
-    //     if (roundEnd) {
-    //         setAverageOfAllVotes(averageOfCurrentRound)
-    //     }
-    // });
 
       useEffect(() => {
         socket.emit("host_exists", () => {
