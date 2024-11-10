@@ -299,26 +299,37 @@ socket.on("update_average", (data) => {
   var isSelected = data.selected;
   var total = 0;
 
+  if(targetsValue != "Pass" && targetsValue != '?')
   average += Number(targetsValue);
 
 
-  if (idToPlayerVote.get(socket.id) != "Pass" && isSelected) { //if the user selects a new card, subtract the old card
+  console.log(average);
+
+
+  // Check if the old card equals pass or ?, if either of these is true, then we cannot subtract the old card
+  if (isSelected) { //if the user selects a new card, subtract the old card
+    console.log("Case 1")
+    if (idToPlayerVote.get(socket.id) != "Pass" && idToPlayerVote.get(socket.id) != "?" )
     average = average - idToPlayerVote.get(socket.id); 
+
     idToPlayerVote.set(socket.id, targetsValue);
   }
 
- else if(!isSelected) { // if its deslected, subtract it.
+  //When you click the card twice it deselects it, but if its pass or ?, we don't want to do anything
+  else if (!isSelected  && targetsValue != "Pass" && targetsValue != '?') { // if its deselected, subtract it, unless its a question mark, or a uhhh pass
+    console.log("Case 2")
     average = (average - Number(targetsValue) ); // do twice to remove it since we added it earlier
     average = (average - Number(targetsValue) );
-    idToPlayerVote.set(socket.id, "Pass");
    }
 
-   else { //From pass, you select this value
+   //
+   else { //From pass or ?, you select this value
+    console.log("Case 3")
     idToPlayerVote.set(socket.id, targetsValue);
    }
 
    for (const [key, value] of idToPlayerVote) {
-       if (value != "Pass") {
+       if (value != "Pass" && value != '?') {
          total++;
        }
    }
