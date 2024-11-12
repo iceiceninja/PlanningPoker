@@ -90,7 +90,8 @@ export default function Host() {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
-
+console.log(endRoundPressed + "HHAHAAHA")
+console.log(checkVoteAllowedByHost + "HHAHAAHA")
         if (!endRoundPressed || endRoundPressed && checkVoteAllowedByHost) {
             const newButtonStates = new Map(buttonStates);
             newButtonStates.forEach((value, key) => {
@@ -284,6 +285,9 @@ export default function Host() {
         setTimeLeft(60)
         setDisplayVote(true)
         setAverageOfAllVotes(averageOfAllVotes);
+
+        console.log("End round pressed" + endRoundPressed)
+        console.log("Check vote allowed" + checkVoteAllowedByHost)
     })
 
       useEffect(() => {
@@ -324,6 +328,16 @@ useEffect(() => {
         console.log(displayVote); 
       }, [displayVote]); 
     
+
+    // ensures checkmark is correct
+    useEffect(() => {
+        console.log(checkVoteAllowedByHost); 
+      }, [checkVoteAllowedByHost]); 
+
+          // ensures endRound pressed is correct
+    useEffect(() => {
+        console.log(endRoundPressed); 
+      }, [endRoundPressed]); 
 
 
     socket.on("return_session_name", (data) => {

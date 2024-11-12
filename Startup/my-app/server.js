@@ -162,7 +162,7 @@ return closestNumber;
     }));
 
       for (const [key, value] of idToPlayerVote) {
-      if (value != "Pass") {
+      if (value != "Pass" && value != "?") {
         total++;
       }
   }
@@ -259,10 +259,11 @@ socket.on("display_all_votes", () => {
   var total = 0;
 
   for (const [key, value] of idToPlayerVote) {
-      if (value != "Pass") {
+      if (value != "Pass" && value != "?") {
         total++;
       }
   }
+
   var newAverage = total == 0 ? 0 :calculateClosest(average / total);
   averageWithCorrectCard = newAverage;
   roundEnded = true;
@@ -315,6 +316,7 @@ socket.on("update_average", (data) => {
   else if (!isSelected  && targetsValue != "Pass" && targetsValue != '?') { // if its deselected, subtract it, unless its a question mark, or a uhhh pass
     average = (average - Number(targetsValue) ); // do twice to remove it since we added it earlier
     average = (average - Number(targetsValue) );
+    idToPlayerVote.set(socket.id, "Pass");
    }
 
    //
@@ -358,7 +360,6 @@ socket.on("reset_all_players", () => {
   average = 0;
   averageWithCorrectCard = 0;
   roundEnded = false;
-  canChangeVote = false;
 })
 
 socket.on("allow_change_votes", (data) => {
