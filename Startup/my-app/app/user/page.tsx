@@ -237,6 +237,7 @@ export default function Host() {
         setDisplayVote(false)
         setIsTimerVisible(false)
         setTimeLeft(60)
+        setIsEndRoundPressed(false)
     });
 
     const backgroundColor = (vote : any) => {
