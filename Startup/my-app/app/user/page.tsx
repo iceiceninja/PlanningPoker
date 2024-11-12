@@ -236,8 +236,8 @@ export default function Host() {
         setCardSelected(false)
         setDisplayVote(false)
         setIsTimerVisible(false)
+        setIsEndRoundPressed(false);
         setTimeLeft(60)
-        setIsEndRoundPressed(false)
     });
 
     const backgroundColor = (vote : any) => {
