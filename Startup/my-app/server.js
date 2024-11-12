@@ -259,7 +259,7 @@ socket.on("display_all_votes", () => {
   var total = 0;
 
   for (const [key, value] of idToPlayerVote) {
-      if (value != "Pass") {
+      if (value != "Pass" || value != "?") {
         total++;
       }
   }
