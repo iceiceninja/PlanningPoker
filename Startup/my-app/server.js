@@ -263,8 +263,7 @@ socket.on("display_all_votes", () => {
         total++;
       }
   }
-  console.log(total);
-  console.log(average);
+
   var newAverage = total == 0 ? 0 :calculateClosest(average / total);
   averageWithCorrectCard = newAverage;
   roundEnded = true;
@@ -361,7 +360,6 @@ socket.on("reset_all_players", () => {
   average = 0;
   averageWithCorrectCard = 0;
   roundEnded = false;
-  canChangeVote = false;
 })
 
 socket.on("allow_change_votes", (data) => {
