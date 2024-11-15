@@ -41,9 +41,8 @@ nextApp.prepare().then(() => {
     handle(req, res, parsedUrl);
   });
   // Example object to store user votes
-  playerVotes = {};
-  const HOST_EXISTS = 1;
-  const HOST_NANE = "host";
+  var HOST_EXISTS = 1;
+  var HOST_NANE = "host";
   var idForEachPlayerQueue = [];
   var idToPlayerName = new Map();
   var idToPlayerVote = new Map();
@@ -52,11 +51,12 @@ nextApp.prepare().then(() => {
   var sessionTopic = "";
   var storePlayers = [];
   const io = new Server(server);
-  const NO_USERS = 0;
+  var NO_USERS = 0;
   var average = 0;
   var roundEnded = false;
   var averageWithCorrectCard = 0;
   var canChangeVote = false;
+  var activeSockets = new Set();
 
 
 
@@ -107,7 +107,7 @@ return closestNumber;
    else {
     idToPlayerName.set(socket.id, "connecting....")
    }
-
+   activeSockets.add(socket);
 
    console.log("user connected")
 
@@ -117,13 +117,26 @@ return closestNumber;
   
 
   socket.on('disconnect', () => {
-
+    activeSockets.delete(socket);
     // If the host disconnects, disconnect everyone.
     if (hostSocket ==  socket.id) {
-
-
-
       io.emit('disconnect_all' , "true")
+      HOST_EXISTS = 1;
+      HOST_NANE = "host";
+      idForEachPlayerQueue = [];
+      idToPlayerName = new Map();
+      idToPlayerVote = new Map();
+      userStory = "";
+      hostSocket = "";
+      sessionTopic = "";
+      storePlayers = [];
+      NO_USERS = 0;
+      average = 0;
+      roundEnded = false;
+      averageWithCorrectCard = 0;
+      canChangeVote = false;
+      activeSockets = new Set();
+       
     }
     
 
@@ -247,8 +260,11 @@ socket.on("check_is_host", (data) => {
       hostInfo = "isHostAndValid"; 
     }
   }
+  else if (idToPlayerName.get(socket.id) == "connecting....") {
+    hostInfo = "notHostAndUserHasNoName";
+  }
   else {
-    hostInfo = "notHost";
+    hostInfo = "notHostAndHasAName"
   }
 
   socket.emit("is_host", hostInfo);
@@ -385,6 +401,35 @@ socket.on("check_if_valid_user", (data) => {
 
   socket.emit("return_check_if_valid_user", userInfoToRoute)
 })
+
+
+const shutdown = () => {
+  console.log('Shutting down server...');
+
+       // Disconnect all sockets
+       activeSockets.forEach((socket) => {
+        socket.disconnect(true);
+    });
+
+
+    activeSockets.clear()
+
+      // Close the HTTP server
+      server.close(() => {
+        console.log('HTTP server closed');
+        process.exit(0);
+    });
+
+    // Force exit if graceful shutdown takes too long
+    setTimeout(() => {
+        console.error('Forcing shutdown...');
+        process.exit(1);
+    }, 1);
+}
+
+process.on('SIGINT', shutdown); // Handle Ctrl+C
+process.on('SIGTERM', shutdown); // Handle termination signals
+
 
 
 

@@ -262,6 +262,10 @@ useEffect(() => {
         else if (data == "notHost") {
             router.push("/userStartUp")
         }
+
+        else if (data == "notHostAndHasAName") {
+            router.push("/user")
+        }
         else {
             router.push("/")
         }
@@ -271,7 +275,7 @@ useEffect(() => {
         // use player map here instead...
         if(displayVote) {
         if (vote === "Pass") {
-          return "Pass";
+          return "grey";
         } 
         else if (vote === "1" || vote == "2") {
           return "cyan";
@@ -289,10 +293,13 @@ useEffect(() => {
           return "lightGray"; // Default case
         }
       }
-      if (vote != "Pass")
+
+      if (buttonStates.get(vote) == true)
       return "lightGray"
 
-      return " "
+      else if (buttonStates.get(vote) == false){
+  return " "
+      }
     }
 
     // ensures the players are correct DONT REMOVE THESE PLEASE
@@ -319,10 +326,11 @@ useEffect(() => {
         setAverageOfAllVotes(averageOfAllVotes);
     })
 
+
     // If the host disconnects, all users disconnect too
     socket.on("disconnect_all", (allPlayers) => {  
-        socket.emit("disconnect_each_socket")  
         router.push("/endScreen")   
+        socket.emit("disconnect_each_socket")  
     })
 
 
