@@ -281,9 +281,6 @@ socket.on("display_all_votes", () => {
   }
 
   var newAverage = total == 0 ? 0 : calculateClosest(average / total);
-  console.error(newAverage);
-  console.error(idToPlayerVote)
-  console.error(total)
   averageWithCorrectCard = newAverage;
   roundEnded = true;
   io.emit("display_votes", newAverage);
@@ -349,7 +346,6 @@ socket.on("update_average", (data) => {
        }
    }
 
-   console.log(average);
    var newAverage = total == 0 ? 0 :calculateClosest(average / total);
    averageWithCorrectCard = newAverage;
    io.emit("set_new_average", newAverage);
@@ -383,15 +379,18 @@ socket.on("reset_all_players", () => {
 })
 
 socket.on("allow_change_votes", (data) => {
-  console.log(data + "HEHEHEHEHEHEHEH AHAHAHH")
   canChangeVote = data;
   io.emit("check_if_can_change_votes", data);
+})
+
+socket.on("get_id", (data) => {
+  socket.emit("return-id", idToPlayerName.get(socket.id));
 })
 
 // check if the user has redirected to this page
 socket.on("check_if_valid_user", (data) => {
   var userInfoToRoute = ""
-  console.log(idToPlayerName.get(socket.id) )
+
   if (idToPlayerName.get(socket.id) == "connecting....") {
     userInfoToRoute = "routeToUserStartUp"
   }

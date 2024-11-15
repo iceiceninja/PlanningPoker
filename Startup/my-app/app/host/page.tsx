@@ -51,6 +51,7 @@ export default function Host() {
     const [averageOfAllVotes, setAverageOfAllVotes] = useState(0);
     const [cardSelected, setCardSelected] = useState(false);
     const [previousValue, setPreviousValue] = useState("-1");
+    const [previousVoteValueForBackgroudn, set] = useState("-1");
     const [textAreaValue, setTextAreaValue] = useState('');
     const [displayVote, setDisplayVote] = useState(false);
     const [timeLeftInput, setTimeLeftInput] = useState(''); 
@@ -60,6 +61,7 @@ export default function Host() {
     const [checked, setChecked] = useState(false);
     const [timerStarted, setTimerStarted] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
+    const [userName, setUserName] = useState("");
 
 
   const setCheckedValue = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,6 +100,10 @@ export default function Host() {
 
 useEffect(() => { 
     socket.emit("render", "True")
+}, []); 
+
+useEffect(() => { 
+    socket.emit("get_id", "True")
 }, []); 
 
 useEffect(() => {
@@ -190,7 +196,7 @@ useEffect(() => {
             marginRight: 3,
             marginBottom: 3,
             fontSize: 15,
-            backgroundColor: backgroundColor(String(value))
+            backgroundColor: backgroundColor(String(value), "")
         }}
         >
              Average: {displayVote ? value: " "}
@@ -252,10 +258,13 @@ useEffect(() => {
         setTimeLeftInput('')
     });
 
+    socket.on("return-id", (data) => {
+        setUserName(data)
+    })
+
 
     // To fix a bug where if someone else navigated to this route it would give strange behaivor.
     socket.on("is_host", (data) => {
-        console.log("HEHEHEHEHEHEKLFDASJLK;FJ")
         if (data == "isHostAndValid") {
             setShouldRender(true)
         }
@@ -271,7 +280,8 @@ useEffect(() => {
         }
     })
 
-    const backgroundColor = (vote : any) => {
+    const backgroundColor = (vote : any, name : any) => {
+        console.log(vote);
         // use player map here instead...
         if(displayVote) {
         if (vote === "Pass") {
@@ -294,10 +304,12 @@ useEffect(() => {
         }
       }
 
-      if (buttonStates.get(vote) == false)
-      return ""
-    else {
+      if ((name == userName && cardSelected) || vote != "Pass")
         return "lightGrey"
+      
+    
+    else {
+        return ""
     }
 
       
@@ -599,7 +611,7 @@ useEffect(() => {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
-                        backgroundColor: backgroundColor(player.vote) //pass in the state from the map instead
+                        backgroundColor: backgroundColor(player.vote, player.name) //pass in the state from the map instead
                     }}
                     >
                      <Typography sx={{ fontSize: 30 }}>

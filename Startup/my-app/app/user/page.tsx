@@ -49,6 +49,7 @@ export default function Host() {
     const [endRoundPressed, setIsEndRoundPressed] = useState(false);
     const [checkVoteAllowedByHost, setChecked] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
+    const [userName, setUserName] = useState("");
 
         // Variables
         let name: string = "Kaiden"
@@ -92,13 +93,10 @@ export default function Host() {
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
-console.log(endRoundPressed + "HHAHAAHA")
-console.log(checkVoteAllowedByHost + "HHAHAAHA")
         if (!endRoundPressed || endRoundPressed && checkVoteAllowedByHost) {
             const newButtonStates = new Map(buttonStates);
             newButtonStates.forEach((value, key) => {
                 if(key == event.currentTarget.value) {
-                    console.log(event.currentTarget.value)
                     newButtonStates.set(event.currentTarget.value, !newButtonStates.get(event.currentTarget.value));
                 }
                 else {
@@ -154,7 +152,7 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
 
   // Makes sure checked is updated
   useEffect(() => {
-    console.log(checkVoteAllowedByHost + "HHAHAAHA")
+    console.log(checkVoteAllowedByHost)
   }, [checkVoteAllowedByHost]);
 
     
@@ -182,7 +180,7 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
             marginRight: 3,
             marginBottom: 3,
             fontSize: 15,
-            backgroundColor: backgroundColor(String(value))
+            backgroundColor: backgroundColor(String(value), "")
         }}
         >
              Average: {displayVote ? value: " "}
@@ -194,6 +192,10 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
   useEffect(() => {
     socket.emit("get_all_information")
   }, );
+
+  useEffect(() => { 
+    socket.emit("get_id", "True")
+}, []); 
 
 
 
@@ -208,8 +210,6 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
         var isRoundOver = data.isRoundOver;
         var canChangeVote = data.changeVote;
 
-        console.log(isRoundOver + "HAHAHH")
-
         setChecked(canChangeVote);
 
         if(isRoundOver) {
@@ -222,6 +222,11 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
     socket.on("check_if_can_change_votes", (data) => {
         setChecked(data);
     })
+
+    socket.on("return-id", (data) => {
+        setUserName(data)
+    })
+
 
     
     socket.on("set_new_average", (average) => {
@@ -245,7 +250,7 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
         setTimeLeft(60)
     });
 
-    const backgroundColor = (vote : any) => {
+    const backgroundColor = (vote : any, name : any)  => {
         if(displayVote) {
         if (vote === "Pass") {
           return "Pass";
@@ -266,14 +271,15 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
           return "lightGray"; // Default case
         }
       }
-      if (vote != "Pass")
-      return "lightGray"
-
-      return " "
+      if ((name == userName && cardSelected) || vote != "Pass")
+        return "lightGrey"
+      
+      else {
+          return ""
+      }
     }
 
     socket.on("get_story_submitted_host", (data) => {
-        console.log(data);
         setStoryText(data);
     })
 
@@ -301,9 +307,6 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
         setTimeLeft(60)
         setDisplayVote(true)
         setAverageOfAllVotes(averageOfAllVotes);
-
-        console.log("End round pressed" + endRoundPressed)
-        console.log("Check vote allowed" + checkVoteAllowedByHost)
     })
 
       useEffect(() => {
@@ -562,7 +565,7 @@ useEffect(() => {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
-                        backgroundColor: backgroundColor(player.vote)
+                        backgroundColor: backgroundColor(player.vote, player.name)
                     }}
                     >
                     <Typography sx={{ fontSize: 30 }}>
