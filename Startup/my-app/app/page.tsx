@@ -108,7 +108,6 @@ useEffect(() : any => {
 
   // Input Validation **
   const handleSubmit = (event: { preventDefault: () => void; }) => {
-    console.log(hostName + " HAHAHSDFHSDKFJALS;FJDSL;FK ")
     event.preventDefault() // Stops default action of an element from happening
     setUserCount((prevValue) => prevValue + 1); // Increment user count
     setDisplayHostname(hostName);

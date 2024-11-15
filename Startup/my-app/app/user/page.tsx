@@ -206,6 +206,8 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
         var isRoundOver = data.isRoundOver;
         var canChangeVote = data.changeVote;
 
+        console.log(isRoundOver)
+
         setChecked(canChangeVote);
 
         if(isRoundOver) {
