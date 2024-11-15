@@ -48,6 +48,8 @@ export default function Host() {
     const [isTimerVisible, setIsTimerVisible] = useState(false);
     const [endRoundPressed, setIsEndRoundPressed] = useState(false);
     const [checkVoteAllowedByHost, setChecked] = useState(false);
+    const [shouldRender, setShouldRender] = useState(false);
+
         // Variables
         let name: string = "Kaiden"
         let topic: string = "Hi! Today we will be making a project about food. I like food. You like food."
@@ -152,7 +154,7 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
 
   // Makes sure checked is updated
   useEffect(() => {
-
+    console.log(checkVoteAllowedByHost + "HHAHAAHA")
   }, [checkVoteAllowedByHost]);
 
     
@@ -206,7 +208,7 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
         var isRoundOver = data.isRoundOver;
         var canChangeVote = data.changeVote;
 
-        console.log(isRoundOver)
+        console.log(isRoundOver + "HAHAHH")
 
         setChecked(canChangeVote);
 
@@ -281,6 +283,18 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
         startTimer()
     });
 
+    socket.on("return_check_if_valid_user",(data) => {
+        if (data == "routeToUserStartUp") {
+            router.push("/userStartUp")
+        }
+        else if (data == "routeToHostStartUp") {
+            router.push("/host")
+        }
+        else {
+            setShouldRender(true)
+        }
+    })
+
     socket.on("display_votes", (averageOfAllVotes) => {
         setIsEndRoundPressed(true);
         setIsTimerVisible(false)
@@ -300,7 +314,13 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
 
       useEffect(() => { 
         socket.emit("get_session_name", "True")
+}, [players]); 
+
+    useEffect(() => { 
+
+            socket.emit("check_if_valid_user", "True")
 }, []); 
+
 
 useEffect(() => { 
     socket.emit("get_story_submitted_for_new_user", "true")
@@ -346,6 +366,21 @@ useEffect(() => {
         setSessionTopicName(data.session);
         setHostName(data.host)
     })
+
+    
+
+
+                      // Loading Screen
+  if (!shouldRender) {
+    return (
+<   div>
+   <title>Planning Poker - Everfox</title>
+  <Stack sx={{ width: "100vw", height: "100vh", justifyContent: "center", alignItems: "center",  }} >
+        <CircularProgress />
+</Stack>
+    </div>);
+  }
+                                                    
 
     return (
         <>

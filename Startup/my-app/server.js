@@ -58,17 +58,7 @@ nextApp.prepare().then(() => {
   var averageWithCorrectCard = 0;
   var canChangeVote = false;
 
-  function onUserJoin(socket) {
-     // We have to make sure not to push the host into the queue.
-    if (idToPlayerName.size >= HOST_EXISTS) 
-      {
-        idForEachPlayerQueue.push(socket.id)
-        socket.emit("host_exists", "True");
-      }
 
-      idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "connecting....");
-      
-  }
 
   function getOrDefault(map, id, socketId, defaultValue = "Pass", selected) {
     if (socketId == id) {
@@ -104,24 +94,16 @@ return closestNumber;
 
 }
 
-
-
   // When user (client) joins the server
   io.on('connection', (socket) => {
 
-  // We have to make sure not to push the host into the queue.
-   if (idToPlayerName.size >= HOST_EXISTS) 
-   {
-     idForEachPlayerQueue.push(socket.id)
-     socket.emit("host_exists", "True");
-   }
-
-
    // We have to make it a default value for now so that every other connection besides host goes to userStartUp
-  else  if ( idToPlayerName.size == NO_USERS) {
+   if ( idToPlayerName.size == NO_USERS) {
     hostSocket = socket.id
-    idToPlayerName.set(socket.id, "hostDefaultValueRandomCharactersSoAUserCantHaveThisName")
+    idToPlayerName.set(socket.id, "hostDoesNotExistYet")
    }
+
+
    else {
     idToPlayerName.set(socket.id, "connecting....")
    }
@@ -258,7 +240,7 @@ socket.on("start_count_down", (data) => {
 socket.on("check_is_host", (data) => {
   var hostInfo = "hostNotJoined"
   if(hostSocket == socket.id) {
-    if(idToPlayerName.get(hostSocket) == "hostDefaultValueRandomCharactersSoAUserCantHaveThisName") {
+    if(idToPlayerName.get(hostSocket) == "hostDoesNotExistYet") {
       hostInfo = "hostNotJoinedAndSkippedUrl";
     }
     else {
@@ -281,7 +263,7 @@ socket.on("display_all_votes", () => {
       }
   }
 
-  var newAverage = total == 0 ? 0 :calculateClosest(average / total);
+  var newAverage = total == 0 ? 0 : calculateClosest(average / total);
   averageWithCorrectCard = newAverage;
   roundEnded = true;
   io.emit("display_votes", newAverage);
@@ -380,8 +362,28 @@ socket.on("reset_all_players", () => {
 })
 
 socket.on("allow_change_votes", (data) => {
+  console.log(data + "HEHEHEHEHEHEHEH AHAHAHH")
   canChangeVote = data;
   io.emit("check_if_can_change_votes", data);
+})
+
+// check if the user has redirected to this page
+socket.on("check_if_valid_user", (data) => {
+  var userInfoToRoute = ""
+  console.log(idToPlayerName.get(socket.id) )
+  if (idToPlayerName.get(socket.id) == "connecting....") {
+    userInfoToRoute = "routeToUserStartUp"
+  }
+
+  else if (idToPlayerName.get(socket.id) == "hostDoesNotExistYet") {
+      userInfoToRoute = "routeToHostStartUp"
+  }
+
+  else {
+    userInfoToRoute = "renderUser"
+  }
+
+  socket.emit("return_check_if_valid_user", userInfoToRoute)
 })
 
 
