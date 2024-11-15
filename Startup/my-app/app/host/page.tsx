@@ -294,13 +294,15 @@ useEffect(() => {
         }
       }
 
-      if (buttonStates.get(vote) == true)
-      return "lightGray"
-
-      else if (buttonStates.get(vote) == false){
-  return " "
-      }
+      if (buttonStates.get(vote) == false)
+      return ""
+    else {
+        return "lightGrey"
     }
+
+      
+      }
+
 
     // ensures the players are correct DONT REMOVE THESE PLEASE
     useEffect(() => {

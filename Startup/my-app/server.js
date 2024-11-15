@@ -139,8 +139,8 @@ return closestNumber;
        
     }
     
-
-
+//if its not the host, delete normally
+else {
     idToPlayerName.delete(socket.id)
 
     if(idToPlayerVote.get(socket.id) != "Pass")
@@ -170,6 +170,7 @@ return closestNumber;
         averageWithCorrectCard = newAverage;
         io.emit("set_new_average", newAverage);
 
+}
 
     console.log('user disconnected');
   });
@@ -280,6 +281,9 @@ socket.on("display_all_votes", () => {
   }
 
   var newAverage = total == 0 ? 0 : calculateClosest(average / total);
+  console.error(newAverage);
+  console.error(idToPlayerVote)
+  console.error(total)
   averageWithCorrectCard = newAverage;
   roundEnded = true;
   io.emit("display_votes", newAverage);
@@ -345,6 +349,7 @@ socket.on("update_average", (data) => {
        }
    }
 
+   console.log(average);
    var newAverage = total == 0 ? 0 :calculateClosest(average / total);
    averageWithCorrectCard = newAverage;
    io.emit("set_new_average", newAverage);
