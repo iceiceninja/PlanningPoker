@@ -59,6 +59,7 @@ export default function Host() {
     const [endRoundPressed, setIsEndRoundPressed] = useState(false);
     const [checked, setChecked] = useState(false);
     const [timerStarted, setTimerStarted] = useState(false);
+    const [shouldRender, setShouldRender] = useState(false);
 
 
   const setCheckedValue = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,15 +69,8 @@ export default function Host() {
   const setTimerValueWhenChanged = (event :  any) => {
     if (!timerStarted)
     setTimeLeft(Number(event.target.value)); // Update the state with the input value
-
-
     setTimeLeftInput(event.target.value);
   };
-
-
-
-  console.log(getDisplayHostname())
-
 
     var lengthChange = -1;
     var inititalMap = new Map([
@@ -99,7 +93,11 @@ export default function Host() {
       const [buttonStates, setButtonStates] = useState(inititalMap);
 
       useEffect(() => { 
-        socket.emit("render", "True")
+        socket.emit("check_is_host", "True")
+}, []); 
+
+useEffect(() => { 
+    socket.emit("render", "True")
 }, []); 
 
 useEffect(() => {
@@ -121,18 +119,20 @@ if (timeLeft === 0) {
 }, [timeLeft]);
 
 useEffect(() => {
-    console.log(checked);
     socket.emit("allow_change_votes", checked);
     }, [checked]);
 
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
+        var valueSubmittedByUser = event.currentTarget.value;
+        if (valueSubmittedByUser == "PassVote") {
+            valueSubmittedByUser = "Pass";
+        }
         if (!endRoundPressed || endRoundPressed && checked) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
-            if(key == event.currentTarget.value) {
-                console.log(event.currentTarget.value)
-                newButtonStates.set(event.currentTarget.value, !newButtonStates.get(event.currentTarget.value));
+            if(key == valueSubmittedByUser) {
+                newButtonStates.set(valueSubmittedByUser, !newButtonStates.get(valueSubmittedByUser));
             }
             else {
                 newButtonStates.set(key, false);
@@ -141,24 +141,24 @@ useEffect(() => {
         setButtonStates(newButtonStates);
 
         //if you click two different cards, it should automatically update.
-        if (previousValue != event.currentTarget.value || cardSelected == false) {
-            setPreviousValue(event.currentTarget.value);
+        if (previousValue != valueSubmittedByUser || cardSelected == false) {
+            setPreviousValue(valueSubmittedByUser);
             setCardSelected(true)
-            socket.emit("update_average", {value: event.currentTarget.value, selected: true});
-            socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
+            socket.emit("update_average", {value: valueSubmittedByUser, selected: true});
+            socket.emit("vote-selected", {value: valueSubmittedByUser, selected: true}); // userId, vote value
         }
 
         //if you click the same card twice, its assumed you deselected it.
         else {
-            if (previousValue != event.currentTarget.value) {
+            if (previousValue != valueSubmittedByUser) {
                 setCardSelected(true)
-                socket.emit("update_average", {value: event.currentTarget.value, selected: true});
-                socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
+                socket.emit("update_average", {value: valueSubmittedByUser, selected: true});
+                socket.emit("vote-selected", {value: valueSubmittedByUser, selected: true}); // userId, vote value
             }
             else {
                 setCardSelected(false)
-                socket.emit("update_average", {value: event.currentTarget.value, selected: false});
-                socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
+                socket.emit("update_average", {value: valueSubmittedByUser, selected: false});
+                socket.emit("vote-selected", {value: valueSubmittedByUser, selected: false}); // userId, vote value
             }
 
         }
@@ -235,7 +235,6 @@ useEffect(() => {
     })
 
     socket.on("set_new_average", (average) => {
-        console.log(average + "asdhfsdhafdhfsf") 
         setAverageOfAllVotes(average);
     })
     
@@ -253,7 +252,23 @@ useEffect(() => {
         setTimeLeftInput('')
     });
 
+
+    // To fix a bug where if someone else navigated to this route it would give strange behaivor.
+    socket.on("is_host", (data) => {
+        console.log("HEHEHEHEHEHEKLFDASJLK;FJ")
+        if (data == "isHostAndValid") {
+            setShouldRender(true)
+        }
+        else if (data == "notHost") {
+            router.push("/userStartUp")
+        }
+        else {
+            router.push("/")
+        }
+    })
+
     const backgroundColor = (vote : any) => {
+        // use player map here instead...
         if(displayVote) {
         if (vote === "Pass") {
           return "Pass";
@@ -339,6 +354,18 @@ useEffect(() => {
         + " We all love food! So, how long would this project take? I estimate 3.50!"
                                                 // TODO: Limit to 150 chars in backend
 
+                                                    // Loading Screen
+    if (!shouldRender) {
+        return (
+          <div>
+            <title>Planning Poker - Everfox</title>
+            <Stack sx={{ width: "100vw", height: "100vh", justifyContent: "center", alignItems: "center",  }} >
+              <CircularProgress />
+            </Stack>
+          </div>);
+      }
+
+      
     return (
         <>
             <Box height={135}>
@@ -505,7 +532,7 @@ useEffect(() => {
                         <button onClick={sendVote}  className={buttonStates.get("8") ? "cardUp card8 cardHover" : "card8 cardHover"}  value={"8"}>8</button>
                         <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card13 cardHover" : "card13 cardHover"}  value={"13"}>13</button>
                         <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card21 cardHover" : "card21 cardHover"}  value={"21"}>21</button>
-                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp cardPass cardHover" : "cardPass cardHover"}  value={"Pass"}>Pass</button>
+                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp cardPass cardHover" : "cardPass cardHover"}  value={"PassVote"}>Pass</button>
                         <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp cardQuestionMark cardHover" : "cardQuestionMark cardHover"}  value={"?"}>?</button>
                     </Stack>
 
@@ -562,7 +589,7 @@ useEffect(() => {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
-                        backgroundColor: backgroundColor(player.vote)
+                        backgroundColor: backgroundColor(player.vote) //pass in the state from the map instead
                     }}
                     >
                      <Typography sx={{ fontSize: 30 }}>

@@ -120,7 +120,7 @@ return closestNumber;
    // We have to make it a default value for now so that every other connection besides host goes to userStartUp
   else  if ( idToPlayerName.size == NO_USERS) {
     hostSocket = socket.id
-    idToPlayerName.set(socket.id, "host")
+    idToPlayerName.set(socket.id, "hostDefaultValueRandomCharactersSoAUserCantHaveThisName")
    }
    else {
     idToPlayerName.set(socket.id, "connecting....")
@@ -253,6 +253,23 @@ socket.on("get_story_submitted_for_new_user", () => {
 
 socket.on("start_count_down", (data) => {
   io.emit("count_down_started", data);
+})
+
+socket.on("check_is_host", (data) => {
+  var hostInfo = "hostNotJoined"
+  if(hostSocket == socket.id) {
+    if(idToPlayerName.get(hostSocket) == "hostDefaultValueRandomCharactersSoAUserCantHaveThisName") {
+      hostInfo = "hostNotJoinedAndSkippedUrl";
+    }
+    else {
+      hostInfo = "isHostAndValid"; 
+    }
+  }
+  else {
+    hostInfo = "notHost";
+  }
+
+  socket.emit("is_host", hostInfo);
 })
 
 socket.on("display_all_votes", () => {
