@@ -403,6 +403,8 @@ socket.on("check_if_valid_user", (data) => {
     userInfoToRoute = "renderUser"
   }
 
+  console.log(userInfoToRoute)
+
   socket.emit("return_check_if_valid_user", userInfoToRoute)
 })
 
@@ -423,6 +425,12 @@ const shutdown = () => {
         console.log('HTTP server closed');
         process.exit(0);
     });
+
+      // Force exit if graceful shutdown takes too long
+      setTimeout(() => {
+        console.log(' shutdown...');
+        process.exit(1);
+    }, 1000);
 
 }
 

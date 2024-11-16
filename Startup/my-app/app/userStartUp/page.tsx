@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import socket from '../../socket';
 
 // React Library Imports
-import { useState } from 'react';
+import { MouseEvent, useState, useEffect } from "react";
 import {Style, textTheme } from '../components/Style' 
 
 
@@ -27,13 +27,43 @@ export default function UserStartUp() {
   const handleOpen = () => setOpen(true);                 // Open Modal
   const handleClose = () => setOpen(false);               // Close Modal
   const [hostName, setHostName] = useState("")            // Host name input
-
+  const [shouldRender, setShouldRender] = useState(false);
   // Input Validation **
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     router.push("/user");
     socket.emit('user_joined', {value: hostName}); // Tell server host has joined **
     event.preventDefault() // Stops default action of an element from happening
   }
+  useEffect(() => { 
+
+    socket.emit("check_if_valid_user", "True")
+}, []); 
+
+
+  socket.on("return_check_if_valid_user",(data) => {
+    if (data == "routeToUserStartUp") {
+      setShouldRender(true)
+    }
+    else if (data == "routeToHostStartUp") {
+        router.push("/host")
+    }
+    else {
+        setShouldRender(true)
+    }
+})
+
+
+                      // Loading Screen
+                      if (!shouldRender) {
+                        return (
+                    <   div>
+                       <title>Planning Poker - Everfox</title>
+                      <Stack sx={{ width: "100vw", height: "100vh", justifyContent: "center", alignItems: "center",  }} >
+                            <CircularProgress />
+                    </Stack>
+                        </div>);
+                      }
+                                
 
 
     return (
