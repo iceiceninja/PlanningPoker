@@ -48,13 +48,10 @@ export default function Host() {
     const [isTimerVisible, setIsTimerVisible] = useState(false);
     const [endRoundPressed, setIsEndRoundPressed] = useState(false);
     const [checkVoteAllowedByHost, setChecked] = useState(false);
+    const [shouldRender, setShouldRender] = useState(false);
+    const [userName, setUserName] = useState("");
         // Variables
         let name: string = "Kaiden"
-        let topic: string = "Hi! Today we will be making a project about food. I like food. You like food."
-            + " We all love food! So, how long would this project take? I estimate 3.50!"
-                                                    // TODO: Limit to 150 chars in backend
-    
-
     const open2 = Boolean(anchor2);
     const id2 = open2 ? 'simple-popper' : undefined;
     const [userVotes, setUserVotes] = useState(0);
@@ -63,7 +60,7 @@ export default function Host() {
     const [previousValue, setPreviousValue] = useState("-1");
     var lengthChange = -1;
     var inititalMap = new Map([
-        ["Pass", false],
+        ["PassVote", false],
         ["1", false],
         ["2", false],
         ["3", false],
@@ -88,48 +85,46 @@ export default function Host() {
 
 
 
-    // sendVote(e)
-    const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
-console.log(endRoundPressed + "HHAHAAHA")
-console.log(checkVoteAllowedByHost + "HHAHAAHA")
+       // sendVote(e)
+       const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
+        var valueSubmittedByUser = event.currentTarget.value;
         if (!endRoundPressed || endRoundPressed && checkVoteAllowedByHost) {
-            const newButtonStates = new Map(buttonStates);
-            newButtonStates.forEach((value, key) => {
-                if(key == event.currentTarget.value) {
-                    console.log(event.currentTarget.value)
-                    newButtonStates.set(event.currentTarget.value, !newButtonStates.get(event.currentTarget.value));
-                }
-                else {
-                    newButtonStates.set(key, false);
-                }
-            });
-            setButtonStates(newButtonStates);
-    
-            //if you click two different cards, it should automatically update.
-            if (previousValue != event.currentTarget.value || cardSelected == false) {
-                setPreviousValue(event.currentTarget.value);
-                setCardSelected(true)
-                socket.emit("update_average", {value: event.currentTarget.value, selected: true});
-                socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
+        const newButtonStates = new Map(buttonStates);
+        newButtonStates.forEach((value, key) => {
+            if(key == valueSubmittedByUser) {
+                newButtonStates.set(valueSubmittedByUser, !newButtonStates.get(valueSubmittedByUser));
             }
-    
-            //if you click the same card twice, its assumed you deselected it.
             else {
-                if (previousValue != event.currentTarget.value) {
-                    setCardSelected(true)
-                    socket.emit("update_average", {value: event.currentTarget.value, selected: false});
-                    socket.emit("vote-selected", {value: event.currentTarget.value, selected: true}); // userId, vote value
-                }
-                else {
-                    setCardSelected(false)
-                    socket.emit("update_average", {value: event.currentTarget.value, selected: false});
-                    socket.emit("vote-selected", {value: event.currentTarget.value, selected: false}); // userId, vote value
-                }
-    
+                newButtonStates.set(key, false);
             }
-    
+        });
+        setButtonStates(newButtonStates);
+
+        //if you click two different cards, it should automatically update.
+        if (previousValue != valueSubmittedByUser || cardSelected == false) {
+            setPreviousValue(valueSubmittedByUser);
+            setCardSelected(true)
+            socket.emit("update_average", {value: valueSubmittedByUser, selected: true});
+            socket.emit("vote-selected", {value: valueSubmittedByUser, selected: true}); // userId, vote value
         }
+
+        //if you click the same card twice, its assumed you deselected it.
+        else {
+            if (previousValue != valueSubmittedByUser) {
+                setCardSelected(true)
+                socket.emit("update_average", {value: valueSubmittedByUser, selected: true});
+                socket.emit("vote-selected", {value: valueSubmittedByUser, selected: true}); // userId, vote value
+            }
+            else {
+                setCardSelected(false)
+                socket.emit("update_average", {value: valueSubmittedByUser, selected: false});
+                socket.emit("vote-selected", {value: valueSubmittedByUser, selected: false}); // userId, vote value
+            }
+
+        }
+
     }
+}
 
     useEffect(() => {
         if (!isTimerVisible || timeLeft === 0) return;
@@ -152,7 +147,7 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
 
   // Makes sure checked is updated
   useEffect(() => {
-
+    console.log(checkVoteAllowedByHost)
   }, [checkVoteAllowedByHost]);
 
     
@@ -180,7 +175,7 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
             marginRight: 3,
             marginBottom: 3,
             fontSize: 15,
-            backgroundColor: backgroundColor(String(value))
+            backgroundColor: backgroundColor(String(value), "")
         }}
         >
              Average: {displayVote ? value: " "}
@@ -192,6 +187,10 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
   useEffect(() => {
     socket.emit("get_all_information")
   }, );
+
+  useEffect(() => { 
+    socket.emit("get_id", "True")
+}, []); 
 
 
 
@@ -206,8 +205,6 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
         var isRoundOver = data.isRoundOver;
         var canChangeVote = data.changeVote;
 
-        console.log(isRoundOver)
-
         setChecked(canChangeVote);
 
         if(isRoundOver) {
@@ -220,6 +217,11 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
     socket.on("check_if_can_change_votes", (data) => {
         setChecked(data);
     })
+
+    socket.on("return-id", (data) => {
+        setUserName(data)
+    })
+
 
     
     socket.on("set_new_average", (average) => {
@@ -243,10 +245,10 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
         setTimeLeft(60)
     });
 
-    const backgroundColor = (vote : any) => {
+    const backgroundColor = (vote : any, name : any)  => {
         if(displayVote) {
         if (vote === "Pass") {
-          return "Pass";
+            return "#dadada";
         } 
         else if (vote === "1" || vote == "2") {
           return "cyan";
@@ -261,17 +263,18 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
             return "violet";
           } 
         else {
-          return "lightGray"; // Default case
+            return "#dadada";
         }
       }
-      if (vote != "Pass")
-      return "lightGray"
-
-      return " "
+      if ((name == userName && cardSelected) || vote != "Pass")
+        return "lightGrey"
+      
+      else {
+          return ""
+      }
     }
 
     socket.on("get_story_submitted_host", (data) => {
-        console.log(data);
         setStoryText(data);
     })
 
@@ -281,15 +284,24 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
         startTimer()
     });
 
+    socket.on("return_check_if_valid_user",(data) => {
+        if (data == "routeToUserStartUp") {
+            router.push("/userStartUp")
+        }
+        else if (data == "routeToHostStartUp") {
+            router.push("/host")
+        }
+        else {
+            setShouldRender(true)
+        }
+    })
+
     socket.on("display_votes", (averageOfAllVotes) => {
         setIsEndRoundPressed(true);
         setIsTimerVisible(false)
         setTimeLeft(60)
         setDisplayVote(true)
         setAverageOfAllVotes(averageOfAllVotes);
-
-        console.log("End round pressed" + endRoundPressed)
-        console.log("Check vote allowed" + checkVoteAllowedByHost)
     })
 
       useEffect(() => {
@@ -300,7 +312,13 @@ console.log(checkVoteAllowedByHost + "HHAHAAHA")
 
       useEffect(() => { 
         socket.emit("get_session_name", "True")
+}, [players]); 
+
+    useEffect(() => { 
+
+            socket.emit("check_if_valid_user", "True")
 }, []); 
+
 
 useEffect(() => { 
     socket.emit("get_story_submitted_for_new_user", "true")
@@ -346,6 +364,21 @@ useEffect(() => {
         setSessionTopicName(data.session);
         setHostName(data.host)
     })
+
+    
+
+
+                      // Loading Screen
+  if (!shouldRender) {
+    return (
+<   div>
+   <title>Planning Poker - Everfox</title>
+  <Stack sx={{ width: "100vw", height: "100vh", justifyContent: "center", alignItems: "center",  }} >
+        <CircularProgress />
+</Stack>
+    </div>);
+  }
+                                                    
 
     return (
         <>
@@ -481,7 +514,7 @@ useEffect(() => {
                         <button onClick={sendVote}  className={buttonStates.get("8") ? "cardUp card8 cardHover" : "card8 cardHover"}  value={"8"}>8</button>
                         <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card13 cardHover" : "card13 cardHover"}  value={"13"}>13</button>
                         <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card21 cardHover" : "card21 cardHover"}  value={"21"}>21</button>
-                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp cardPass cardHover" : "cardPass cardHover"}  value={"Pass"}>Pass</button>
+                        <button onClick={sendVote} className={buttonStates.get("PassVote") ? "cardUp cardPass cardHover" : "cardPass cardHover"}  value={"PassVote"}>Pass</button>
                         <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp cardQuestionMark cardHover" : "cardQuestionMark cardHover"}  value={"?"}>?</button>
                     </Stack>
 
@@ -527,11 +560,11 @@ useEffect(() => {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
-                        backgroundColor: backgroundColor(player.vote)
+                        backgroundColor: backgroundColor(player.vote, player.name)
                     }}
                     >
                     <Typography sx={{ fontSize: 30 }}>
-                {displayVote ? player.vote : " "}
+                    {displayVote ? (player.vote == "PassVote" ? "Pass" : player.vote) : " "}
                 </Typography>
                     </Paper>
                     <Typography style={{marginRight: 26, marginTop: 4, fontWeight: "bold"}}>{player.name}</Typography>

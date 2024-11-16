@@ -51,6 +51,7 @@ export default function Host() {
     const [averageOfAllVotes, setAverageOfAllVotes] = useState(0);
     const [cardSelected, setCardSelected] = useState(false);
     const [previousValue, setPreviousValue] = useState("-1");
+    const [previousVoteValueForBackgroudn, set] = useState("-1");
     const [textAreaValue, setTextAreaValue] = useState('');
     const [displayVote, setDisplayVote] = useState(false);
     const [timeLeftInput, setTimeLeftInput] = useState(''); 
@@ -60,6 +61,7 @@ export default function Host() {
     const [checked, setChecked] = useState(false);
     const [timerStarted, setTimerStarted] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
+    const [userName, setUserName] = useState("");
 
 
   const setCheckedValue = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +76,7 @@ export default function Host() {
 
     var lengthChange = -1;
     var inititalMap = new Map([
-        ["Pass", false],
+        ["PassVote", false],
         ["1", false],
         ["2", false],
         ["3", false],
@@ -98,6 +100,10 @@ export default function Host() {
 
 useEffect(() => { 
     socket.emit("render", "True")
+}, []); 
+
+useEffect(() => { 
+    socket.emit("get_id", "True")
 }, []); 
 
 useEffect(() => {
@@ -125,9 +131,6 @@ useEffect(() => {
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
         var valueSubmittedByUser = event.currentTarget.value;
-        if (valueSubmittedByUser == "PassVote") {
-            valueSubmittedByUser = "Pass";
-        }
         if (!endRoundPressed || endRoundPressed && checked) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
@@ -190,7 +193,7 @@ useEffect(() => {
             marginRight: 3,
             marginBottom: 3,
             fontSize: 15,
-            backgroundColor: backgroundColor(String(value))
+            backgroundColor: backgroundColor(String(value), "")
         }}
         >
              Average: {displayVote ? value: " "}
@@ -252,26 +255,34 @@ useEffect(() => {
         setTimeLeftInput('')
     });
 
+    socket.on("return-id", (data) => {
+        setUserName(data)
+    })
+
 
     // To fix a bug where if someone else navigated to this route it would give strange behaivor.
     socket.on("is_host", (data) => {
-        console.log("HEHEHEHEHEHEKLFDASJLK;FJ")
         if (data == "isHostAndValid") {
             setShouldRender(true)
         }
         else if (data == "notHost") {
             router.push("/userStartUp")
         }
+
+        else if (data == "notHostAndHasAName") {
+            router.push("/user")
+        }
         else {
             router.push("/")
         }
     })
 
-    const backgroundColor = (vote : any) => {
+    const backgroundColor = (vote : any, name : any) => {
+        console.log(vote);
         // use player map here instead...
         if(displayVote) {
         if (vote === "Pass") {
-          return "Pass";
+          return "#dadada";
         } 
         else if (vote === "1" || vote == "2") {
           return "cyan";
@@ -286,14 +297,20 @@ useEffect(() => {
             return "violet";
           } 
         else {
-          return "lightGray"; // Default case
+          return "#dadada"; // Default case
         }
       }
-      if (vote != "Pass")
-      return "lightGray"
 
-      return " "
+      if (vote != "Pass")
+        return "lightGrey"
+    
+    else {
+        return ""
     }
+
+      
+      }
+
 
     // ensures the players are correct DONT REMOVE THESE PLEASE
     useEffect(() => {
@@ -319,10 +336,11 @@ useEffect(() => {
         setAverageOfAllVotes(averageOfAllVotes);
     })
 
+
     // If the host disconnects, all users disconnect too
     socket.on("disconnect_all", (allPlayers) => {  
-        socket.emit("disconnect_each_socket")  
         router.push("/endScreen")   
+        socket.emit("disconnect_each_socket")  
     })
 
 
@@ -532,7 +550,7 @@ useEffect(() => {
                         <button onClick={sendVote}  className={buttonStates.get("8") ? "cardUp card8 cardHover" : "card8 cardHover"}  value={"8"}>8</button>
                         <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card13 cardHover" : "card13 cardHover"}  value={"13"}>13</button>
                         <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card21 cardHover" : "card21 cardHover"}  value={"21"}>21</button>
-                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp cardPass cardHover" : "cardPass cardHover"}  value={"PassVote"}>Pass</button>
+                        <button onClick={sendVote} className={buttonStates.get("PassVote") ? "cardUp cardPass cardHover" : "cardPass cardHover"}  value={"PassVote"}>Pass</button>
                         <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp cardQuestionMark cardHover" : "cardQuestionMark cardHover"}  value={"?"}>?</button>
                     </Stack>
 
@@ -589,11 +607,11 @@ useEffect(() => {
                         justifyContent: "center",
                         padding: 3,
                         marginRight: 3,
-                        backgroundColor: backgroundColor(player.vote) //pass in the state from the map instead
+                        backgroundColor: backgroundColor(player.vote, player.name) //pass in the state from the map instead
                     }}
                     >
                      <Typography sx={{ fontSize: 30 }}>
-                       {displayVote ? player.vote : " "}
+                       {displayVote ? (player.vote == "PassVote" ? "Pass" : player.vote) : " "}
                     </Typography>
                     </Paper>
                     <Typography style={{marginRight: 26, marginTop: 4, fontWeight: "bold"}}>{player.name}</Typography>

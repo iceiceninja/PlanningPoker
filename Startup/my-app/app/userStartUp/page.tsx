@@ -76,9 +76,6 @@ export default function UserStartUp() {
                  <h1>
                    User Sign Up
                  </h1>
-                 <h2>
-                   Session ID: ####
-                 </h2>
                </Box>
  
                {/* 2nd Row: Login */}

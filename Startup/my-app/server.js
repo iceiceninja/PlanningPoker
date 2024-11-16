@@ -41,9 +41,8 @@ nextApp.prepare().then(() => {
     handle(req, res, parsedUrl);
   });
   // Example object to store user votes
-  playerVotes = {};
-  const HOST_EXISTS = 1;
-  const HOST_NANE = "host";
+  var HOST_EXISTS = 1;
+  var HOST_NANE = "host";
   var idForEachPlayerQueue = [];
   var idToPlayerName = new Map();
   var idToPlayerVote = new Map();
@@ -52,23 +51,14 @@ nextApp.prepare().then(() => {
   var sessionTopic = "";
   var storePlayers = [];
   const io = new Server(server);
-  const NO_USERS = 0;
+  var NO_USERS = 0;
   var average = 0;
   var roundEnded = false;
   var averageWithCorrectCard = 0;
   var canChangeVote = false;
+  var activeSockets = new Set();
 
-  function onUserJoin(socket) {
-     // We have to make sure not to push the host into the queue.
-    if (idToPlayerName.size >= HOST_EXISTS) 
-      {
-        idForEachPlayerQueue.push(socket.id)
-        socket.emit("host_exists", "True");
-      }
 
-      idToPlayerName.size == NO_USERS ?  idToPlayerName.set(socket.id, "host") : idToPlayerName.set(socket.id, "connecting....");
-      
-  }
 
   function getOrDefault(map, id, socketId, defaultValue = "Pass", selected) {
     if (socketId == id) {
@@ -104,28 +94,20 @@ return closestNumber;
 
 }
 
-
-
   // When user (client) joins the server
   io.on('connection', (socket) => {
 
-  // We have to make sure not to push the host into the queue.
-   if (idToPlayerName.size >= HOST_EXISTS) 
-   {
-     idForEachPlayerQueue.push(socket.id)
-     socket.emit("host_exists", "True");
-   }
-
-
    // We have to make it a default value for now so that every other connection besides host goes to userStartUp
-  else  if ( idToPlayerName.size == NO_USERS) {
+   if ( idToPlayerName.size == NO_USERS) {
     hostSocket = socket.id
-    idToPlayerName.set(socket.id, "hostDefaultValueRandomCharactersSoAUserCantHaveThisName")
+    idToPlayerName.set(socket.id, "hostDoesNotExistYet")
    }
+
+
    else {
     idToPlayerName.set(socket.id, "connecting....")
    }
-
+   activeSockets.add(socket);
 
    console.log("user connected")
 
@@ -135,22 +117,34 @@ return closestNumber;
   
 
   socket.on('disconnect', () => {
-
+    activeSockets.delete(socket);
     // If the host disconnects, disconnect everyone.
     if (hostSocket ==  socket.id) {
-
-
-
       io.emit('disconnect_all' , "true")
+      HOST_EXISTS = 1;
+      HOST_NANE = "host";
+      idForEachPlayerQueue = [];
+      idToPlayerName = new Map();
+      idToPlayerVote = new Map();
+      userStory = "";
+      hostSocket = "";
+      sessionTopic = "";
+      storePlayers = [];
+      NO_USERS = 0;
+      average = 0;
+      roundEnded = false;
+      averageWithCorrectCard = 0;
+      canChangeVote = false;
+      activeSockets = new Set();
+       
     }
     
-
-
+//if its not the host, delete normally
+else if (hostSocket != "") {
     idToPlayerName.delete(socket.id)
 
-    if(idToPlayerVote.get(socket.id) != "Pass")
+    if(idToPlayerVote.get(socket.id) != "Pass" && idToPlayerVote.get(socket.id) != "PassVote")
     average = average - idToPlayerVote.get(socket.id); //remove it from the average before deleting
-
 
     idToPlayerVote.delete(socket.id)
     var total = 0;
@@ -162,7 +156,7 @@ return closestNumber;
     }));
 
       for (const [key, value] of idToPlayerVote) {
-      if (value != "Pass" && value != "?") {
+      if (value != "Pass" && value != "?" && value != "PassVote") {
         total++;
       }
   }
@@ -175,13 +169,13 @@ return closestNumber;
         averageWithCorrectCard = newAverage;
         io.emit("set_new_average", newAverage);
 
+}
 
     console.log('user disconnected');
   });
 
   
   socket.on("render", (data) => {
-    var currentAverage = average;
     
     
  // convert the map to an array, get the votes from all of them
@@ -258,15 +252,18 @@ socket.on("start_count_down", (data) => {
 socket.on("check_is_host", (data) => {
   var hostInfo = "hostNotJoined"
   if(hostSocket == socket.id) {
-    if(idToPlayerName.get(hostSocket) == "hostDefaultValueRandomCharactersSoAUserCantHaveThisName") {
+    if(idToPlayerName.get(hostSocket) == "hostDoesNotExistYet") {
       hostInfo = "hostNotJoinedAndSkippedUrl";
     }
     else {
       hostInfo = "isHostAndValid"; 
     }
   }
+  else if (idToPlayerName.get(socket.id) == "connecting....") {
+    hostInfo = "notHostAndUserHasNoName";
+  }
   else {
-    hostInfo = "notHost";
+    hostInfo = "notHostAndHasAName"
   }
 
   socket.emit("is_host", hostInfo);
@@ -276,12 +273,14 @@ socket.on("display_all_votes", () => {
   var total = 0;
 
   for (const [key, value] of idToPlayerVote) {
-      if (value != "Pass" && value != "?") {
+      if (value != "Pass" && value != "?" && value != "PassVote") {
         total++;
       }
   }
 
-  var newAverage = total == 0 ? 0 :calculateClosest(average / total);
+
+
+  var newAverage = total == 0 ? 0 : calculateClosest(average / total);
   averageWithCorrectCard = newAverage;
   roundEnded = true;
   io.emit("display_votes", newAverage);
@@ -317,20 +316,20 @@ socket.on("update_average", (data) => {
   var isSelected = data.selected;
   var total = 0;
 
-  if(targetsValue != "Pass" && targetsValue != '?')
+  if(targetsValue != "Pass" && targetsValue != "PassVote" && targetsValue != '?')
   average += Number(targetsValue);
 
 
   // Check if the old card equals pass or ?, if either of these is true, then we cannot subtract the old card
   if (isSelected) { //if the user selects a new card, subtract the old card
-    if (idToPlayerVote.get(socket.id) != "Pass" && idToPlayerVote.get(socket.id) != "?" )
+    if (idToPlayerVote.get(socket.id) != "Pass" && idToPlayerVote.get(socket.id) != "PassVote" &&idToPlayerVote.get(socket.id) != "?" )
     average = average - idToPlayerVote.get(socket.id); 
 
     idToPlayerVote.set(socket.id, targetsValue);
   }
 
   //When you click the card twice it deselects it, but if its pass or ?, we don't want to do anything
-  else if (!isSelected  && targetsValue != "Pass" && targetsValue != '?') { // if its deselected, subtract it, unless its a question mark, or a uhhh pass
+  else if (!isSelected  && targetsValue != "Pass" && targetsValue != "PassVote" && targetsValue != '?') { // if its deselected, subtract it, unless its a question mark, or a uhhh pass
     average = (average - Number(targetsValue) ); // do twice to remove it since we added it earlier
     average = (average - Number(targetsValue) );
     idToPlayerVote.set(socket.id, "Pass");
@@ -342,7 +341,7 @@ socket.on("update_average", (data) => {
    }
 
    for (const [key, value] of idToPlayerVote) {
-       if (value != "Pass" && value != '?') {
+       if (value != "Pass" && value != '?' && value != "PassVote") {
          total++;
        }
    }
@@ -383,6 +382,53 @@ socket.on("allow_change_votes", (data) => {
   canChangeVote = data;
   io.emit("check_if_can_change_votes", data);
 })
+
+socket.on("get_id", (data) => {
+  socket.emit("return-id", idToPlayerName.get(socket.id));
+})
+
+// check if the user has redirected to this page
+socket.on("check_if_valid_user", (data) => {
+  var userInfoToRoute = ""
+
+  if (idToPlayerName.get(socket.id) == "connecting....") {
+    userInfoToRoute = "routeToUserStartUp"
+  }
+
+  else if (idToPlayerName.get(socket.id) == "hostDoesNotExistYet") {
+      userInfoToRoute = "routeToHostStartUp"
+  }
+
+  else {
+    userInfoToRoute = "renderUser"
+  }
+
+  socket.emit("return_check_if_valid_user", userInfoToRoute)
+})
+
+
+const shutdown = () => {
+  console.log('Shutting down server...');
+
+       // Disconnect all sockets
+       activeSockets.forEach((socket) => {
+        socket.disconnect(true);
+    });
+
+
+    activeSockets.clear()
+
+      // Close the HTTP server
+      server.close(() => {
+        console.log('HTTP server closed');
+        process.exit(0);
+    });
+
+}
+
+process.on('SIGINT', shutdown); // Handle Ctrl+C
+process.on('SIGTERM', shutdown); // Handle termination signals
+
 
 
 
