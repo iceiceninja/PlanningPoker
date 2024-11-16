@@ -76,7 +76,7 @@ export default function Host() {
 
     var lengthChange = -1;
     var inititalMap = new Map([
-        ["Pass", false],
+        ["PassVote", false],
         ["1", false],
         ["2", false],
         ["3", false],
@@ -131,9 +131,6 @@ useEffect(() => {
     // sendVote(e)
     const sendVote = (event: MouseEvent<HTMLButtonElement>) => {
         var valueSubmittedByUser = event.currentTarget.value;
-        if (valueSubmittedByUser == "PassVote") {
-            valueSubmittedByUser = "Pass";
-        }
         if (!endRoundPressed || endRoundPressed && checked) {
         const newButtonStates = new Map(buttonStates);
         newButtonStates.forEach((value, key) => {
@@ -285,7 +282,7 @@ useEffect(() => {
         // use player map here instead...
         if(displayVote) {
         if (vote === "Pass") {
-          return "grey";
+          return "#dadada";
         } 
         else if (vote === "1" || vote == "2") {
           return "cyan";
@@ -300,13 +297,12 @@ useEffect(() => {
             return "violet";
           } 
         else {
-          return "lightGray"; // Default case
+          return "#dadada"; // Default case
         }
       }
 
-      if ((name == userName && cardSelected) || vote != "Pass")
+      if (vote != "Pass")
         return "lightGrey"
-      
     
     else {
         return ""
@@ -554,7 +550,7 @@ useEffect(() => {
                         <button onClick={sendVote}  className={buttonStates.get("8") ? "cardUp card8 cardHover" : "card8 cardHover"}  value={"8"}>8</button>
                         <button onClick={sendVote}  className={buttonStates.get("13") ? "cardUp card13 cardHover" : "card13 cardHover"}  value={"13"}>13</button>
                         <button onClick={sendVote}  className={buttonStates.get("21") ? "cardUp card21 cardHover" : "card21 cardHover"}  value={"21"}>21</button>
-                        <button onClick={sendVote} className={buttonStates.get("Pass") ? "cardUp cardPass cardHover" : "cardPass cardHover"}  value={"PassVote"}>Pass</button>
+                        <button onClick={sendVote} className={buttonStates.get("PassVote") ? "cardUp cardPass cardHover" : "cardPass cardHover"}  value={"PassVote"}>Pass</button>
                         <button onClick={sendVote} className={buttonStates.get("?") ? "cardUp cardQuestionMark cardHover" : "cardQuestionMark cardHover"}  value={"?"}>?</button>
                     </Stack>
 
@@ -615,7 +611,7 @@ useEffect(() => {
                     }}
                     >
                      <Typography sx={{ fontSize: 30 }}>
-                       {displayVote ? player.vote : " "}
+                       {displayVote ? (player.vote == "PassVote" ? "Pass" : player.vote) : " "}
                     </Typography>
                     </Paper>
                     <Typography style={{marginRight: 26, marginTop: 4, fontWeight: "bold"}}>{player.name}</Typography>

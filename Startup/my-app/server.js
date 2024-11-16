@@ -140,12 +140,11 @@ return closestNumber;
     }
     
 //if its not the host, delete normally
-else {
+else if (hostSocket != "") {
     idToPlayerName.delete(socket.id)
 
-    if(idToPlayerVote.get(socket.id) != "Pass")
+    if(idToPlayerVote.get(socket.id) != "Pass" && idToPlayerVote.get(socket.id) != "PassVote")
     average = average - idToPlayerVote.get(socket.id); //remove it from the average before deleting
-
 
     idToPlayerVote.delete(socket.id)
     var total = 0;
@@ -157,7 +156,7 @@ else {
     }));
 
       for (const [key, value] of idToPlayerVote) {
-      if (value != "Pass" && value != "?") {
+      if (value != "Pass" && value != "?" && value != "PassVote") {
         total++;
       }
   }
@@ -177,7 +176,6 @@ else {
 
   
   socket.on("render", (data) => {
-    var currentAverage = average;
     
     
  // convert the map to an array, get the votes from all of them
@@ -275,10 +273,12 @@ socket.on("display_all_votes", () => {
   var total = 0;
 
   for (const [key, value] of idToPlayerVote) {
-      if (value != "Pass" && value != "?") {
+      if (value != "Pass" && value != "?" && value != "PassVote") {
         total++;
       }
   }
+
+
 
   var newAverage = total == 0 ? 0 : calculateClosest(average / total);
   averageWithCorrectCard = newAverage;
@@ -316,20 +316,20 @@ socket.on("update_average", (data) => {
   var isSelected = data.selected;
   var total = 0;
 
-  if(targetsValue != "Pass" && targetsValue != '?')
+  if(targetsValue != "Pass" && targetsValue != "PassVote" && targetsValue != '?')
   average += Number(targetsValue);
 
 
   // Check if the old card equals pass or ?, if either of these is true, then we cannot subtract the old card
   if (isSelected) { //if the user selects a new card, subtract the old card
-    if (idToPlayerVote.get(socket.id) != "Pass" && idToPlayerVote.get(socket.id) != "?" )
+    if (idToPlayerVote.get(socket.id) != "Pass" && idToPlayerVote.get(socket.id) != "PassVote" &&idToPlayerVote.get(socket.id) != "?" )
     average = average - idToPlayerVote.get(socket.id); 
 
     idToPlayerVote.set(socket.id, targetsValue);
   }
 
   //When you click the card twice it deselects it, but if its pass or ?, we don't want to do anything
-  else if (!isSelected  && targetsValue != "Pass" && targetsValue != '?') { // if its deselected, subtract it, unless its a question mark, or a uhhh pass
+  else if (!isSelected  && targetsValue != "Pass" && targetsValue != "PassVote" && targetsValue != '?') { // if its deselected, subtract it, unless its a question mark, or a uhhh pass
     average = (average - Number(targetsValue) ); // do twice to remove it since we added it earlier
     average = (average - Number(targetsValue) );
     idToPlayerVote.set(socket.id, "Pass");
@@ -341,7 +341,7 @@ socket.on("update_average", (data) => {
    }
 
    for (const [key, value] of idToPlayerVote) {
-       if (value != "Pass" && value != '?') {
+       if (value != "Pass" && value != '?' && value != "PassVote") {
          total++;
        }
    }
@@ -424,11 +424,6 @@ const shutdown = () => {
         process.exit(0);
     });
 
-    // Force exit if graceful shutdown takes too long
-    setTimeout(() => {
-        console.error('Forcing shutdown...');
-        process.exit(1);
-    }, 1);
 }
 
 process.on('SIGINT', shutdown); // Handle Ctrl+C
