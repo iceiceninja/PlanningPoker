@@ -380,6 +380,7 @@ socket.on("reset_all_players", () => {
 
 socket.on("allow_change_votes", (data) => {
   canChangeVote = data;
+  console.log(canChangeVote)
   io.emit("check_if_can_change_votes", data);
 })
 
@@ -402,8 +403,6 @@ socket.on("check_if_valid_user", (data) => {
   else {
     userInfoToRoute = "renderUser"
   }
-
-  console.log(userInfoToRoute)
 
   socket.emit("return_check_if_valid_user", userInfoToRoute)
 })
