@@ -78,7 +78,6 @@ export default function HostHome() {
 
 
 useEffect(() : any => {
-  console.log(socketEmissionHolder.length)
   if(userCount >= 1) {
     router.push('/host')
   } 
@@ -87,7 +86,6 @@ useEffect(() : any => {
 
    //ensures the hostname is registered.
    useEffect(() : any => {
-    console.log(hostName);
   [hostName]})
 
   

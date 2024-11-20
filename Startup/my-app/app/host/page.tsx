@@ -177,7 +177,6 @@ useEffect(() => {
     };
 
     function submitStory() {
-        console.log(textAreaValue);
         socket.emit("story_submitted_host", textAreaValue); 
     }
 
@@ -280,7 +279,6 @@ useEffect(() => {
     })
 
     const backgroundColor = (vote : any, name : any) => {
-        console.log(vote);
         // use player map here instead...
         if(displayVote) {
         if (vote === "Pass") {
@@ -316,7 +314,6 @@ useEffect(() => {
 
     // ensures the players are correct DONT REMOVE THESE PLEASE
     useEffect(() => {
-        console.log(players); // This will log the updated value of players
       }, [players]); // Runs whenever players state changes
     
        // ensures the cardSelected variable is correct
@@ -361,7 +358,6 @@ useEffect(() => {
 
         // ensures the players are correct DONT GET RID OF THE CONSOLE LOGS PLEASE
         useEffect(() => {
-            console.log(endRoundPressed); // This will log the updated value of players
           }, [endRoundPressed]); // Runs whenever players state changes
 
     

@@ -380,7 +380,6 @@ socket.on("reset_all_players", () => {
 
 socket.on("allow_change_votes", (data) => {
   canChangeVote = data;
-  console.log(canChangeVote)
   io.emit("check_if_can_change_votes", data);
 })
 
