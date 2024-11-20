@@ -201,12 +201,10 @@ export default function Host() {
     })
 
     socket.on("return_all_information", (data) => {
-        console.log(data);
         var currentAverage = data.currentAverage;
         var isRoundOver = data.isRoundOver;
         var canChangeVote = data.changeVote;
 
-        console.log(canChangeVote)
 
         setChecked(canChangeVote);
 
