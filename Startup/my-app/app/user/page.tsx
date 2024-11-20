@@ -147,7 +147,6 @@ export default function Host() {
 
   // Makes sure checked is updated
   useEffect(() => {
-    console.log(checkVoteAllowedByHost)
   }, [checkVoteAllowedByHost]);
 
     
@@ -328,36 +327,30 @@ useEffect(() => {
 
           // ensures the players are correct DONT GET RID OF THE CONSOLE LOGS PLEASE
     useEffect(() => {
-        console.log(players); // This will log the updated value of players
       }, [players]); // Runs whenever players state changes
 
 
           // ensures the players are correct
     useEffect(() => {
-        console.log(players); // This will log the updated value of players
       }, [storyText, players]); // Runs whenever players state changes
     
     
        // ensures the cardSelected variable is correct
     useEffect(() => {
-        console.log(cardSelected); // This will log the updated value of players DOP
       }, [cardSelected]); // Runs whenever players state changes
     
 
        // ensures votes are correct
     useEffect(() => {
-        console.log(displayVote); 
       }, [displayVote]); 
     
 
     // ensures checkmark is correct
     useEffect(() => {
-        console.log(checkVoteAllowedByHost); 
       }, [checkVoteAllowedByHost]); 
 
           // ensures endRound pressed is correct
     useEffect(() => {
-        console.log(endRoundPressed); 
       }, [endRoundPressed]); 
 
 
