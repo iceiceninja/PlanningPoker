@@ -52,6 +52,12 @@ export default function UserStartUp() {
     }
 })
 
+    // If the host disconnects, all users disconnect too
+    socket.on("disconnect_all", (allPlayers) => {  
+      socket.emit("disconnect_each_socket")  
+      router.push("/endScreen")   
+  })
+
 
                       // Loading Screen
                       if (!shouldRender) {
