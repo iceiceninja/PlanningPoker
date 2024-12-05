@@ -412,8 +412,8 @@ useEffect(() => {
                             padding: 2,
                             bgcolor: "#F3F1F6",
                             borderRadius: '8px',
-                            width: "50vw",
-                            height: "12vh",
+                            width: "100vw",
+                            height: "17vh",
                             maxWidth: 500,
                             boxShadow: 4
                         }}
@@ -519,7 +519,6 @@ useEffect(() => {
                                 variant="h6"
                                 align="center"
                             >
-                        <p>Story: </p>
                         <textarea
         value={storyText}
         className="textarea-class"

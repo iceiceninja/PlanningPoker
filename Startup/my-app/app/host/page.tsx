@@ -420,8 +420,8 @@ useEffect(() => {
                             padding: 2,
                             bgcolor: "#F3F1F6",
                             borderRadius: '8px',
-                            width: "50vw",
-                            height: "13.8vh",
+                            width: "100vw",
+                            height: "17vh",
                             maxWidth: 500,
                             boxShadow: 4
                         }}
@@ -561,13 +561,12 @@ useEffect(() => {
                                 align="center"
                             >
                         <p >Story: </p> 
-
                         <textarea
         value={textAreaValue} 
         onChange={handleTextAreaChange}
         className="textarea-class"
         maxLength={135}
-        placeholder="Enter up to 135 characters"
+        placeholder="Enter a story up to 135 characters"
 
         style={{ width: '400px', height: '100px', resize: 'none' }} // Custom styles
       />
