@@ -363,7 +363,7 @@ useEffect(() => {
     
 
     // Variables
-    let name: string = "Kaiden"
+    let name: string = getDisplayHostname()
     let topicName: string = getGlobalSession()     // TODO: Limit to 36 chars in backend
     let hostName: string =   getDisplayHostname()   // TODO: Limit to 20 chars in backend
     let topic: string = "Hi! Today we will be making a project about food. I like food. You like food."
@@ -456,46 +456,6 @@ useEffect(() => {
                             alignItems: "center"
                         }}
                     >
-                        <ThemeProvider theme = {buttonTheme}>
-                            <Button
-                                variant="contained"
-                                startIcon={<InfoIcon />}
-                                sx={{
-                                    width: "16vw",
-                                    maxWidth: 160,
-                                    height: "4vh"
-                                }}
-                            >
-                                <ThemeProvider theme = {textTheme}>
-                                    <Typography
-                                        variant="button"
-                                        align="center"
-                                    >
-                                        How to Play
-                                    </Typography>
-                                </ThemeProvider>
-                            </Button>
-                        </ThemeProvider>
-                        <ThemeProvider theme = {buttonTheme}>
-                            <Button
-                                variant="contained"
-                                startIcon={<LinkIcon />}
-                                sx={{
-                                    width: "16vw",
-                                    maxWidth: 160,
-                                    height: "4vh"
-                                }}
-                            >
-                                <ThemeProvider theme = {textTheme}>
-                                    <Typography
-                                        variant="button"
-                                        align="center"
-                                    >
-                                        Invite Link
-                                    </Typography>
-                                </ThemeProvider>
-                            </Button>
-                        </ThemeProvider>
                     </Stack>
                 </Stack>
                 <div className = ", footer">
