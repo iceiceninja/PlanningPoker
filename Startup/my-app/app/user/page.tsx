@@ -479,6 +479,7 @@ useEffect(() => {
                                 variant="h6"
                                 align="center"
                             >
+                    <p style={{opacity: 0}}>Story: </p> 
                         <textarea
         value={storyText}
         className="textarea-class"

@@ -520,7 +520,7 @@ useEffect(() => {
                                 variant="h6"
                                 align="center"
                             >
-                        <p >Story: </p> 
+                        <p style={{opacity: 0}}>Story: </p> 
                         <textarea
         value={textAreaValue} 
         onChange={handleTextAreaChange}
